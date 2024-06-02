@@ -55,7 +55,7 @@ const Header: FC<HeaderProps> = ({ title = "" }) => {
             />
           </div>
 
-          <h2 className="text-white text-2xl uppercase font-bold mt-1">
+          <h2 className="text-white text-3xl uppercase font-extrabold">
             <Link href={"/"}>MUGS.DC</Link>
           </h2>
         </div>
