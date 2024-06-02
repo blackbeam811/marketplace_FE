@@ -2,14 +2,15 @@
 @tailwind components;
 @tailwind utilities;
 
-/* @font-face {
+@font-face {
   font-family: "custom";
-  src: url("../assets/fonts/Ramabhadra-Regular.ttf") format("truetype");
+  src: url("/fonts/Blinker-SemiBold.ttf") format("truetype");
   font-weight: normal;
   font-style: normal;
-} */
+}
 
 body {
+  font-family: "custom" !important;
   scroll-behavior: smooth !important;
   background-color: #111827 !important;
 }
