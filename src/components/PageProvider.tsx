@@ -6,6 +6,7 @@ import SolanaWalletProvider from "@/contexts/WalletContext";
 import { NFTDataProvider } from "@/contexts/NFTDataContext";
 import { ModalProvider } from "@/contexts/ModalContext";
 import Header from "./Header";
+import SearchCollectionModal from "./Modal/SearchCollectionModal";
 
 export default function PageProvider({ children }: { children: ReactNode }) {
   return (
@@ -14,13 +15,16 @@ export default function PageProvider({ children }: { children: ReactNode }) {
         <ModalProvider>
           <Header />
           {children}
-          <ProgressBar
-            height="1px"
-            color="#fffd00"
-            options={{ showSpinner: true }}
-            shallowRouting
-          />
+          <SearchCollectionModal />
           <ToastContainer pauseOnFocusLoss={false} theme="colored" stacked />
+          <div className="z-[9999]">
+            <ProgressBar
+              height="1px"
+              color="#fffd00"
+              options={{ showSpinner: true }}
+              shallowRouting
+            />
+          </div>
         </ModalProvider>
       </NFTDataProvider>
     </SolanaWalletProvider>

@@ -2,18 +2,15 @@
 import { NextPage } from "next";
 import { useWallet } from "@solana/wallet-adapter-react";
 import MainPageLayout from "@/components/Layout";
-import { useParams, usePathname, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import Image from "next/image";
 import { MdOutlineSecurity } from "react-icons/md";
-import { BiArrowToTop } from "react-icons/bi";
-import { BsArrowBarLeft } from "react-icons/bs";
 import { BiDetail } from "react-icons/bi";
 import { BiLineChart } from "react-icons/bi";
 
 import { ArrowIcon } from "@/components/SvgIcons";
 import { TfiAnnouncement } from "react-icons/tfi";
 import { useState } from "react";
-import CollectionTable from "@/components/CollectionTable";
 import ActivityTable from "@/components/ActivityTable";
 
 const ItemDetails: NextPage = () => {

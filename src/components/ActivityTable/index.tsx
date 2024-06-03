@@ -1,5 +1,4 @@
 import { activityTableData } from "@/data/activityTableData";
-import { collectionTableData } from "@/data/collectionTableData";
 import Image from "next/image";
 
 export default function ActivityTable() {
