@@ -10,12 +10,13 @@ import {
   collectionDataType,
   collectionTableData,
 } from "@/data/collectionTableData";
-import { FaDiscord, FaTwitter } from "react-icons/fa";
-import { BsTwitterX } from "react-icons/bs";
 import CollectionDetail from "@/components/CollectionDetail";
 import CollectionItemSkeleton from "@/components/CollectionItemSkeleton";
 import { NFTDataContext } from "@/contexts/NFTDataContext";
 import NFTCard from "@/components/NFTCard";
+import { FiFilter } from "react-icons/fi";
+import { BiSearch } from "react-icons/bi";
+import CollectionFilterSelect from "@/components/CollectionFilterSelect";
 
 const Market: NextPage = () => {
   const { publicKey, connected } = useWallet();
@@ -25,7 +26,6 @@ const Market: NextPage = () => {
 
   const memoizedOwnNFTs = useMemo(() => ownNFTs, [ownNFTs]);
   const [collectionData, setCollectionData] = useState<collectionDataType>();
-  console.log("collectionAddr ===>", collectionAddr);
 
   useEffect(() => {
     if (collectionAddr) {
@@ -35,6 +35,7 @@ const Market: NextPage = () => {
       setCollectionData(collection[0]);
     }
   }, [collectionAddr]);
+
   return (
     <MainPageLayout>
       <div
@@ -47,6 +48,19 @@ const Market: NextPage = () => {
           <Suspense fallback={<div />}>
             <TabsTip />
           </Suspense>
+          <div className="w-full flex items-center justify-between gap-3">
+            <div className="p-2 bg-gray-700 rounded-md text-gray-300 hover:text-white duration-300 cursor-pointer">
+              <FiFilter />
+            </div>
+            <div className="w-full flex items-center justify-start px-2 rounded-md border-[1px] border-gray-600">
+              <BiSearch color="white" />
+              <input
+                placeholder="Search items"
+                className="outline-none bg-transparent w-full text-white py-1 px-1 font-thin"
+              />
+            </div>
+            <CollectionFilterSelect />
+          </div>
           <CollectionItemSkeleton />
           <div
             className={`w-full grid 2xl:grid-cols-8 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-7 sm:grid-cols-3 grid-cols-2 gap-5 ${
