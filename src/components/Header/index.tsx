@@ -66,14 +66,14 @@ const Header: FC<HeaderProps> = ({ title = "" }) => {
                 router === "/" ? "text-yellow-400 list-disc" : "list-none"
               }`}
             >
-              <Link href={"/"}>collection</Link>
+              <Link href={"/"}>Collection</Link>
             </li>
             <li
               className={` text-white text-sm mr-5 font-bold cursor-pointer duration-300 hover:text-yellow-400 ${
-                router === "/" ? "text-yellow-400 list-disc" : "list-none"
+                router === "/mint" ? "text-yellow-400 list-disc" : "list-none"
               }`}
             >
-              <Link href={"/"}>Mint</Link>
+              <Link href={"/mint"}>Mint</Link>
             </li>
             <li
               className={` text-white text-sm mr-5 font-bold cursor-pointer duration-300 hover:text-yellow-400 ${

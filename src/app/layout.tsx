@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import PageProvider from "@/components/PageProvider";
 import "react-toastify/dist/ReactToastify.css";
 import "react-responsive-modal/styles.css";
+import "react-multi-carousel/lib/styles.css";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"] });

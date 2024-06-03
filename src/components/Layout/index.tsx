@@ -7,15 +7,15 @@ interface PageProps {
 
 const MainPageLayout: FC<PageProps> = ({ children }) => {
   return (
-    <main className="main-page">
-      <motion.div
-        initial={{ y: 0, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ ease: "easeInOut", duration: 0.5 }}
-      >
+    <motion.div
+      initial={{ y: 0, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      transition={{ ease: "easeInOut", duration: 0.5 }}
+    >
+      <main className="main-page w-full items-center justify-center flex  px-3">
         {children}
-      </motion.div>
-    </main>
+      </main>
+    </motion.div>
   );
 };
 
