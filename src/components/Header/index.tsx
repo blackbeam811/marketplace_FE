@@ -10,14 +10,7 @@ import React, {
 } from "react";
 import { web3 } from "@project-serum/anchor";
 import { useWallet } from "@solana/wallet-adapter-react";
-import {
-  CloseIcon,
-  ExitIcon,
-  FireIcon,
-  ProfileIcon,
-  SolanaIcon,
-  WalletIcon,
-} from "../SvgIcons";
+import { CloseIcon, ExitIcon } from "../SvgIcons";
 import ConnectButton from "../WalletConnectButton";
 import { SOLANA_RPC, SOL_DECIMAL } from "@/config";
 import { usePathname } from "next/navigation";
@@ -25,23 +18,21 @@ import Link from "next/link";
 import { FaWallet } from "react-icons/fa";
 import { FaCopy } from "react-icons/fa";
 import { FaCheck } from "react-icons/fa6";
+import { FaUser } from "react-icons/fa";
 import { BiMenu, BiSearch } from "react-icons/bi";
-import { CgClose } from "react-icons/cg";
+import { TfiWorld } from "react-icons/tfi";
+import { FaExchangeAlt } from "react-icons/fa";
+
+import { MdSettings } from "react-icons/md";
+import { CgClose, CgWebsite } from "react-icons/cg";
 import Image from "next/image";
 import { useWalletModal } from "@solana/wallet-adapter-react-ui";
 import { ModalContext } from "@/contexts/ModalContext";
 import { useOnClickOutside } from "@/hooks/useOnClickOutside";
+import { BsDiscord, BsTwitterX } from "react-icons/bs";
+import { BalanceProps, HeaderProps } from "@/types/types";
 
-interface HeaderProps {
-  title?: string;
-}
-
-interface BalanceProps {
-  myBalance?: number;
-  address: web3.PublicKey | null;
-}
-
-const Header: FC<HeaderProps> = ({ title = "" }) => {
+const Header: FC<HeaderProps> = () => {
   const inputRef = useRef<HTMLInputElement>(null);
   const router = usePathname();
   const { publicKey, disconnect, connected } = useWallet();
@@ -132,28 +123,8 @@ const Header: FC<HeaderProps> = ({ title = "" }) => {
             >
               <Link href={"/mint"}>Mint</Link>
             </li>
-            <li
-              className={` text-white text-sm mr-5 font-bold cursor-pointer duration-300 hover:text-yellow-400 ${
-                router === "/market" ? "text-yellow-400 list-disc" : "list-none"
-              }`}
-            >
-              <Link href={"/market"}>Marketplace</Link>
-            </li>
           </ul>
 
-          {/* <div
-            className="border p-[10px] py-[9px] flex items-center gap-3 rounded-md border-gray-500
-          hover:bg-gray-800 duration-300 cursor-pointer"
-            onClick={onOpenModal}
-          >
-            <FireIcon />
-          </div> */}
-          {/* <div
-            className="bg-gray-800 rounded-md p-2 cursor-pointer"
-            onClick={() => openSearchCollectionModal()}
-          >
-            <BiSearch color="white" />
-          </div> */}
           {connected && (
             <BalanceBox myBalance={myBalance} address={publicKey} />
           )}
@@ -176,7 +147,7 @@ const Header: FC<HeaderProps> = ({ title = "" }) => {
 
 export default Header;
 
-const BalanceBox: FC<BalanceProps> = ({ myBalance, address }) => {
+const BalanceBox: FC<BalanceProps> = ({ myBalance }) => {
   const { setVisible } = useWalletModal();
   const { publicKey, disconnect } = useWallet();
   const [openModal, setOpenModal] = useState(false);
@@ -239,9 +210,9 @@ const BalanceBox: FC<BalanceProps> = ({ myBalance, address }) => {
         </div>
         <ul className=" border-gray-500 rounded-lg bg-grayborder-gray-500 p-2 mt-1 pt-2">
           <li className="flex gap-2 items-center mb-3 text-sm duration-300 text-white transition-all w-full justify-between">
-            <span className="flex items-center justify-center gap-2">
-              <FaWallet color="#86B0A8" size={14} />
-              <Link href="/myitem">My Wallet : </Link>
+            <span className="flex items-center justify-center gap-[7px]">
+              <FaWallet color="#86B0A8" size={15} className="pl-[2px]" />
+              My Wallet :
             </span>
             <span className="flex items-center justify-center gap-1">
               {" "}
@@ -254,25 +225,41 @@ const BalanceBox: FC<BalanceProps> = ({ myBalance, address }) => {
               </span>
             </span>
           </li>
-          <li className="flex gap-2 items-center mb-3 text-sm hover:text-yellow-400 duration-300 text-white transition-all">
-            <ProfileIcon className="brightness-200" />
-            <Link href="/myitem">My Items</Link>
+          <li className="flex gap-2 items-center mb-3 text-sm hover:text-yellow-400 duration-300 text-white transition-all cursor-pointer">
+            <FaUser size={14} color="#86B0A8" className="pl-[2px]" />
+            <Link href="/me">My Items</Link>
+          </li>
+          <li className="flex gap-[5px] items-center mb-3 text-sm hover:text-yellow-400 duration-300 text-white transition-all cursor-pointer">
+            <MdSettings size={17} color="#86B0A8" />
+            <Link href="/account/settings">Account Settings</Link>
           </li>
           <li>
             <div
-              className="flex gap-2 items-center mb-3 text-sm hover:text-yellow-400 duration-300 text-white transition-all"
+              className="flex gap-2 items-center mb-3 text-sm hover:text-yellow-400 duration-300 text-white transition-all cursor-pointer"
               onClick={() => setVisible(true)}
             >
-              <WalletIcon className="brightness-200" /> Change Wallet
+              <FaExchangeAlt size={14} color="#86B0A8" className="pl-[2px]" />{" "}
+              Change Wallet
             </div>
           </li>
-          <li>
+          <li className="border-b-[1px] border-gray-600 pb-3">
             <button
-              className="flex gap-2 items-center text-sm hover:text-yellow-400 duration-300 text-white transition-all"
+              className="flex gap-[6px] items-center text-sm hover:text-yellow-400 duration-300 text-white transition-all cursor-pointer"
               onClick={disconnect}
             >
               <ExitIcon className="brightness-200" /> Disconnect
             </button>
+          </li>
+          <li className="flex items-center justify-start gap-3 p-2">
+            <span className="text-white bg-gray-600 p-1 rounded-md hover:bg-gray-800 duration-300 cursor-pointer">
+              <BsTwitterX />
+            </span>
+            <span className="text-white bg-gray-600 p-1 rounded-md hover:bg-gray-800 duration-300 cursor-pointer">
+              <BsDiscord />
+            </span>
+            <span className="text-white bg-gray-600 p-1 rounded-md hover:bg-gray-800 duration-300 cursor-pointer">
+              <TfiWorld />
+            </span>
           </li>
         </ul>
       </div>

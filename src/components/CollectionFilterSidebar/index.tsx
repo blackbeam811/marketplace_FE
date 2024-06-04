@@ -1,9 +1,5 @@
-import { ArrowIcon, CloseIcon } from "../SvgIcons";
-
-interface SidebarPropsType {
-  filterOpen: boolean;
-  onClosebar: () => void;
-}
+import { SidebarPropsType } from "@/types/types";
+import { CloseIcon } from "../SvgIcons";
 
 export default function CollectionFilterSidebar({
   filterOpen,

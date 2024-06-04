@@ -1,11 +1,9 @@
-import { collectionDataType } from "@/data/collectionTableData";
 import Image from "next/image";
+
 import { BsTwitterX } from "react-icons/bs";
 import { FaDiscord } from "react-icons/fa";
 
-export interface CollectionDetailProps {
-  collectionData: collectionDataType;
-}
+import { CollectionDetailProps } from "@/types/types";
 
 export default function CollectionDetail({
   collectionData,

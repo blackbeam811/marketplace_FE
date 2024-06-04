@@ -1,15 +1,4 @@
-export type collectionDataType = {
-    name: string,
-    imgUrl: string,
-    collectionAddr: string,
-    currentPrice: number,
-    previousPrice: number,
-    volume: number,
-    change: number,
-    sales: number,
-    marketCap: number,
-    totalVolume: number,
-}
+
 export const collectionTableData = [
     {
         name: "Azuki",
