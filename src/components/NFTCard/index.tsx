@@ -3,6 +3,7 @@ import { FC } from "react";
 import { DetailIcon } from "../SvgIcons";
 import { TbListDetails } from "react-icons/tb";
 import Link from "next/link";
+import { useWindowSize } from "@/hooks/useWindowSize";
 
 interface NFTCardType {
   imgUrl: string;
@@ -10,9 +11,11 @@ interface NFTCardType {
   tokenAddr: string;
 }
 const NFTCard: FC<NFTCardType> = ({ imgUrl, tokenId, tokenAddr }) => {
+  const { width } = useWindowSize();
+
   return (
     <div className="flex items-start justify-start flex-col gap-2 bg-gray-800 rounded-md pb-2">
-      <div className="overflow-hidden rounded-t-md h-[200px]">
+      <div className="overflow-hidden rounded-t-md md:h-[210px] h-[180px]">
         <img
           src={imgUrl}
           alt="NFT Image"
@@ -25,7 +28,7 @@ const NFTCard: FC<NFTCardType> = ({ imgUrl, tokenId, tokenAddr }) => {
           <Link
             href={"/item-details/0xed5af388653567af2f388e6224dc7c4b3244c544"}
           >
-            <TbListDetails />
+            <TbListDetails size={20} />
           </Link>
         </span>
       </div>

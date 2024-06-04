@@ -29,98 +29,16 @@ body {
 /*Customize scroll style*/
 /* Chrome, Edge, and Safari */
 *::-webkit-scrollbar {
-  width: 4px;
+  width: 6px;
   height: 10px;
 }
 
 *::-webkit-scrollbar-track {
-  background: rgb(255, 255, 255);
+  background: transparent;
 }
 
 *::-webkit-scrollbar-thumb {
   background: #838383;
   border-radius: 30px;
   border: 3px none #636060;
-}
-
-/*Nprogress Customize*/
-#nprogress {
-  pointer-events: none;
-}
-
-#nprogress .bar {
-  background: #d32fa2;
-
-  position: fixed;
-  z-index: 1031;
-  top: 0;
-  left: 0;
-
-  width: 100%;
-  height: 2px;
-}
-
-#nprogress .peg {
-  display: block;
-  position: absolute;
-  right: 0px;
-  width: 100px;
-  height: 100%;
-  box-shadow: 0 0 10px #f9e0a8, 0 0 5px #f9e0a8;
-  opacity: 1;
-
-  -webkit-transform: rotate(3deg) translate(0px, -4px);
-  -ms-transform: rotate(3deg) translate(0px, -4px);
-  transform: rotate(3deg) translate(0px, -4px);
-}
-
-/* Remove these to get rid of the spinner */
-#nprogress .spinner {
-  display: block;
-  position: fixed;
-  z-index: 1031;
-  top: 15px;
-  right: 15px;
-}
-
-#nprogress .spinner-icon {
-  width: 18px;
-  height: 18px;
-  box-sizing: border-box;
-
-  border: solid 2px transparent;
-  border-top-color: #f9e0a8;
-  border-left-color: #f9e0a8;
-  border-radius: 50%;
-
-  -webkit-animation: nprogress-spinner 400ms linear infinite;
-  animation: nprogress-spinner 400ms linear infinite;
-}
-
-.nprogress-custom-parent {
-  overflow: hidden;
-  position: relative;
-}
-
-.nprogress-custom-parent #nprogress .spinner,
-.nprogress-custom-parent #nprogress .bar {
-  position: absolute;
-}
-
-@-webkit-keyframes nprogress-spinner {
-  0% {
-    -webkit-transform: rotate(0deg);
-  }
-  100% {
-    -webkit-transform: rotate(360deg);
-  }
-}
-
-@keyframes nprogress-spinner {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
 }

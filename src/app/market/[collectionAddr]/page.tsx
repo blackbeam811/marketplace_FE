@@ -17,6 +17,10 @@ import NFTCard from "@/components/NFTCard";
 import { FiFilter } from "react-icons/fi";
 import { BiSearch } from "react-icons/bi";
 import CollectionFilterSelect from "@/components/CollectionFilterSelect";
+import { ArrowIcon, CloseIcon } from "@/components/SvgIcons";
+import CollectionFilterSidebar from "@/components/CollectionFilterSidebar";
+import { collectionItems } from "@/data/collectionItems";
+import { Size, useWindowSize } from "@/hooks/useWindowSize";
 
 const Market: NextPage = () => {
   const { publicKey, connected } = useWallet();
@@ -26,6 +30,10 @@ const Market: NextPage = () => {
 
   const memoizedOwnNFTs = useMemo(() => ownNFTs, [ownNFTs]);
   const [collectionData, setCollectionData] = useState<collectionDataType>();
+  const [windowSize, setWindowSize] = useState<Size>();
+  const [filterOpen, setFilterOpen] = useState(false);
+  const { width } = useWindowSize();
+  console.log("width", width);
 
   useEffect(() => {
     if (collectionAddr) {
@@ -36,20 +44,42 @@ const Market: NextPage = () => {
     }
   }, [collectionAddr]);
 
+  const getColumns = () => {
+    if (width >= 1536) return Math.floor(width / 150); // 2xl
+    if (width >= 1280) return 7; // xl
+    if (width >= 1024) return 6; // lg
+    if (width >= 768) return 5; // md
+    if (width >= 640) return 3; // sm
+    return 2; // default case for small screens
+  };
+
   return (
     <MainPageLayout>
       <div
-        className={`w-full max-w-[1440px] flex items-center justify-start min-h-[80vh] flex-col ${
+        className={`w-full flex items-start justify-start flex-row ${
           !connected && "hidden"
         }`}
       >
-        <div className="w-full flex items-start justify-start mt-5 gap-4 flex-col">
-          <CollectionDetail collectionData={collectionData} />
+        <CollectionFilterSidebar
+          filterOpen={filterOpen}
+          onClosebar={() => setFilterOpen(false)}
+        />
+        <div className="w-full flex items-start justify-start mt-5 gap-4 flex-col px-2">
+          {collectionData && (
+            <CollectionDetail collectionData={collectionData} />
+          )}
           <Suspense fallback={<div />}>
             <TabsTip />
           </Suspense>
           <div className="w-full flex items-center justify-between gap-3">
-            <div className="p-2 bg-gray-700 rounded-md text-gray-300 hover:text-white duration-300 cursor-pointer">
+            <div
+              className={`p-2 ${
+                filterOpen
+                  ? "bg-pink-500 text-white"
+                  : "bg-gray-700 text-gray-300"
+              } rounded-md hover:text-white duration-300 cursor-pointer`}
+              onClick={() => setFilterOpen(!filterOpen)}
+            >
               <FiFilter />
             </div>
             <div className="w-full flex items-center justify-start px-2 rounded-md border-[1px] border-gray-600">
@@ -62,19 +92,21 @@ const Market: NextPage = () => {
             <CollectionFilterSelect />
           </div>
           <CollectionItemSkeleton />
-          <div
-            className={`w-full grid 2xl:grid-cols-8 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-7 sm:grid-cols-3 grid-cols-2 gap-5 ${
-              getOwnNFTsState && "hidden"
-            }`}
-          >
-            {memoizedOwnNFTs?.map((item, index) => (
-              <NFTCard
-                imgUrl={item.imgUrl}
-                tokenId={item.tokenId}
-                key={index}
-                tokenAddr={item.mintAddr}
-              />
-            ))}
+          <div className="w-full max-h-[70vh] overflow-y-auto p-3">
+            <div
+              className={`w-full grid grid-cols-2 md:grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-5 ${
+                getOwnNFTsState && "hidden"
+              }`}
+            >
+              {collectionItems?.map((item, index) => (
+                <NFTCard
+                  imgUrl={item.imgUrl}
+                  tokenId={item.tokenId}
+                  key={index}
+                  tokenAddr={item.mintAddr}
+                />
+              ))}
+            </div>
           </div>
           <div
             className={`${

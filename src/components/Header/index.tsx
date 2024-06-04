@@ -11,6 +11,7 @@ import React, {
 import { web3 } from "@project-serum/anchor";
 import { useWallet } from "@solana/wallet-adapter-react";
 import {
+  CloseIcon,
   ExitIcon,
   FireIcon,
   ProfileIcon,
@@ -21,11 +22,15 @@ import ConnectButton from "../WalletConnectButton";
 import { SOLANA_RPC, SOL_DECIMAL } from "@/config";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
+import { FaWallet } from "react-icons/fa";
+import { FaCopy } from "react-icons/fa";
+import { FaCheck } from "react-icons/fa6";
 import { BiMenu, BiSearch } from "react-icons/bi";
 import { CgClose } from "react-icons/cg";
 import Image from "next/image";
 import { useWalletModal } from "@solana/wallet-adapter-react-ui";
 import { ModalContext } from "@/contexts/ModalContext";
+import { useOnClickOutside } from "@/hooks/useOnClickOutside";
 
 interface HeaderProps {
   title?: string;
@@ -41,7 +46,6 @@ const Header: FC<HeaderProps> = ({ title = "" }) => {
   const router = usePathname();
   const { publicKey, disconnect, connected } = useWallet();
   const { openSearchCollectionModal } = useContext(ModalContext);
-
   const [myBalance, setMyBalance] = useState<number>(0);
   const [isFocused, setIsFocused] = useState(false);
   const [openMobileMenu, setOpenMobileMenu] = useState(false);
@@ -80,35 +84,38 @@ const Header: FC<HeaderProps> = ({ title = "" }) => {
   return (
     <header className="border-b border-gray-600 fixed w-full bg-[#111827] z-10">
       <div className="py-2 px-4 flex items-center justify-between">
-        <div className="flex items-center justify-center gap-3">
-          <div className="w-[30px] h-[30px] rounded-full relative">
-            <Image
-              src="/images/logo.png"
-              fill
-              alt=""
-              className="object-cover rounded-md"
-            />
-          </div>
+        <Link href={"/"}>
+          <div className="flex items-center justify-center gap-3">
+            <div className="w-[30px] h-[30px] rounded-full relative">
+              <Image
+                src="/images/logo.png"
+                fill
+                alt=""
+                className="object-cover rounded-md"
+              />
+            </div>
 
-          <h2 className="text-white text-3xl uppercase font-extrabold hidden lg:block">
-            <Link href={"/"}>MUGS.DC</Link>
-          </h2>
-        </div>
-        <div className="2xl:min-w-[700px] xl:min-w-[500px] w-[350px] border-[1px] rounded-md border-gray-600 flex items-center justify-center gap-2 px-3">
+            <h2 className="text-white text-3xl uppercase font-extrabold hidden lg:block">
+              MUGS.DC
+            </h2>
+          </div>
+        </Link>
+        <div className="2xl:min-w-[700px] xl:min-w-[500px] md:w-[350px] w-[150px] border-[1px] rounded-md border-gray-600 flex items-center justify-center gap-2 px-3">
           <BiSearch color="white" />
           <input
             ref={inputRef}
             placeholder="Search all of Mugs"
-            className="outline-none bg-transparent w-full text-white py-1 px-1 font-thin"
+            className="outline-none bg-transparent w-full text-white py-2 md:py-[5px] px-1 font-thin text-[12px] md:text-sm"
             onFocus={() => {
               setIsFocused(true);
             }}
             onClick={openSearchCollectionModal}
           />
-          <div className="bg-gray-700 rounded-md text-[12px] text-white px-1">
+          <div className="bg-gray-700 rounded-md text-[12px] text-white px-1 hidden md:block">
             CTRL+K
           </div>
         </div>
+
         <div className="flex items-center gap-3">
           <ul className="lg:flex items-center justify-center gap-3 hidden">
             <li
@@ -141,15 +148,21 @@ const Header: FC<HeaderProps> = ({ title = "" }) => {
           >
             <FireIcon />
           </div> */}
+          {/* <div
+            className="bg-gray-800 rounded-md p-2 cursor-pointer"
+            onClick={() => openSearchCollectionModal()}
+          >
+            <BiSearch color="white" />
+          </div> */}
           {connected && (
             <BalanceBox myBalance={myBalance} address={publicKey} />
           )}
           {!connected && <ConnectButton />}
           <div
-            className="cursor-pointer flex lg:hidden"
+            className="cursor-pointer flex lg:hidden bg-gray-800 rounded-md p-1"
             onClick={() => setOpenMobileMenu(true)}
           >
-            <BiMenu size={23} color="white" />
+            <BiMenu size={22} color="white" />
           </div>
         </div>
         <MobileMenu
@@ -166,17 +179,81 @@ export default Header;
 const BalanceBox: FC<BalanceProps> = ({ myBalance, address }) => {
   const { setVisible } = useWalletModal();
   const { publicKey, disconnect } = useWallet();
+  const [openModal, setOpenModal] = useState(false);
+  const [showCheck, setShowCheck] = useState(false);
+  const elem = useRef(null);
+  useOnClickOutside(elem, () => setOpenModal(false));
 
+  const handleCopy = () => {
+    if (publicKey) {
+      navigator.clipboard.writeText(publicKey.toBase58());
+      setShowCheck(true);
+      setTimeout(() => {
+        setShowCheck(false);
+      }, 1000);
+    }
+  };
   return (
-    <div className="border p-2 py-[9px] hidden sm:flex items-center gap-3 rounded-md border-gray-500 group">
-      <div className="w-[18px] h-[18px] relative">
-        <Image src="/svgs/solana-sol-logo.svg" alt="Avatar" fill className="" />
+    <div className="border p-2 py-2 flex items-center gap-3 rounded-md border-gray-500 group">
+      <div
+        className={`flex gap-1 items-center justify-center cursor-pointer`}
+        onClick={() => setOpenModal(true)}
+      >
+        <div className="w-[18px] h-[18px] relative">
+          <Image
+            src="/svgs/solana-sol-logo.svg"
+            alt="Avatar"
+            fill
+            className=""
+          />
+        </div>
+        <span className="text-yellow-400 text-sm leading-[1] font-bold">
+          {myBalance?.toFixed(2)} SOL
+        </span>
       </div>
-      <span className="text-yellow-400 text-sm leading-[1] font-bold">
-        {myBalance?.toFixed(2)} SOL
-      </span>
-      <div className="w-[160px] absolute right-[18px] top-[58px] hidden group-hover:block bg-gray-700 shadow-lg rounded-xl hover:duration-300 z-[9999]">
-        <ul className="border border-gray-500 rounded-lg bg-grayborder-gray-500 p-2 mt-1">
+      <div
+        className={`w-[300px] absolute shadow-lg shadow-gray-600 right-[10px] top-1 bg-gray-700 rounded-xl hover:duration-300 z-[9999]
+        ${!openModal && "hidden"}`}
+        ref={elem}
+      >
+        <div className="w-full flex items-center justify-between px-2 py-2">
+          <div className="flex items-center justify-center gap-2">
+            <div className="relative w-[30px] h-[30px] rounded-full gap-3">
+              <Image
+                alt="Avatar"
+                src={"/svgs/initialAvatar.svg"}
+                fill
+                className="rounded-full"
+              />
+            </div>
+            <span className="text-white">
+              {" "}
+              {publicKey?.toBase58().slice(0, 4) +
+                "...." +
+                publicKey?.toBase58().slice(-4)}
+            </span>
+          </div>
+          <span className="cursor-pointer" onClick={() => setOpenModal(false)}>
+            <CloseIcon />
+          </span>
+        </div>
+        <ul className=" border-gray-500 rounded-lg bg-grayborder-gray-500 p-2 mt-1 pt-2">
+          <li className="flex gap-2 items-center mb-3 text-sm duration-300 text-white transition-all w-full justify-between">
+            <span className="flex items-center justify-center gap-2">
+              <FaWallet color="#86B0A8" size={14} />
+              <Link href="/myitem">My Wallet : </Link>
+            </span>
+            <span className="flex items-center justify-center gap-1">
+              {" "}
+              {publicKey?.toBase58().slice(0, 4) +
+                "...." +
+                publicKey?.toBase58().slice(-4)}
+              <span className="cursor-pointer">
+                {!showCheck && <FaCopy onClick={handleCopy} />}
+                {showCheck && <FaCheck />}
+              </span>
+            </span>
+          </li>
           <li className="flex gap-2 items-center mb-3 text-sm hover:text-yellow-400 duration-300 text-white transition-all">
             <ProfileIcon className="brightness-200" />
             <Link href="/myitem">My Items</Link>
@@ -211,7 +288,7 @@ const MobileMenu: FC<{ openMobileMenu: boolean; close: () => void }> = ({
 
   return (
     <div
-      className={`fixed top-0 bottom-0 left-0 right-0 bg-black bg-opacity-60 backdrop-blur-sm z-[9999] flex items-center justify-center lg:hidden
+      className={`fixed top-0 bottom-0 left-0 right-0 bg-gray-900 z-[9999] flex items-center justify-center lg:hidden
     ${!openMobileMenu && "hidden"}`}
     >
       <div className="absolute top-4 right-3" onClick={close}>
