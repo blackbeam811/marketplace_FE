@@ -3,8 +3,8 @@ import Image from "next/image";
 import { BsTwitterX } from "react-icons/bs";
 import { FaDiscord } from "react-icons/fa";
 
-interface CollectionDetailProps {
-  collectionData: collectionDataType | undefined;
+export interface CollectionDetailProps {
+  collectionData: collectionDataType;
 }
 
 export default function CollectionDetail({
@@ -15,7 +15,7 @@ export default function CollectionDetail({
       <div className="flex items-center justify-center gap-2">
         <div className="w-[68px] h-[68px] relative">
           <Image
-            src={collectionData?.imgUrl!}
+            src={collectionData?.imgUrl}
             alt="Avatar"
             fill
             className="rounded-full"
