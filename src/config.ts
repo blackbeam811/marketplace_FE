@@ -5,3 +5,4 @@ export const COLLECTION_ID = "Ctci2VuJgHPo8d1e3BKGFkFfYafQfyRNvyt6ksXCKV4Z";
 export const COLLECTION_MINT = "CNWeeSxws4ULowBC3dLC7ekGnJi3KZLTBVhdWQ9aZs6z";
 export const CANDYMACHINE_ID = "8xYRz65D476D76otyzHRyMvux9KRUtKB9zSYAnqTEwdF";
 export const ENDPOINT = 'https://mugs-backend.vercel.app/'
+export const COINGECKOAPIKEY = 'CG-Y1F1ELjDqqq8pCKUiKpXhkmw'

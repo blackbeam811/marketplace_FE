@@ -80,7 +80,7 @@ const Market: NextPage = () => {
             <CollectionFilterSelect options={collectionFilterOptions} />
           </div>
           <CollectionItemSkeleton />
-          <div className="w-full max-h-[70vh] overflow-y-auto p-3">
+          <div className="w-full max-h-[70vh] overflow-y-auto pb-10">
             <div
               className={`w-full grid grid-cols-2 md:grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-5 ${
                 getOwnNFTsState && "hidden"

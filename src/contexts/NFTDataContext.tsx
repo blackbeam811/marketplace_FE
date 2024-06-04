@@ -1,6 +1,6 @@
 "use client";
 
-import { COLLECTION_ID, SOLANA_RPC } from "@/config";
+import { COINGECKOAPIKEY, COLLECTION_ID, SOLANA_RPC } from "@/config";
 import { NFTDataContextType, OwnNFTDataType } from "@/types/types";
 import { getParsedNftAccountsByOwner } from "@nfteyez/sol-rayz";
 import { web3 } from "@project-serum/anchor";
@@ -32,6 +32,28 @@ export function NFTDataProvider({ children }: NFTDataProviderProps) {
   const [solPrice, setSolPrice] = useState(0);
   const [getOwnNFTsState, setGetOwnNFTsState] = useState(false);
   const [ownNFTs, setOwnNFTs] = useState<OwnNFTDataType[]>([]);
+
+  const getSolPriceFromCoinGeckio = async () => {
+    const options = {
+      method: "GET",
+      headers: {
+        accept: "application/json",
+        "x-cg-demo-api-key": COINGECKOAPIKEY,
+      },
+    };
+
+    await fetch(
+      "https://api.coingecko.com/api/v3/simple/price?ids=solana&vs_currencies=usd",
+      options
+    )
+      .then((response) => response.json())
+      .then((response) => {
+        const solanaUsd: number = response.solana.usd;
+        setSolPrice(solanaUsd);
+        console.log(`Solana price in USD: $\[${solanaUsd}\]`);
+      })
+      .catch((err) => console.error(err));
+  };
 
   const fetchNFTMetadata = async (uri: string): Promise<any> => {
     const metadataRes = await fetch(uri);
@@ -86,6 +108,23 @@ export function NFTDataProvider({ children }: NFTDataProviderProps) {
     setOwnNFTs(data);
     setGetOwnNFTsState(false);
   };
+
+  useEffect(() => {
+    const fetchSolPrice = async () => {
+      try {
+        await getSolPriceFromCoinGeckio();
+      } catch (error) {
+        console.error("Error fetching Sol Price:", error);
+      }
+    };
+
+    const interval = setInterval(fetchSolPrice, 6000); // Call the function every 60 seconds (1 minute)
+
+    // Clean up the interval when the component is unmounted
+    return () => clearInterval(interval);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   useEffect(() => {
     if (wallet) {
       const fetchData = async () => {
