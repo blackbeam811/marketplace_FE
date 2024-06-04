@@ -1,5 +1,6 @@
-import { activityTableData } from "@/data/activityTableData";
 import Image from "next/image";
+import { activityTableData } from "@/data/activityTableData";
+import { activityTableTH } from "@/data/tableTHData";
 
 export default function ActivityTable() {
   return (
@@ -7,25 +8,15 @@ export default function ActivityTable() {
       <table className="min-w-[1024px] lg:w-full bg-transparent">
         <thead>
           <tr>
-            <th className="text-left py-3 px-4 uppercase text-gray-300 font-bold text-sm"></th>
-            <th className="text-left py-3 px-4 uppercase text-gray-300 font-bold text-sm">
-              Name
-            </th>
-            <th className="text-left py-3 px-4 uppercase text-gray-300 font-bold text-sm">
-              type
-            </th>
-            <th className="text-left py-3 px-4 uppercase text-gray-300 font-bold text-sm">
-              total
-            </th>
-            <th className="text-left py-3 px-4 uppercase text-gray-300 font-bold text-sm">
-              seller
-            </th>
-            <th className="text-left py-3 px-4 uppercase text-gray-300 font-bold text-sm">
-              buyer
-            </th>
-            <th className="text-left py-3 px-4 uppercase text-gray-300 font-bold text-sm">
-              time
-            </th>
+            {activityTableTH.map((item, index) => (
+              <th
+                className="text-left py-3 px-4 uppercase text-gray-300 font-bold text-sm"
+                key={index}
+              >
+                {" "}
+                {item}
+              </th>
+            ))}
           </tr>
         </thead>
         <tbody>

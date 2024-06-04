@@ -1,6 +1,7 @@
 "use client";
 
 import { COLLECTION_ID, SOLANA_RPC } from "@/config";
+import { NFTDataContextType, OwnNFTDataType } from "@/types/types";
 import { getParsedNftAccountsByOwner } from "@nfteyez/sol-rayz";
 import { web3 } from "@project-serum/anchor";
 import { useWallet } from "@solana/wallet-adapter-react";
@@ -11,26 +12,6 @@ import {
   useEffect,
   useState,
 } from "react";
-
-interface NFTAttribute {
-  trait_type: string;
-  value: string;
-}
-
-interface OwnNFTDataType {
-  tokenId: string;
-  mintAddr: string;
-  imgUrl: string;
-  attribute: NFTAttribute[];
-}
-
-interface NFTDataContextType {
-  walletAddr: string | undefined;
-  solPrice: number;
-  getOwnNFTsState: boolean;
-  ownNFTs: OwnNFTDataType[];
-  getOwnNFTs: () => Promise<void>;
-}
 
 export const NFTDataContext = createContext<NFTDataContextType>({
   walletAddr: "",

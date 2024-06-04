@@ -4,7 +4,6 @@ import { useContext, useEffect, useMemo, useState } from "react";
 import type { NextPage } from "next";
 import Image from "next/image";
 import { useWallet } from "@solana/wallet-adapter-react";
-
 import "@solana/wallet-adapter-react-ui/styles.css";
 
 import { createUmi } from "@metaplex-foundation/umi-bundle-defaults";
@@ -37,16 +36,15 @@ import {
   CandyMachine,
   CandyGuard,
 } from "@metaplex-foundation/mpl-candy-machine";
-import {
-  errorAlert,
-  successAlert,
-  warningAlert,
-} from "@/components/ToastGroup";
+import { errorAlert, successAlert } from "@/components/ToastGroup";
 import MainPageLayout from "@/components/Layout";
-import { ModalContext } from "@/contexts/ModalContext";
 import RedeemModal from "@/components/Modal/RedeemModal";
+
+import { ModalContext } from "@/contexts/ModalContext";
 import { NFTDataContext } from "@/contexts/NFTDataContext";
+
 import { redeemAPI } from "@/utils/api";
+
 import { CANDYMACHINE_ID, COLLECTION_MINT, SOLANA_RPC } from "@/config";
 
 const Home: NextPage = () => {

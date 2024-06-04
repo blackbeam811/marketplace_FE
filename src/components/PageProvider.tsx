@@ -7,7 +7,6 @@ import { NFTDataProvider } from "@/contexts/NFTDataContext";
 import { ModalProvider } from "@/contexts/ModalContext";
 import Header from "./Header";
 import SearchCollectionModal from "./Modal/SearchCollectionModal";
-import MobileSearchCollectionBar from "./MobileSearchCollectionBar";
 
 export default function PageProvider({ children }: { children: ReactNode }) {
   return (

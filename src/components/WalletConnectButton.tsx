@@ -1,12 +1,11 @@
 "use client";
 
+import Link from "next/link";
 import { FC } from "react";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { useWalletModal } from "@solana/wallet-adapter-react-ui";
 import { WalletIcon, ExitIcon, ArrowIcon } from "./SvgIcons";
 import { ProfileIcon } from "./SvgIcons/ProfileIcon";
-import Link from "next/link";
-import Image from "next/image";
 
 const ConnectButton: FC = () => {
   const { setVisible } = useWalletModal();

@@ -1,8 +1,9 @@
 "use client";
-import { collectionTableData } from "@/data/collectionTableData";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { collectionTableData } from "@/data/collectionTableData";
+import { collectionTableTH } from "@/data/tableTHData";
 
 export default function CollectionTable() {
   const router = useRouter();
@@ -11,31 +12,14 @@ export default function CollectionTable() {
       <table className="min-w-[1024px] lg:w-full bg-transparent">
         <thead>
           <tr>
-            <th className="text-left py-3 px-4 uppercase text-gray-300 font-bold text-sm"></th>
-            <th className="text-left py-3 px-4 uppercase text-gray-300 font-bold text-sm">
-              Collection
-            </th>
-            <th className="text-left py-3 px-4 uppercase text-gray-300 font-bold text-sm">
-              Current Price
-            </th>
-            <th className="text-left py-3 px-4 uppercase text-gray-300 font-bold text-sm">
-              Previous Price
-            </th>
-            <th className="text-left py-3 px-4 uppercase text-gray-300 font-bold text-sm">
-              Volume
-            </th>
-            <th className="text-left py-3 px-4 uppercase text-gray-300 font-bold text-sm">
-              Change
-            </th>
-            <th className="text-left py-3 px-4 uppercase text-gray-300 font-bold text-sm">
-              Sales
-            </th>
-            <th className="text-left py-3 px-4 uppercase text-gray-300 font-bold text-sm">
-              Market Cap
-            </th>
-            <th className="text-left py-3 px-4 uppercase text-gray-300 font-bold text-sm">
-              Total Volume
-            </th>
+            {collectionTableTH.map((item, index) => (
+              <th
+                className="text-left py-3 px-4 uppercase text-gray-300 font-bold text-sm"
+                key={index}
+              >
+                {item}
+              </th>
+            ))}
           </tr>
         </thead>
         <tbody>
@@ -67,9 +51,15 @@ export default function CollectionTable() {
               <td className="py-2 px-4 text-[#DD7A98]">
                 {row.previousPrice} SOL
               </td>
-              <td className="py-2 px-4 text-white font-light">{row.volume}</td>
-              <td className="py-2 px-4 text-white font-light">{row.change}%</td>
-              <td className="py-2 px-4 text-white font-light">{row.sales}</td>
+              <td className="py-2 px-4 text-white font-light">
+                {row.volume.toLocaleString()}
+              </td>
+              <td className="py-2 px-4 text-white font-light">
+                {row.change.toLocaleString()}%
+              </td>
+              <td className="py-2 px-4 text-white font-light">
+                {row.sales.toLocaleString()}
+              </td>
               <td className="py-2 px-4 text-white font-light">
                 {row.marketCap}
               </td>

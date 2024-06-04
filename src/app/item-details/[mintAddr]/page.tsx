@@ -1,22 +1,21 @@
 "use client";
+import { useState } from "react";
 import { NextPage } from "next";
-import { useWallet } from "@solana/wallet-adapter-react";
-import MainPageLayout from "@/components/Layout";
 import { useParams } from "next/navigation";
 import Image from "next/image";
+import { useWallet } from "@solana/wallet-adapter-react";
+
+import { TfiAnnouncement } from "react-icons/tfi";
 import { MdOutlineSecurity } from "react-icons/md";
 import { BiDetail } from "react-icons/bi";
 import { BiLineChart } from "react-icons/bi";
 
+import MainPageLayout from "@/components/Layout";
 import { ArrowIcon } from "@/components/SvgIcons";
-import { TfiAnnouncement } from "react-icons/tfi";
-import { useState } from "react";
 import ActivityTable from "@/components/ActivityTable";
 
 const ItemDetails: NextPage = () => {
-  const { publicKey, connected } = useWallet();
   const params = useParams();
-  const { collectionAddr } = params;
 
   const [openAboutTag, SetOpenAboutTag] = useState(false);
   const [openAttributeTag, setOpenAttributeTag] = useState(false);
@@ -25,7 +24,7 @@ const ItemDetails: NextPage = () => {
 
   return (
     <MainPageLayout>
-      <div className={`w-full max-w-[1240px]`}>
+      <div className={`w-full max-w-[1240px] py-3`}>
         <div className="w-full grid md:grid-cols-2 grid-cols-1 gap-5 lg:gap-10 md:p-10 p-3">
           <div className="lg:w-full relative lg:h-[450px] xl:h-[550px] h-[350px] cursor-pointer">
             <Image

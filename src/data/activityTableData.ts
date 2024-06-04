@@ -1,12 +1,5 @@
-export type activityTableDataType = {
-    imgUrl: string,
-    name: string,
-    type: number,
-    total: number,
-    seller: string,
-    buyer: string,
-    time: number,
-}
+import { activityTableDataType } from "@/types/types";
+
 export const activityTableData: activityTableDataType[] = [
     {
         imgUrl: '/images/collectionSliderImgs/1.png',

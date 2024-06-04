@@ -1,7 +1,6 @@
 "use client";
 import { Suspense, useContext, useEffect, useMemo, useState } from "react";
 import { NextPage } from "next";
-import { useParams, usePathname, useRouter } from "next/navigation";
 import { useWallet } from "@solana/wallet-adapter-react";
 
 import { FiFilter } from "react-icons/fi";
@@ -9,37 +8,26 @@ import { BiSearch } from "react-icons/bi";
 
 import MainPageLayout from "@/components/Layout";
 import TabsTip from "@/components/TabsTip";
-import NFTCard from "@/components/NFTCard";
-import CollectionDetail from "@/components/CollectionDetail";
 import CollectionItemSkeleton from "@/components/CollectionItemSkeleton";
+import NFTCard from "@/components/NFTCard";
 import CollectionFilterSelect from "@/components/CollectionFilterSelect";
-import CollectionFilterSidebar from "@/components/CollectionFilterSidebar";
+import MyItemDetail from "@/components/MyItemDetail";
 
 import { NFTDataContext } from "@/contexts/NFTDataContext";
 
-import { collectionItems } from "@/data/collectionItems";
-import { collectionFilterOptions } from "@/data/selectTabData";
-import { collectionTableData } from "@/data/collectionTableData";
-import { collectionDataType } from "@/types/types";
+import { Size, useWindowSize } from "@/hooks/useWindowSize";
 
-const Market: NextPage = () => {
+import {
+  collectionFilterOptions,
+  myItemFilterOptions,
+} from "@/data/selectTabData";
+
+const MyItem: NextPage = () => {
   const { publicKey, connected } = useWallet();
-  const params = useParams();
-  const { collectionAddr } = params;
   const { ownNFTs, getOwnNFTsState } = useContext(NFTDataContext);
 
   const memoizedOwnNFTs = useMemo(() => ownNFTs, [ownNFTs]);
-  const [collectionData, setCollectionData] = useState<collectionDataType>();
   const [filterOpen, setFilterOpen] = useState(false);
-
-  useEffect(() => {
-    if (collectionAddr) {
-      const collection = collectionTableData.filter(
-        (item) => item.collectionAddr === collectionAddr
-      );
-      setCollectionData(collection[0]);
-    }
-  }, [collectionAddr]);
 
   return (
     <MainPageLayout>
@@ -48,14 +36,12 @@ const Market: NextPage = () => {
           !connected && "hidden"
         }`}
       >
-        <CollectionFilterSidebar
+        {/* <CollectionFilterSidebar
           filterOpen={filterOpen}
           onClosebar={() => setFilterOpen(false)}
-        />
+        /> */}
         <div className="w-full flex items-start justify-start mt-5 gap-4 flex-col px-2">
-          {collectionData && (
-            <CollectionDetail collectionData={collectionData} />
-          )}
+          <MyItemDetail />
           <Suspense fallback={<div />}>
             <TabsTip />
           </Suspense>
@@ -78,6 +64,7 @@ const Market: NextPage = () => {
               />
             </div>
             <CollectionFilterSelect options={collectionFilterOptions} />
+            <CollectionFilterSelect options={myItemFilterOptions} />
           </div>
           <CollectionItemSkeleton />
           <div className="w-full max-h-[70vh] overflow-y-auto p-3">
@@ -86,7 +73,7 @@ const Market: NextPage = () => {
                 getOwnNFTsState && "hidden"
               }`}
             >
-              {collectionItems?.map((item, index) => (
+              {ownNFTs?.map((item, index) => (
                 <NFTCard
                   imgUrl={item.imgUrl}
                   tokenId={item.tokenId}
@@ -124,4 +111,4 @@ const Market: NextPage = () => {
   );
 };
 
-export default Market;
+export default MyItem;

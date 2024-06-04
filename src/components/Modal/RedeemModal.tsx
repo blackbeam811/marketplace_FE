@@ -8,12 +8,9 @@ import { CloseIcon } from "@/components/SvgIcons";
 import { NFTDataContext } from "@/contexts/NFTDataContext";
 import { ModalContext } from "@/contexts/ModalContext";
 import { errorAlert } from "../ToastGroup";
+import { RedeemModalProps } from "@/types/types";
 
-interface ModalProps {
-  handleRedeemFunc: (email: string, homeAddr: string) => void;
-}
-
-const RedeemModal: FC<ModalProps> = ({ handleRedeemFunc }) => {
+const RedeemModal: FC<RedeemModalProps> = ({ handleRedeemFunc }) => {
   const { connected, publicKey } = useWallet();
   const { redeemModalShow, closeRedeemModal } = useContext(ModalContext);
   const { ownNFTs } = useContext(NFTDataContext);

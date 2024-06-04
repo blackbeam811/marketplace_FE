@@ -1,15 +1,15 @@
 "use client";
+import { TabMenu } from "@/data/tabMenuData";
 /* eslint-disable @next/next/no-img-element */
-import { Menu } from "./menu";
 import { useRouter, useSearchParams } from "next/navigation";
 
-const TabsTip = () => {
+export default function TabsTip() {
   const router = useRouter();
   const param = useSearchParams();
   const search = param.get("activeTab") || "items";
   return (
     <div className="w-full border-b-[1px] border-gray-600 flex items-center justify-start gap-5">
-      {Menu.map((item, index) => (
+      {TabMenu.map((item, index) => (
         <div
           className={`text-sm  ${
             item.param === search?.toString()
@@ -24,6 +24,4 @@ const TabsTip = () => {
       ))}
     </div>
   );
-};
-
-export default TabsTip;
+}

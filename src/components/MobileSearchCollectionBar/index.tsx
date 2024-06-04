@@ -1,7 +1,6 @@
 "use client";
 import { useContext } from "react";
 import { BiSearch } from "react-icons/bi";
-import { CloseIcon } from "../SvgIcons";
 import { CgClose } from "react-icons/cg";
 import { ModalContext } from "@/contexts/ModalContext";
 

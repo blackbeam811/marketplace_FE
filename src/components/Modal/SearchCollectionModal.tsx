@@ -12,7 +12,7 @@ export default function SearchCollectionModal() {
   useOnClickOutside(elem, () => closeSearchCollectionModal());
   return (
     <div
-      className={`w-full fixed items-start top-0 bottom-0 py-10 lg:pr-[200px] left-0 right-0 justify-center flex px-3 bg-black bg-opacity-10 backdrop-blur-md z-[9] ${
+      className={`w-full fixed items-start top-0 bottom-0 py-10 lg:pr-[100px] left-0 right-0 justify-center flex px-3 bg-black bg-opacity-10 backdrop-blur-md z-[9] ${
         !searchCollectionModalShow && "hidden"
       }`}
     >
