@@ -7,6 +7,7 @@ import { NFTDataProvider } from "@/contexts/NFTDataContext";
 import { ModalProvider } from "@/contexts/ModalContext";
 import Header from "./Header";
 import SearchCollectionModal from "./Modal/SearchCollectionModal";
+import Footer from "./Footer";
 
 export default function PageProvider({ children }: { children: ReactNode }) {
   return (
@@ -16,6 +17,7 @@ export default function PageProvider({ children }: { children: ReactNode }) {
           {/* <MobileSearchCollectionBar /> */}
           <Header />
           {children}
+          <Footer />
           <SearchCollectionModal />
           <ToastContainer pauseOnFocusLoss={false} theme="colored" stacked />
           <div className="z-[9999]">

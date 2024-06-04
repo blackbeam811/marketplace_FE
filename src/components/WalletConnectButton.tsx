@@ -12,7 +12,7 @@ const ConnectButton: FC = () => {
   const { publicKey, disconnect } = useWallet();
 
   return (
-    <div className="rounded-lg border cursor-pointer border-gray-500 bg-gray-700 shadow-btn-inner text-[#ffffff] py-2 px-2 w-[150px] lg:w-[160px] group relative">
+    <div className="rounded-lg border cursor-pointer border-gray-500 bg-gray-700 shadow-btn-inner text-[#ffffff] py-2 px-2 w-[100px] md:w-[150px] lg:w-[160px] group relative">
       {publicKey ? (
         <>
           <div className="flex items-center justify-center text-sm gap-2 font-bold hover:text-yellow-500 duration-300 text-white">
@@ -54,7 +54,7 @@ const ConnectButton: FC = () => {
           className="flex items-center justify-center gap-1 text-sm hover:text-yellow-400 duration-300 transition-all font-bold text-white"
           onClick={() => setVisible(true)}
         >
-          Connect wallet
+          Connect
         </div>
       )}
     </div>

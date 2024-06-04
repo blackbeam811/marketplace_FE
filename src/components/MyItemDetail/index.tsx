@@ -43,7 +43,7 @@ export default function MyItemDetail() {
           </div>
         </div>
       </div>
-      <div className="flex items-center justify-start md:gap-10 gap-7 md:ml-10 mt-3">
+      <div className="flex items-center md:justify-start justify-between md:gap-10 gap-7 md:ml-10 mt-3 w-full md:w-auto">
         <div className="flex items-start justify-center flex-col gap-2">
           <p className="text-[12px] text-gray-400">Portfolio Value</p>
           <span className="text-white text-sm">123 Sol</span>

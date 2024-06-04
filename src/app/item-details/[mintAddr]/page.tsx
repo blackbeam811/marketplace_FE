@@ -24,7 +24,7 @@ const ItemDetails: NextPage = () => {
 
   return (
     <MainPageLayout>
-      <div className={`w-full max-w-[1240px] py-3`}>
+      <div className={`w-full max-w-[1240px] pt-3 pb-12`}>
         <div className="w-full grid md:grid-cols-2 grid-cols-1 gap-5 lg:gap-10 md:p-10 p-3">
           <div className="lg:w-full relative lg:h-[450px] xl:h-[550px] h-[350px] cursor-pointer">
             <Image

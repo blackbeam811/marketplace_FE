@@ -45,8 +45,8 @@ const MyItem: NextPage = () => {
           <Suspense fallback={<div />}>
             <TabsTip />
           </Suspense>
-          <div className="w-full flex items-center justify-between gap-3">
-            <div
+          <div className="w-full flex items-center justify-between flex-col md:flex-row gap-3">
+            {/* <div
               className={`p-2 ${
                 filterOpen
                   ? "bg-pink-500 text-white"
@@ -55,19 +55,21 @@ const MyItem: NextPage = () => {
               onClick={() => setFilterOpen(!filterOpen)}
             >
               <FiFilter />
-            </div>
+            </div> */}
             <div className="w-full flex items-center justify-start px-2 rounded-md border-[1px] border-gray-600">
               <BiSearch color="white" />
               <input
                 placeholder="Search items"
-                className="outline-none bg-transparent w-full text-white py-1 px-1 font-thin"
+                className="outline-none bg-transparent w-full text-white py-1 px-1 font-thin placeholder:text-gray-600"
               />
             </div>
-            <CollectionFilterSelect options={collectionFilterOptions} />
-            <CollectionFilterSelect options={myItemFilterOptions} />
+            <div className="flex items-center justify-center gap-2">
+              <CollectionFilterSelect options={collectionFilterOptions} />
+              <CollectionFilterSelect options={myItemFilterOptions} />
+            </div>
           </div>
           <CollectionItemSkeleton />
-          <div className="w-full max-h-[70vh] overflow-y-auto p-3">
+          <div className="w-full max-h-[70vh] overflow-y-auto pb-10">
             <div
               className={`w-full grid grid-cols-2 md:grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-5 ${
                 getOwnNFTsState && "hidden"

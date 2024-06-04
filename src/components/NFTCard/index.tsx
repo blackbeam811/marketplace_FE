@@ -1,18 +1,40 @@
 /* eslint-disable @next/next/no-img-element */
-import { FC } from "react";
+import { FC, useState } from "react";
 import { TbListDetails } from "react-icons/tb";
 import Link from "next/link";
 import { NFTCardType } from "@/types/types";
+import { PiPlus } from "react-icons/pi";
+import { CgCheck } from "react-icons/cg";
+import { BiPlus } from "react-icons/bi";
 
 const NFTCard: FC<NFTCardType> = ({ imgUrl, tokenId, tokenAddr }) => {
+  const [seleted, setSeleted] = useState(false);
   return (
-    <div className="flex items-start justify-start flex-col gap-2 bg-gray-800 rounded-md pb-2">
-      <div className="overflow-hidden rounded-t-md md:h-[210px] h-[180px]">
+    <div
+      className={`flex items-start justify-start flex-col gap-2 bg-gray-800 rounded-md pb-2 border-[1px] ${
+        seleted ? "border-pink-600" : "border-gray-800"
+      }`}
+    >
+      <div
+        className="overflow-hidden rounded-t-md md:h-[230px] h-[170px] sm:h-[180px] cursor-pointer group relative"
+        onClick={() => setSeleted(!seleted)}
+      >
         <img
           src={imgUrl}
           alt="NFT Image"
           className="rounded-t-md hover:scale-105 duration-300 w-full"
         />
+        <div
+          className={`absolute top-2 right-2 p-1 rounded-full ${
+            seleted ? "bg-pink-500" : "bg-gray-700"
+          } group-hover:block ${seleted ? "block" : "hidden"}`}
+        >
+          {seleted ? (
+            <CgCheck color="white" size={18} />
+          ) : (
+            <BiPlus color="white" size={17} />
+          )}
+        </div>
       </div>
       <div className="w-full flex items-center justify-between pr-2">
         <p className="text-white text-left px-2 text-sm">Mugs #{tokenId}</p>
