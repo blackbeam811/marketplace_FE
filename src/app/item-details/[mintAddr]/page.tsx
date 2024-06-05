@@ -1,23 +1,21 @@
 "use client";
 import { useState } from "react";
 import { NextPage } from "next";
-import { useParams } from "next/navigation";
 import Image from "next/image";
-import { useWallet } from "@solana/wallet-adapter-react";
 
 import { TfiAnnouncement } from "react-icons/tfi";
 import { MdOutlineSecurity } from "react-icons/md";
 import { BiDetail } from "react-icons/bi";
 import { BiLineChart } from "react-icons/bi";
+import { MdOutlineLocalOffer } from "react-icons/md";
 
 import MainPageLayout from "@/components/Layout";
 import { ArrowIcon } from "@/components/SvgIcons";
 import ActivityTable from "@/components/ActivityTable";
 
 const ItemDetails: NextPage = () => {
-  const params = useParams();
-
-  const [openAboutTag, SetOpenAboutTag] = useState(false);
+  const [openAboutTag, setOpenAboutTag] = useState(false);
+  const [openOfferTable, setOpenOfferTable] = useState(false);
   const [openAttributeTag, setOpenAttributeTag] = useState(false);
   const [openDetailTag, setOpenDetailTag] = useState(false);
   const [openActivityTag, setOpenActivityTag] = useState(false);
@@ -63,7 +61,7 @@ const ItemDetails: NextPage = () => {
 
             <div
               className="w-full p-3 flex items-center justify-between rounded-md border-[1px] border-gray-700 cursor-pointer"
-              onClick={() => SetOpenAboutTag(!openAboutTag)}
+              onClick={() => setOpenAboutTag(!openAboutTag)}
             >
               <span className="text-white font-bold text-md flex items-center justify-center gap-2">
                 <TfiAnnouncement color="#DB2777" />
@@ -166,6 +164,27 @@ const ItemDetails: NextPage = () => {
           </div>
         </div>
         <div className="w-full flex items-center justify-center gap-2 flex-col md:px-10 px-3">
+          <div
+            className="w-full p-3 flex items-center justify-between rounded-md border-[1px] border-gray-700 cursor-pointer "
+            onClick={() => setOpenOfferTable(!openOfferTable)}
+          >
+            <span className="text-white font-bold text-md flex items-center justify-center gap-2">
+              <MdOutlineLocalOffer color="#DB2777" size={20} />
+              Offers
+            </span>
+            <span
+              className={`duration-300 ${
+                openOfferTable ? "-rotate-90" : "rotate-90"
+              }`}
+            >
+              <ArrowIcon />
+            </span>
+          </div>
+          <div className={`w-full ${!openOfferTable && "hidden"}`}>
+            <ActivityTable />
+          </div>
+        </div>
+        <div className="w-full flex items-center justify-center gap-2 flex-col md:px-10 px-3 mt-3">
           <div
             className="w-full p-3 flex items-center justify-between rounded-md border-[1px] border-gray-700 cursor-pointer "
             onClick={() => setOpenActivityTag(!openActivityTag)}
