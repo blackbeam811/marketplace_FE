@@ -8,6 +8,7 @@ import { ModalProvider } from "@/contexts/ModalContext";
 import Header from "./Header";
 import SearchCollectionModal from "./Modal/SearchCollectionModal";
 import Footer from "./Footer";
+import NFTDetailModal from "./Modal/NFTDetailModal";
 
 export default function PageProvider({ children }: { children: ReactNode }) {
   return (
@@ -18,6 +19,7 @@ export default function PageProvider({ children }: { children: ReactNode }) {
           <Header />
           {children}
           <Footer />
+          <NFTDetailModal />
           <SearchCollectionModal />
           <ToastContainer pauseOnFocusLoss={false} theme="colored" stacked />
           <div className="z-[9999]">

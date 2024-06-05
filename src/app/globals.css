@@ -16,6 +16,9 @@ body {
 }
 
 /*Customize react-responsive-modal style*/
+.react-responsive-modal-container {
+  height: auto !important;
+}
 .react-responsive-modal-modal {
   border-radius: 10px !important;
   background-color: #1b2431 !important;
@@ -24,6 +27,11 @@ body {
 
 .react-responsive-modal-closeButton {
   display: none !important;
+}
+
+.react-responsive-modal-modal {
+  max-width: 1300px;
+  max-height: 90vh;
 }
 
 /*Customize scroll style*/
@@ -41,4 +49,16 @@ body {
   background: #838383;
   border-radius: 30px;
   border: 3px none #636060;
+}
+
+/*Remove increase and decrease icon in number input tag*/
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+  appearance: textfield;
 }

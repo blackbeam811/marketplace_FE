@@ -3,3 +3,7 @@ export const TabMenu = [
     { title: 'Offers', link: '?activeTab=offers', param: 'offers' },
     { title: 'Activity', link: '?activeTab=activity', param: 'activity' },
 ]
+
+export const ModalTabMenu = [
+    'Overview', 'Activity', 'Offers'
+]

@@ -1,8 +1,6 @@
 "use client";
 import { FC, ReactNode } from "react";
 import { motion } from "framer-motion";
-import { activityTableData } from "@/data/activityTableData";
-import Image from "next/image";
 interface PageProps {
   children?: ReactNode;
 }

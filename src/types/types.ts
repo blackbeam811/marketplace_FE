@@ -41,7 +41,7 @@ export type BalanceProps = {
 export type NFTCardType = {
     imgUrl: string;
     tokenId: string;
-    tokenAddr: string;
+    mintAddr: string;
 }
 
 export type NFTAttribute = {

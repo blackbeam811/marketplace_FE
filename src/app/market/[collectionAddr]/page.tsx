@@ -91,7 +91,7 @@ const Market: NextPage = () => {
                   imgUrl={item.imgUrl}
                   tokenId={item.tokenId}
                   key={index}
-                  tokenAddr={item.mintAddr}
+                  mintAddr={item.mintAddr}
                 />
               ))}
             </div>
