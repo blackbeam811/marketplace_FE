@@ -5,7 +5,7 @@ import { activityTableTH } from "@/data/tableTHData";
 export default function ActivityTable() {
   return (
     <div className="w-full overflow-x-auto border-[1px] border-gray-700 rounded-md mb-10">
-      <table className="min-w-[1024px] lg:w-full bg-transparent">
+      <table className="min-w-[1000px] lg:w-full bg-transparent">
         <thead>
           <tr>
             {activityTableTH.map((item, index) => (

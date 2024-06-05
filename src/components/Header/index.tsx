@@ -91,7 +91,7 @@ const Header: FC<HeaderProps> = () => {
             </h2>
           </div>
         </Link>
-        <div className="2xl:min-w-[700px] xl:min-w-[500px] md:w-[350px] w-[150px] border-[1px] rounded-md border-gray-600 flex items-center justify-center gap-2 px-3">
+        <div className="2xl:min-w-[700px] xl:min-w-[500px] md:w-[350px] w-[150px] border-[1px] rounded-md border-gray-600 flex items-center justify-center gap-2 px-3 py-[1px]">
           <BiSearch color="white" />
           <input
             ref={inputRef}
@@ -110,14 +110,14 @@ const Header: FC<HeaderProps> = () => {
         <div className="flex items-center gap-3">
           <ul className="lg:flex items-center justify-center gap-3 hidden">
             <li
-              className={` text-white text-sm mr-5 font-bold cursor-pointer duration-300 hover:text-yellow-400 ${
+              className={` text-white text-sm mr-5 cursor-pointer uppercase font-bold duration-300 hover:text-yellow-400 ${
                 router === "/" ? "text-yellow-400 list-disc" : "list-none"
               }`}
             >
               <Link href={"/"}>Collection</Link>
             </li>
             <li
-              className={` text-white text-sm mr-5 font-bold cursor-pointer duration-300 hover:text-yellow-400 ${
+              className={` text-white text-sm mr-5 cursor-pointer uppercase font-bold duration-300 hover:text-yellow-400 ${
                 router === "/mint" ? "text-yellow-400 list-disc" : "list-none"
               }`}
             >
@@ -167,7 +167,7 @@ const BalanceBox: FC<BalanceProps> = ({ myBalance }) => {
   return (
     <div className="border p-2 py-2 flex items-center gap-3 rounded-md border-gray-500 group">
       <div
-        className={`flex gap-1 items-center justify-center cursor-pointer`}
+        className={`flex gap-2 items-center justify-center cursor-pointer`}
         onClick={() => setOpenModal(true)}
       >
         <div className="w-[18px] h-[18px] relative">
@@ -178,7 +178,7 @@ const BalanceBox: FC<BalanceProps> = ({ myBalance }) => {
             className=""
           />
         </div>
-        <span className="text-yellow-400 text-sm leading-[1] font-bold">
+        <span className="text-yellow-400 text-md leading-[1] font-bold">
           {myBalance?.toFixed(2)} SOL
         </span>
       </div>

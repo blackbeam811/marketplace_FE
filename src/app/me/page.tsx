@@ -25,7 +25,6 @@ import {
 const MyItem: NextPage = () => {
   const param = useSearchParams();
   const search = param.get("activeTab") || "items";
-  console.log("search", search);
   const { publicKey, connected } = useWallet();
   const { ownNFTs, getOwnNFTsState } = useContext(NFTDataContext);
 
@@ -85,7 +84,7 @@ const MyItem: NextPage = () => {
                     imgUrl={item.imgUrl}
                     tokenId={item.tokenId}
                     key={index}
-                    tokenAddr={item.mintAddr}
+                    mintAddr={item.mintAddr}
                   />
                 ))}
               </div>

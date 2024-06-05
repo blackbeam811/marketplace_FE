@@ -1,5 +1,6 @@
 import { SidebarPropsType } from "@/types/types";
 import { CloseIcon } from "../SvgIcons";
+import { CgClose } from "react-icons/cg";
 
 export default function CollectionFilterSidebar({
   filterOpen,
@@ -15,7 +16,7 @@ export default function CollectionFilterSidebar({
         className="absolute top-1 right-3 cursor-pointer"
         onClick={onClosebar}
       >
-        <CloseIcon />
+        <CgClose color="white" size={20} />
       </div>
       <h1 className="text-2xl text-white mt-5">Filter</h1>
       <div className="w-full flex items-center justify-center gap-2 flex-col mt-3 border-b-[1px] border-gray-700 py-2">
@@ -49,11 +50,13 @@ export default function CollectionFilterSidebar({
           <input
             placeholder="Min"
             className="outline-none p-1 text-[12px] text-white border-[1px] rounded-md border-gray-700 bg-transparent w-[100px]"
+            type="number"
           />
           <span className="text-[12px] text-gray-600">to</span>
           <input
             placeholder="Max"
             className="outline-none p-1 text-[12px] text-white border-[1px] rounded-md border-gray-700 bg-transparent w-[100px]"
+            type="number"
           />
         </div>
       </div>

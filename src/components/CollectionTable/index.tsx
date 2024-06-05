@@ -14,7 +14,7 @@ export default function CollectionTable() {
           <tr>
             {collectionTableTH.map((item, index) => (
               <th
-                className="text-left py-3 px-4 uppercase text-gray-300 font-bold text-sm"
+                className="text-left py-3 px-4 uppercase text-gray-300 font-thin text-sm"
                 key={index}
               >
                 {item}
@@ -40,13 +40,13 @@ export default function CollectionTable() {
                     fill
                     src={row.imgUrl}
                     alt="Collection Image"
-                    className="object-cover"
+                    className="object-cover rounded-md"
                   />
                 </div>
                 {row.name}
               </td>
               <td className="py-2 px-4 text-[#8DEEC4]">
-                {row.currentPrice}SOL
+                {row.currentPrice} SOL
               </td>
               <td className="py-2 px-4 text-[#DD7A98]">
                 {row.previousPrice} SOL
@@ -61,10 +61,10 @@ export default function CollectionTable() {
                 {row.sales.toLocaleString()}
               </td>
               <td className="py-2 px-4 text-white font-light">
-                {row.marketCap}
+                {row.marketCap.toLocaleString()}
               </td>
               <td className="py-2 px-4 text-white font-light">
-                {row.totalVolume}
+                {row.totalVolume.toLocaleString()}
               </td>
             </tr>
           ))}

@@ -11,10 +11,10 @@ export default function TabsTip() {
     <div className="w-full border-b-[1px] border-gray-600 flex items-center justify-start gap-5">
       {TabMenu.map((item, index) => (
         <div
-          className={`text-sm  ${
+          className={`${
             item.param === search?.toString()
-              ? ` border-b-2 text-white font-bold`
-              : "text-gray-400"
+              ? ` border-b-2 text-white font-bold text-lg`
+              : "text-gray-400 text-sm "
           } border-pink-600 cursor-pointer min-w-[60px] text-center`}
           key={index}
           onClick={() => router.push(`${item.link}`)}
