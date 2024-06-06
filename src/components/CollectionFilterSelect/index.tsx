@@ -14,7 +14,7 @@ export default function CollectionFilterSelect({ options }: SelectPropsType) {
     <div className="relative">
       <div
         className="w-[160px] py-[5px] px-2 border border-customborder rounded-md text-gray-300 text-md flex items-center justify-between gap-2 cursor-pointer
-      hover:border-gray-400 duration-300"
+      hover:border-gray-400 duration-300 text-sm"
         onClick={() => setOpen(!open)}
       >
         {options[filterOption]}
@@ -30,7 +30,7 @@ export default function CollectionFilterSelect({ options }: SelectPropsType) {
       >
         {options.map((item, index) => (
           <p
-            className={`text-white cursor-pointer text-sm ${
+            className={`text-white cursor-pointer text-sm  ${
               item !== options[filterOption] && "hover:bg-green-500"
             } w-full py-2 px-2 ${
               item === options[filterOption] ? "bg-green-800" : "bg-green-950"
