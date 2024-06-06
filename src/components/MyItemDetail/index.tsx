@@ -17,7 +17,7 @@ export default function MyItemDetail() {
             className="rounded-full"
           />
         </div>
-        <div className="flex items-center justify-center gap-2 bg-gray-900 px-3 rounded-full py-1 border border-customborder">
+        <div className="flex items-center justify-center gap-2 bg-transparent px-3 rounded-full py-1 border border-customborder">
           <div className="w-[18px] h-[18px] relative">
             <Image
               src="/svgs/solana-sol-logo.svg"
