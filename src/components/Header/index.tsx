@@ -79,9 +79,9 @@ const Header: FC<HeaderProps> = () => {
       <div className="py-2 px-4 flex items-center justify-between">
         <Link href={"/"}>
           <div className="flex items-center justify-center gap-3">
-            <div className="w-[70px] h-[30px] rounded-full relative">
+            <div className="w-[30px] h-[30px] rounded-full relative">
               <Image
-                src="/images/logo4.png"
+                src="/images/logo.png"
                 fill
                 alt=""
                 className="object-cover rounded-md"

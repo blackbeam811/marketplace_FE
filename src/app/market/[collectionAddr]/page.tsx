@@ -74,7 +74,7 @@ const Market: NextPage = () => {
               <BiSearch color="white" />
               <input
                 placeholder="Search items"
-                className="outline-none bg-transparent w-full text-white py-1 px-1 "
+                className="outline-none bg-transparent w-full text-white py-1 px-1 text-sm md:text-lg"
               />
             </div>
             <CollectionFilterSelect options={collectionFilterOptions} />
