@@ -21,7 +21,7 @@ export default function SearchCollectionModal() {
         ref={elem}
       >
         <table className="w-full bg-transparent">
-          <thead>
+          <thead className="border-b border-customborder">
             <tr>
               <th className="text-left py-3 px-4 uppercase text-gray-300 font-bold text-sm">
                 Collection
@@ -40,7 +40,7 @@ export default function SearchCollectionModal() {
                 key={index}
                 className={`${
                   index % 2 === 0 ? "bg-darkgreen" : "bg-[#0b563356]"
-                }`}
+                } py-10`}
               >
                 <td className="relative py-1 px-4 text-white font-light text-md flex items-center justify-start gap-3">
                   <div className="relative w-[30px] h-[30px]">
