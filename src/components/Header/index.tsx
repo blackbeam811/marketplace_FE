@@ -41,6 +41,8 @@ const Header: FC<HeaderProps> = () => {
   const [isFocused, setIsFocused] = useState(false);
   const [openMobileMenu, setOpenMobileMenu] = useState(false);
 
+  useOnClickOutside(inputRef, () => setIsFocused(false));
+
   const getBalanceFunc = useCallback(async () => {
     const solConnection = new web3.Connection(SOLANA_RPC);
     if (publicKey) {
@@ -77,9 +79,9 @@ const Header: FC<HeaderProps> = () => {
       <div className="py-2 px-4 flex items-center justify-between">
         <Link href={"/"}>
           <div className="flex items-center justify-center gap-3">
-            <div className="w-[30px] h-[30px] rounded-full relative">
+            <div className="w-[70px] h-[30px] rounded-full relative">
               <Image
-                src="/images/logo.png"
+                src="/images/logo4.png"
                 fill
                 alt=""
                 className="object-cover rounded-md"
@@ -87,16 +89,21 @@ const Header: FC<HeaderProps> = () => {
             </div>
 
             <h2 className="text-white text-3xl uppercase font-extrabold hidden lg:block">
-              MUGS.DC
+              MUGS
             </h2>
           </div>
         </Link>
-        <div className="2xl:min-w-[700px] xl:min-w-[500px] md:w-[350px] w-[150px] border rounded-md border-customborder flex items-center justify-center gap-2 px-3 py-[1px]">
+        <div
+          className={`2xl:min-w-[700px] xl:min-w-[500px] md:w-[350px] w-[150px] border rounded-md border-customborder hover:border-gray-400 duration-300 flex items-center justify-center gap-2 md:px-3 px-2 py-[1px]
+          ${isFocused && "border-gray-400"}`}
+        >
           <BiSearch color="white" />
           <input
             ref={inputRef}
             placeholder="Search all of Mugs"
-            className="outline-none bg-transparent w-full text-white py-2 md:py-[5px] px-1 font-thin text-[12px] md:text-sm placeholder:text-gray-300"
+            className={`outline-none bg-transparent w-full text-white py-2 md:py-[5px] md:px-1 font-thin text-[12px] md:text-sm placeholder:text-gray-300 ${
+              isFocused && "border-gray-400"
+            }`}
             onFocus={() => {
               setIsFocused(true);
             }}
@@ -130,7 +137,7 @@ const Header: FC<HeaderProps> = () => {
           )}
           {!connected && <ConnectButton />}
           <div
-            className="cursor-pointer flex lg:hidden bg-gray-800 rounded-md p-1"
+            className="cursor-pointer flex lg:hidden bg-transparent border border-customborder rounded-md p-1"
             onClick={() => setOpenMobileMenu(true)}
           >
             <BiMenu size={22} color="white" />
@@ -187,7 +194,7 @@ const BalanceBox: FC<BalanceProps> = ({ myBalance }) => {
         ${!openModal && "hidden"}`}
         ref={elem}
       >
-        <div className="w-full flex items-center justify-between px-2 py-2">
+        <div className="w-full flex items-center justify-between px-2 py-2 border-b border-customborder">
           <div className="flex items-center justify-center gap-2">
             <div className="relative w-[30px] h-[30px] rounded-full gap-3">
               <Image
@@ -204,8 +211,11 @@ const BalanceBox: FC<BalanceProps> = ({ myBalance }) => {
                 publicKey?.toBase58().slice(-4)}
             </span>
           </div>
-          <span className="cursor-pointer" onClick={() => setOpenModal(false)}>
-            <CloseIcon />
+          <span
+            className="cursor-pointer mb-3"
+            onClick={() => setOpenModal(false)}
+          >
+            <CgClose color="white" size={22} />
           </span>
         </div>
         <ul className=" border-gray-500 rounded-lg bg-darkgreen p-2 mt-1 pt-2">

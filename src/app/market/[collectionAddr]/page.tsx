@@ -64,17 +64,17 @@ const Market: NextPage = () => {
               className={`p-2 ${
                 filterOpen
                   ? "bg-yellow-500 text-white"
-                  : "bg-transparent text-gray-300"
+                  : "bg-transparent text-gray-300 border border-customborder"
               } rounded-md hover:text-white duration-300 cursor-pointer`}
               onClick={() => setFilterOpen(!filterOpen)}
             >
               <FiFilter />
             </div>
-            <div className="w-full flex items-center justify-start px-2 rounded-md border border-customborder">
+            <div className="w-full flex items-center justify-start px-2 rounded-md border border-customborder hover:border-[#ffffff87] duration-300">
               <BiSearch color="white" />
               <input
                 placeholder="Search items"
-                className="outline-none bg-transparent w-full text-white py-1 px-1 font-thin"
+                className="outline-none bg-transparent w-full text-white py-1 px-1 "
               />
             </div>
             <CollectionFilterSelect options={collectionFilterOptions} />

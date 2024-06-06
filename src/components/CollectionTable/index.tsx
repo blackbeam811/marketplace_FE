@@ -27,7 +27,7 @@ export default function CollectionTable() {
             <tr
               key={index}
               className={
-                "bg-darkgreen hover:bg-[#098b553c] cursor-pointer duration-200"
+                "bg-darkgreen hover:bg-[#225e451f] cursor-pointer duration-200"
               }
               onClick={() => router.push("/market/" + row.collectionAddr)}
             >

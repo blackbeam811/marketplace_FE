@@ -43,9 +43,12 @@ const NFTDetailModal = () => {
         className={`xl:w-[1200px] lg:w-[950px] md:w-[680px] w-[290px] sm:w-[500px] relative`}
       >
         <div className="absolute top-0 right-0 cursor-pointer flex items-center justify-center gap-3">
-          <div className="cursor-pointer" onClick={closeNFTDetailModal}>
+          <div
+            className="cursor-pointer outline-none"
+            onClick={closeNFTDetailModal}
+          >
             <Link href={`/item-details/${memoSelectedNFTDetail[0]}`}>
-              <GoLinkExternal color="#EAB308" size={22} />
+              <GoLinkExternal color="#F0DC04" size={22} />
             </Link>
           </div>
           <div className="cursor-pointer" onClick={closeNFTDetailModal}>
@@ -110,28 +113,13 @@ const NFTDetailModal = () => {
                 </div>
               </div>
 
-              <div className="w-full p-3 flex items-center justify-between rounded-md border border-customborder cursor-pointer">
-                <span className="text-white font-bold text-md flex items-center justify-center gap-2">
-                  <TfiAnnouncement color="#EAB308" />
-                  About Validat3rs
-                </span>
-              </div>
-              <div
-                className={`w-full p-3 flex items-center justify-between rounded-md border border-customborder cursor-pointer text-gray-400 `}
-              >
-                Validat3rs NFT provides access to top-tier RPC nodes on the
-                Solana blockchain, optimized for speed and efficiency.
-              </div>
-
-              <div className="w-full p-3 flex items-center justify-between rounded-md border border-customborder cursor-pointer">
+              <div className="w-full p-3 flex items-center justify-between rounded-md border-b border-customborder cursor-pointer">
                 <span className="text-white font-bold text-md flex items-center justify-center gap-2">
                   <MdOutlineSecurity color="#EAB308" size={18} />
                   Attributes
                 </span>
               </div>
-              <div
-                className={`w-full p-3 grid grid-cols-3 gap-3 rounded-md border border-customborder`}
-              >
+              <div className={`w-full py-3 grid grid-cols-3 gap-3 rounded-md`}>
                 <div className="rounded-md bg-darkgreen border border-customborder p-2">
                   <p className="text-gray-400">Renewed</p>
                   <span className="text-white">False</span>
@@ -150,30 +138,30 @@ const NFTDetailModal = () => {
                 </div>
               </div>
 
-              <div className="w-full p-3 flex items-center justify-between rounded-md border border-customborder cursor-pointer">
+              <div className="w-full p-3 flex items-center justify-between rounded-md border-b border-customborder cursor-pointer">
                 <span className="text-white font-bold text-md flex items-center justify-center gap-2">
                   <BiDetail color="#EAB308" size={19} />
                   Detail
                 </span>
               </div>
               <div
-                className={`w-full p-3 flex items-center justify-between flex-col gap-1 rounded-md border border-customborder cursor-pointer text-gray-400`}
+                className={`w-full py-3 flex items-center justify-between flex-col gap-1 rounded-md cursor-pointer text-gray-400`}
               >
                 <div className="w-full flex items-center justify-between">
-                  <span>Mint Address</span>
-                  <span className="text-white">9e2tgt..23fgdrg2</span>
+                  <span className="text-white">Mint Address</span>
+                  <span>9e2tgt..23fgdrg2</span>
                 </div>
                 <div className="w-full flex items-center justify-between">
-                  <span>OnChain Collection</span>
-                  <span className="text-white">9e2tgt..23fgdrg2</span>
+                  <span className="text-white">OnChain Collection</span>
+                  <span>9e2tgt..23fgdrg2</span>
                 </div>
                 <div className="w-full flex items-center justify-between">
-                  <span>Token Address</span>
-                  <span className="text-white">9e2tgt..23fgdrg2</span>
+                  <span className="text-white">Token Address</span>
+                  <span>9e2tgt..23fgdrg2</span>
                 </div>
                 <div className="w-full flex items-center justify-between">
-                  <span>Owner</span>
-                  <span className="text-white">9e2tgt..23fgdrg2</span>
+                  <span className="text-white">Owner</span>
+                  <span>9e2tgt..23fgdrg2</span>
                 </div>
               </div>
             </div>

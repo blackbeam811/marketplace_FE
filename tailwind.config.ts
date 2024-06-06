@@ -12,7 +12,7 @@ module.exports = {
     extend: {
       colors: {
         darkgreen: '#022D19',
-        customborder: '#ffffff11'
+        customborder: '#ffffff18'
       }
     },
   },
