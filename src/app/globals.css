@@ -12,7 +12,7 @@
 body {
   font-family: "custom" !important;
   scroll-behavior: smooth !important;
-  background-color: #111827 !important;
+  background-color: #022d19 !important;
 }
 
 /*Customize react-responsive-modal style*/
@@ -21,7 +21,7 @@ body {
 }
 .react-responsive-modal-modal {
   border-radius: 10px !important;
-  background-color: #1b2431 !important;
+  background-color: #022d19 !important;
   border: 1px solid rgba(255, 255, 255, 0.196);
 }
 

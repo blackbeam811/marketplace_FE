@@ -13,7 +13,7 @@ export default function CollectionFilterSelect({ options }: SelectPropsType) {
   return (
     <div className="relative">
       <div
-        className="w-[160px] py-[5px] px-2 border-[1px] border-gray-600 rounded-md text-gray-300 text-md flex items-center justify-between gap-2 cursor-pointer
+        className="w-[160px] py-[5px] px-2 border border-customborder rounded-md text-gray-300 text-md flex items-center justify-between gap-2 cursor-pointer
       hover:border-gray-400 duration-300"
         onClick={() => setOpen(!open)}
       >
@@ -23,7 +23,7 @@ export default function CollectionFilterSelect({ options }: SelectPropsType) {
         </span>
       </div>
       <div
-        className={`absolute top-10 w-[160px] min-h-[70px] rounded-md bg-gray-700 flex items-start justify-between flex-col z-50 py-2 ${
+        className={`absolute top-10 w-[160px] min-h-[70px] rounded-md bg-green-950 flex items-start shadow-sm shadow-green-300 justify-between flex-col z-50 py-2 ${
           !open && "hidden"
         }`}
         ref={elem}
@@ -31,9 +31,9 @@ export default function CollectionFilterSelect({ options }: SelectPropsType) {
         {options.map((item, index) => (
           <p
             className={`text-white cursor-pointer text-sm ${
-              item !== options[filterOption] && "hover:bg-gray-500"
+              item !== options[filterOption] && "hover:bg-green-500"
             } w-full py-2 px-2 ${
-              item === options[filterOption] ? "bg-gray-800" : "bg-gray-700"
+              item === options[filterOption] ? "bg-green-800" : "bg-green-950"
             }`}
             key={index}
             onClick={() => {

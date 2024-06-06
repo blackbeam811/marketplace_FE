@@ -6,7 +6,7 @@ import { useContext } from "react";
 export default function Footer() {
   const { solPrice } = useContext(NFTDataContext);
   return (
-    <div className="w-full fixed bottom-0 left-0 right-0 border-t-[1px] border-gray-700 z-50 bg-[#111827] p-2">
+    <div className="w-full fixed bottom-0 left-0 right-0 border-t-[1px] border-customborder z-50 bg-darkgreen p-2">
       <div className="w-full flex items-end justify-end">
         <div className="flex items-center justify-center gap-1">
           <div className="w-[14px] h-[14px] relative">

@@ -15,8 +15,8 @@ const NFTCard: FC<NFTCardType> = ({ imgUrl, tokenId, mintAddr }) => {
   return (
     <>
       <div
-        className={`flex items-start justify-start flex-col gap-2 bg-gray-800 rounded-md pb-2 border-[1px] ${
-          seleted ? "border-pink-600" : "border-gray-700"
+        className={`flex items-start justify-start flex-col gap-2 bg-[#0f4223b9] rounded-md pb-2 border ${
+          seleted ? "border-yellow-500" : "border-customborder"
         }`}
       >
         <div
@@ -30,7 +30,7 @@ const NFTCard: FC<NFTCardType> = ({ imgUrl, tokenId, mintAddr }) => {
           />
           <div
             className={`absolute top-2 right-2 p-1 rounded-full ${
-              seleted ? "bg-pink-500" : "bg-gray-700"
+              seleted ? "bg-yellow-500" : "bg-gray-700"
             } group-hover:block ${seleted ? "block" : "hidden"}`}
           >
             {seleted ? (
@@ -50,7 +50,7 @@ const NFTCard: FC<NFTCardType> = ({ imgUrl, tokenId, mintAddr }) => {
           </Link>
         </span> */}
           <span
-            className="cursor-pointer rounded-md text-gray-400 hover:text-white duration-300"
+            className="cursor-pointer rounded-md text-gray-300 hover:text-white duration-300"
             onClick={() => openNFTDetailModal(mintAddr, mintAddr)}
           >
             <VscScreenFull size={22} />

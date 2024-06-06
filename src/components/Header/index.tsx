@@ -73,7 +73,7 @@ const Header: FC<HeaderProps> = () => {
   }, []);
 
   return (
-    <header className="border-b border-gray-600 fixed w-full bg-[#111827] z-10">
+    <header className="border-b border-customborder fixed w-full bg-darkgreen z-10">
       <div className="py-2 px-4 flex items-center justify-between">
         <Link href={"/"}>
           <div className="flex items-center justify-center gap-3">
@@ -91,18 +91,18 @@ const Header: FC<HeaderProps> = () => {
             </h2>
           </div>
         </Link>
-        <div className="2xl:min-w-[700px] xl:min-w-[500px] md:w-[350px] w-[150px] border-[1px] rounded-md border-gray-600 flex items-center justify-center gap-2 px-3 py-[1px]">
+        <div className="2xl:min-w-[700px] xl:min-w-[500px] md:w-[350px] w-[150px] border rounded-md border-customborder flex items-center justify-center gap-2 px-3 py-[1px]">
           <BiSearch color="white" />
           <input
             ref={inputRef}
             placeholder="Search all of Mugs"
-            className="outline-none bg-transparent w-full text-white py-2 md:py-[5px] px-1 font-thin text-[12px] md:text-sm"
+            className="outline-none bg-transparent w-full text-white py-2 md:py-[5px] px-1 font-thin text-[12px] md:text-sm placeholder:text-gray-300"
             onFocus={() => {
               setIsFocused(true);
             }}
             onClick={openSearchCollectionModal}
           />
-          <div className="bg-gray-700 rounded-md text-[12px] text-white px-1 hidden md:block">
+          <div className="bg-gray-300 rounded-sm text-[12px] text-gray-900 px-1 hidden md:block">
             CTRL+K
           </div>
         </div>
@@ -165,7 +165,7 @@ const BalanceBox: FC<BalanceProps> = ({ myBalance }) => {
     }
   };
   return (
-    <div className="border p-2 py-2 flex items-center gap-3 rounded-md border-gray-500 group">
+    <div className="border p-2 py-2 flex items-center gap-3 rounded-md border-yellow-400">
       <div
         className={`flex gap-2 items-center justify-center cursor-pointer`}
         onClick={() => setOpenModal(true)}
@@ -183,7 +183,7 @@ const BalanceBox: FC<BalanceProps> = ({ myBalance }) => {
         </span>
       </div>
       <div
-        className={`w-[300px] absolute shadow-lg shadow-gray-600 right-[10px] top-1 bg-gray-700 rounded-xl hover:duration-300 z-[9999]
+        className={`w-[300px] absolute right-[10px] top-1 bg-darkgreen border-yellow-400 border-opacity-30 shadow-md shadow-[#ebdb6042] border rounded-md hover:duration-300 z-[9999]
         ${!openModal && "hidden"}`}
         ref={elem}
       >
@@ -208,7 +208,7 @@ const BalanceBox: FC<BalanceProps> = ({ myBalance }) => {
             <CloseIcon />
           </span>
         </div>
-        <ul className=" border-gray-500 rounded-lg bg-grayborder-gray-500 p-2 mt-1 pt-2">
+        <ul className=" border-gray-500 rounded-lg bg-darkgreen p-2 mt-1 pt-2">
           <li className="flex gap-2 items-center mb-3 text-sm duration-300 text-white transition-all w-full justify-between">
             <span className="flex items-center justify-center gap-[7px]">
               <FaWallet color="#86B0A8" size={15} className="pl-[2px]" />
@@ -242,7 +242,7 @@ const BalanceBox: FC<BalanceProps> = ({ myBalance }) => {
               Change Wallet
             </div>
           </li>
-          <li className="border-b-[1px] border-gray-600 pb-3">
+          <li className="border-b-[1px] border-white border-opacity-15 pb-3">
             <button
               className="flex gap-[6px] items-center text-sm hover:text-yellow-400 duration-300 text-white transition-all cursor-pointer"
               onClick={disconnect}
@@ -251,13 +251,13 @@ const BalanceBox: FC<BalanceProps> = ({ myBalance }) => {
             </button>
           </li>
           <li className="flex items-center justify-start gap-3 p-2">
-            <span className="text-white bg-gray-600 p-1 rounded-md hover:bg-gray-800 duration-300 cursor-pointer">
+            <span className="text-white bg-gray-600 p-1 rounded-md hover:bg-gray-700 duration-300 cursor-pointer">
               <BsTwitterX />
             </span>
-            <span className="text-white bg-gray-600 p-1 rounded-md hover:bg-gray-800 duration-300 cursor-pointer">
+            <span className="text-white bg-gray-600 p-1 rounded-md hover:bg-gray-700 duration-300 cursor-pointer">
               <BsDiscord />
             </span>
-            <span className="text-white bg-gray-600 p-1 rounded-md hover:bg-gray-800 duration-300 cursor-pointer">
+            <span className="text-white bg-gray-600 p-1 rounded-md hover:bg-gray-700 duration-300 cursor-pointer">
               <TfiWorld />
             </span>
           </li>
