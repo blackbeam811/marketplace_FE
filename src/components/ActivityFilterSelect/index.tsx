@@ -30,11 +30,11 @@ export default function ActivityFilterSelect() {
 
   return (
     <div
-      className="w-[350px] relative border-[1px] border-gray-700 rounded-md"
+      className="w-[350px] relative border border-customborder rounded-md"
       ref={elem}
     >
       <div
-        className="bg-gray-800 rounded-md p-2 flex items-center justify-between space-x-2 w-full cursor-pointer"
+        className="bg-transparent rounded-md p-2 flex items-center justify-between space-x-2 w-full cursor-pointer"
         onClick={() => setOpen(true)}
       >
         <span
@@ -48,14 +48,14 @@ export default function ActivityFilterSelect() {
           {selectedTags.map((tag) => (
             <div
               key={tag}
-              className="bg-gray-700 text-white rounded-md px-1 text-[12px] flex items-center space-x-2"
+              className="bg-green-800 text-white rounded-md px-1 text-[12px] flex items-center space-x-2"
             >
               {tag}
               <button
                 onClick={() => {
                   removeTag(tag);
                 }}
-                className="ml-2 text-red-500"
+                className="ml-2 text-yellow-500"
               >
                 x
               </button>
@@ -73,7 +73,7 @@ export default function ActivityFilterSelect() {
         <CgClose />
       </button>
       <div
-        className={`absolute w-full bg-gray-800 z-40 ${
+        className={`absolute w-full bg-darkgreen z-40 ${
           (!open || filteredOptions.length === 0) && "hidden"
         } mt-1`}
       >
@@ -84,11 +84,11 @@ export default function ActivityFilterSelect() {
           value={searchKeyword}
           onChange={(e) => setSearchKeyword(e.target.value)}
         /> */}
-        <ul className="w-full border-[1px] border-gray-700 bg-gray-900 text-white rounded-md py-2 max-h-40 overflow-y-auto">
+        <ul className="w-full border border-customborder bg-transparent text-white rounded-md py-2 max-h-40 overflow-y-auto">
           {filteredOptions.map((option) => (
             <li
               key={option}
-              className="p-2 hover:bg-gray-700 cursor-pointer text-sm"
+              className="p-2 hover:bg-green-900 cursor-pointer text-sm"
               onClick={() => addTag(option)}
             >
               {option}

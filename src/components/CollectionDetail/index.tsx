@@ -33,23 +33,23 @@ export default function CollectionDetail({
       </div>
       <div className="flex items-center md:justify-start justify-between md:gap-5 gap-4 md:ml-10 mt-3 w-full md:w-auto">
         <div className="flex items-start justify-center flex-col gap-2 w-[70px]">
-          <p className="text-sm text-gray-400">Floor Price</p>
+          <p className="text-[12px] text-gray-200">Floor Price</p>
           <span className="text-white text-md">123 Sol</span>
         </div>
         <div className="flex items-start justify-center flex-col gap-2 w-[70px]">
-          <p className="text-sm text-gray-400">Top Offere</p>
+          <p className="text-[12px] text-gray-200">Top Offere</p>
           <span className="text-white text-md">68.25 Sol</span>
         </div>
         <div className="flex items-start justify-center flex-col gap-2 w-[70px]">
-          <p className="text-sm text-gray-400">24h Vol</p>
+          <p className="text-[12px] text-gray-200">24h Vol</p>
           <span className="text-white text-md">447.6</span>
         </div>
         <div className="flex items-start justify-center flex-col gap-2 w-[70px]">
-          <p className="text-sm text-gray-400">24h Sales</p>
+          <p className="text-[12px] text-gray-200">24h Sales</p>
           <span className="text-white text-md">5</span>
         </div>
         <div className="flex items-start justify-center flex-col gap-2 w-[70px]">
-          <p className="text-sm text-gray-400">Owners</p>
+          <p className="text-[12px] text-gray-200">Owners</p>
           <span className="text-white text-md">71</span>
         </div>
       </div>

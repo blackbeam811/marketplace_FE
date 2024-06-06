@@ -63,14 +63,14 @@ const Market: NextPage = () => {
             <div
               className={`p-2 ${
                 filterOpen
-                  ? "bg-pink-500 text-white"
-                  : "bg-gray-700 text-gray-300"
+                  ? "bg-yellow-500 text-white"
+                  : "bg-transparent text-gray-300"
               } rounded-md hover:text-white duration-300 cursor-pointer`}
               onClick={() => setFilterOpen(!filterOpen)}
             >
               <FiFilter />
             </div>
-            <div className="w-full flex items-center justify-start px-2 rounded-md border-[1px] border-gray-600">
+            <div className="w-full flex items-center justify-start px-2 rounded-md border border-customborder">
               <BiSearch color="white" />
               <input
                 placeholder="Search items"

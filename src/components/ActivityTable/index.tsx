@@ -4,9 +4,9 @@ import { activityTableTH } from "@/data/tableTHData";
 
 export default function ActivityTable() {
   return (
-    <div className="w-full overflow-x-auto border-[1px] border-gray-700 rounded-md mb-10">
+    <div className="w-full overflow-x-auto border border-customborder rounded-md mb-10">
       <table className="min-w-[1000px] lg:w-full bg-transparent">
-        <thead>
+        <thead className="border-b border-customborder">
           <tr>
             {activityTableTH.map((item, index) => (
               <th
@@ -23,7 +23,9 @@ export default function ActivityTable() {
           {activityTableData.map((row, index) => (
             <tr
               key={index}
-              className={`${index % 2 === 0 ? "bg-gray-800" : "bg-gray-900"}`}
+              className={`${
+                index % 2 === 0 ? "bg-darkgreen" : "bg-[#0f4223b9]"
+              }`}
             >
               <td className="py-2 px-4 text-white font-light text-md">
                 {index + 1}

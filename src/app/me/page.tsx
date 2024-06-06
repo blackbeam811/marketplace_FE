@@ -42,7 +42,7 @@ const MyItem: NextPage = () => {
           <TabsTip />
           <div className="w-full flex items-center justify-between flex-col md:flex-row gap-3">
             <div
-              className={`w-full flex items-center justify-start px-2 rounded-md border-[1px] border-gray-600 ${
+              className={`w-full flex items-center justify-start px-2 rounded-md border border-customborder ${
                 (search === "activity" || search === "offers") && "hidden"
               }`}
             >

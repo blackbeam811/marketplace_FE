@@ -15,7 +15,7 @@ export default function CollectionItemSkeleton() {
       {[...Array(5)].map((_, index) => (
         <div
           key={index}
-          className="w-full md:h-[250px] h-[200px] animate-pulse bg-gray-600 rounded-md"
+          className="w-full md:h-[250px] h-[200px] animate-pulse bg-green-900 rounded-md"
         />
       ))}
     </div>

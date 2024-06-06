@@ -17,7 +17,7 @@ export default function SearchCollectionModal() {
       }`}
     >
       <div
-        className="w-[700px] bg-gray-800 min-h-[300px] rounded-lg mt-5 relative"
+        className="w-[700px] bg-darkgreen min-h-[300px] rounded-lg mt-5 relative shadow-lg"
         ref={elem}
       >
         <table className="w-full bg-transparent">
@@ -38,7 +38,9 @@ export default function SearchCollectionModal() {
             {activityTableData.map((row, index) => (
               <tr
                 key={index}
-                className={`${index % 2 === 0 ? "bg-gray-800" : "bg-gray-900"}`}
+                className={`${
+                  index % 2 === 0 ? "bg-darkgreen" : "bg-[#0b563356]"
+                }`}
               >
                 <td className="relative py-1 px-4 text-white font-light text-md flex items-center justify-start gap-3">
                   <div className="relative w-[30px] h-[30px]">

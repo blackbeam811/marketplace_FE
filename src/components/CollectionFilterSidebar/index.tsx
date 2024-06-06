@@ -8,7 +8,7 @@ export default function CollectionFilterSidebar({
 }: SidebarPropsType) {
   return (
     <div
-      className={`lg:w-[300px] border-r-[1px] border-gray-700 h-[93vh] relative px-2 ${
+      className={`lg:w-[300px] border-r-[1px] border-customborder h-[93vh] relative px-2 ${
         !filterOpen && "hidden"
       }`}
     >
@@ -19,7 +19,7 @@ export default function CollectionFilterSidebar({
         <CgClose color="white" size={20} />
       </div>
       <h1 className="text-2xl text-white mt-5">Filter</h1>
-      <div className="w-full flex items-center justify-center gap-2 flex-col mt-3 border-b-[1px] border-gray-700 py-2">
+      <div className="w-full flex items-center justify-center gap-2 flex-col mt-3 border-b-[1px] border-customborder py-2">
         <div className="w-full flex items-center justify-between">
           <div className="flex items-center justify-center gap-1">
             <input type="radio" className="" />
@@ -39,7 +39,7 @@ export default function CollectionFilterSidebar({
           </span>
         </div>
       </div>
-      <div className="w-full flex items-center justify-center gap-2 flex-col mt-3 border-b-[1px] border-gray-700 py-2">
+      <div className="w-full flex items-center justify-center gap-2 flex-col mt-3 border-b-[1px] border-customborder py-2">
         <div className="w-full flex items-center justify-between">
           <p className="text-white">Price</p>
           {/* <span>
@@ -49,13 +49,13 @@ export default function CollectionFilterSidebar({
         <div className="w-full flex items-center justify-center gap-2">
           <input
             placeholder="Min"
-            className="outline-none p-1 text-[12px] text-white border-[1px] rounded-md border-gray-700 bg-transparent w-[100px]"
+            className="outline-none p-1 text-[12px] text-white border rounded-md border-customborder bg-transparent w-[100px]"
             type="number"
           />
           <span className="text-[12px] text-gray-600">to</span>
           <input
             placeholder="Max"
-            className="outline-none p-1 text-[12px] text-white border-[1px] rounded-md border-gray-700 bg-transparent w-[100px]"
+            className="outline-none p-1 text-[12px] text-white border rounded-md border-customborder bg-transparent w-[100px]"
             type="number"
           />
         </div>

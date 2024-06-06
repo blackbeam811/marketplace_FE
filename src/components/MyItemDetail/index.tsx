@@ -17,7 +17,7 @@ export default function MyItemDetail() {
             className="rounded-full"
           />
         </div>
-        <div className="flex items-center justify-center gap-2 bg-gray-900 px-3 rounded-full py-1 border-[1px] border-gray-700">
+        <div className="flex items-center justify-center gap-2 bg-gray-900 px-3 rounded-full py-1 border border-customborder">
           <div className="w-[18px] h-[18px] relative">
             <Image
               src="/svgs/solana-sol-logo.svg"
@@ -34,10 +34,10 @@ export default function MyItemDetail() {
         </div>
         <div className="flex items-start justify-center flex-col">
           <div className="flex items-center justify-start gap-4">
-            <span className="cursor-pointer hover:text-white text-gray-300 duration-300 border-[1px] border-gray-700 rounded-full px-3 py-1">
+            <span className="cursor-pointer hover:text-white text-gray-300 duration-300 border border-customborder rounded-full px-3 py-1">
               <FaDiscord size={14} />
             </span>
-            <span className="cursor-pointer hover:text-white text-gray-300 duration-300 border-[1px] border-gray-700 rounded-full px-3 py-1">
+            <span className="cursor-pointer hover:text-white text-gray-300 duration-300 border border-customborder rounded-full px-3 py-1">
               <BsTwitterX size={12} />
             </span>
           </div>

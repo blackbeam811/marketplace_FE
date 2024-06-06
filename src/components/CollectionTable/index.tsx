@@ -10,7 +10,7 @@ export default function CollectionTable() {
   return (
     <div className="w-full overflow-x-auto">
       <table className="min-w-[1024px] lg:w-full bg-transparent">
-        <thead>
+        <thead className="border-b border-customborder">
           <tr>
             {collectionTableTH.map((item, index) => (
               <th
@@ -27,7 +27,7 @@ export default function CollectionTable() {
             <tr
               key={index}
               className={
-                "bg-gray-900 hover:bg-gray-800 cursor-pointer duration-200"
+                "bg-darkgreen hover:bg-[#098b553c] cursor-pointer duration-200"
               }
               onClick={() => router.push("/market/" + row.collectionAddr)}
             >

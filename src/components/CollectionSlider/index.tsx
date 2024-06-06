@@ -45,14 +45,13 @@ export default function CollectionSlider() {
             },
           }}
           shouldResetAutoplay
-          showDots={true}
-          sliderClass=""
+          showDots={false}
           arrows={true}
           slidesToSlide={1}
         >
           {collectionSliderData.map((data, index) => (
             <div className="relative px-2" key={index}>
-              <div className="relative border-gray-500 border-7 bg-white bg-opacity-10 backdrop-blur-md p-2 rounded-lg w-full cursor-pointer aspect-square border-[1px] overflow-hidden">
+              <div className="relative border-gray-500 border-7 bg-white bg-opacity-10 backdrop-blur-md p-2 rounded-lg w-full cursor-pointer aspect-square border overflow-hidden">
                 <Image
                   src={data.imgUrl}
                   fill

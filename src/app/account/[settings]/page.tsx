@@ -12,7 +12,7 @@ const AccountSettings: NextPage = () => {
         <div className="w-full flex flex-col gap-1">
           <span className="text-sm text-gray-300">Username</span>
           <input
-            className="text-white outline-none placeholder:text-gray-700 border-[1px] border-gray-700 py-1 px-2 w-full bg-transparent rounded-md"
+            className="text-white outline-none placeholder:text-gray-700 border border-customborder py-1 px-2 w-full bg-transparent rounded-md"
             placeholder="zeno"
           />
           <span className="text-[12px] text-gray-500">
@@ -25,14 +25,14 @@ const AccountSettings: NextPage = () => {
         <div className="w-full flex flex-col gap-1">
           <span className="text-sm text-gray-300">Display Name</span>
           <input
-            className="text-white outline-none placeholder:text-gray-700 border-[1px] border-gray-700 py-1 px-2 w-full bg-transparent rounded-md"
+            className="text-white outline-none placeholder:text-gray-700 border border-customborder py-1 px-2 w-full bg-transparent rounded-md"
             placeholder="zeno"
           />
         </div>
         <div className="w-full flex flex-col gap-1">
           <span className="text-sm text-gray-300">Email</span>
           <input
-            className="text-white outline-none placeholder:text-gray-700 border-[1px] border-gray-700 py-1 px-2 w-full bg-transparent rounded-md"
+            className="text-white outline-none placeholder:text-gray-700 border border-customborder py-1 px-2 w-full bg-transparent rounded-md"
             placeholder="zeno3618@gmail.com"
           />
         </div>

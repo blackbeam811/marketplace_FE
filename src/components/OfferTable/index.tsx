@@ -4,7 +4,7 @@ import { activityTableTH } from "@/data/tableTHData";
 
 export default function OfferTable() {
   return (
-    <div className="w-full overflow-x-auto border-[1px] border-gray-700 rounded-md mb-10">
+    <div className="w-full overflow-x-auto border border-customborder rounded-md mb-10">
       <table className="min-w-[1024px] lg:w-full bg-transparent">
         <thead>
           <tr>

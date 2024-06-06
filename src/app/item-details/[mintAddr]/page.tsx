@@ -35,9 +35,9 @@ const ItemDetails: NextPage = () => {
           <div className="w-full flex flex-col justify-start items-start gap-2">
             <div className="flex flex-col gap-1">
               <h1 className="text-white text-2xl">Validat3rs #73</h1>
-              <p className="text-pink-600 texl-md">Validat3rs #73</p>
+              <p className="text-yellow-500 texl-md">Validat3rs #73</p>
             </div>
-            <div className="w-full flex items-center justify-start gap-2 rounded-md bg-gray-800 min-h-[200px] flex-col p-3">
+            <div className="w-full flex items-center justify-start gap-2 rounded-md bg-darkgreen border border-customborder min-h-[200px] flex-col p-3">
               <div className="w-full flex items-center justify-between">
                 <p className="text-md text-gray-300">List Price</p>
                 <span className="text-md text-white">5.614 Sol</span>
@@ -54,17 +54,17 @@ const ItemDetails: NextPage = () => {
                 <p className="text-2xl text-gray-300">Total Price</p>
                 <span className="text-2xl text-white">5.614 Sol</span>
               </div>
-              <div className="w-full rounded-md py-2 text-center bg-pink-600 text-white cursor-pointer">
+              <div className="w-full rounded-md py-2 text-center bg-yellow-500 text-white cursor-pointer">
                 Buy now
               </div>
             </div>
 
             <div
-              className="w-full p-3 flex items-center justify-between rounded-md border-[1px] border-gray-700 cursor-pointer"
+              className="w-full p-3 flex items-center justify-between rounded-md border border-customborder cursor-pointer"
               onClick={() => setOpenAboutTag(!openAboutTag)}
             >
               <span className="text-white font-bold text-md flex items-center justify-center gap-2">
-                <TfiAnnouncement color="#DB2777" />
+                <TfiAnnouncement color="#EAB308" />
                 About Validat3rs
               </span>
               <span
@@ -76,7 +76,7 @@ const ItemDetails: NextPage = () => {
               </span>
             </div>
             <div
-              className={`w-full p-3 flex items-center justify-between rounded-md border-[1px] border-gray-700 cursor-pointer text-gray-400 ${
+              className={`w-full p-3 flex items-center justify-between rounded-md border border-customborder cursor-pointer text-gray-400 ${
                 !openAboutTag && "hidden"
               }`}
             >
@@ -85,11 +85,11 @@ const ItemDetails: NextPage = () => {
             </div>
 
             <div
-              className="w-full p-3 flex items-center justify-between rounded-md border-[1px] border-gray-700 cursor-pointer"
+              className="w-full p-3 flex items-center justify-between rounded-md border border-customborder cursor-pointer"
               onClick={() => setOpenAttributeTag(!openAttributeTag)}
             >
               <span className="text-white font-bold text-md flex items-center justify-center gap-2">
-                <MdOutlineSecurity color="#DB2777" size={18} />
+                <MdOutlineSecurity color="#EAB308" size={18} />
                 Attributes
               </span>
               <span
@@ -101,34 +101,34 @@ const ItemDetails: NextPage = () => {
               </span>
             </div>
             <div
-              className={`w-full p-3 grid grid-cols-3 gap-3 rounded-md border-[1px] border-gray-700 ${
+              className={`w-full p-3 grid grid-cols-3 gap-3 rounded-md border border-customborder ${
                 !openAttributeTag && "hidden"
               }`}
             >
-              <div className="rounded-md bg-gray-800 p-2">
+              <div className="rounded-md bg-darkgreen border border-customborder p-2">
                 <p className="text-gray-400">Renewed</p>
                 <span className="text-white">False</span>
               </div>
-              <div className="rounded-md bg-gray-800 p-2">
+              <div className="rounded-md bg-darkgreen border border-customborder p-2">
                 <p className="text-gray-400">Renewed</p>
                 <span className="text-white">False</span>
               </div>
-              <div className="rounded-md bg-gray-800 p-2">
+              <div className="rounded-md bg-darkgreen border border-customborder p-2">
                 <p className="text-gray-400">Renewed</p>
                 <span className="text-white">False</span>
               </div>
-              <div className="rounded-md bg-gray-800 p-2">
+              <div className="rounded-md bg-darkgreen border border-customborder p-2">
                 <p className="text-gray-400">Renewed</p>
                 <span className="text-white">False</span>
               </div>
             </div>
 
             <div
-              className="w-full p-3 flex items-center justify-between rounded-md border-[1px] border-gray-700 cursor-pointer"
+              className="w-full p-3 flex items-center justify-between rounded-md border border-customborder cursor-pointer"
               onClick={() => setOpenDetailTag(!openDetailTag)}
             >
               <span className="text-white font-bold text-md flex items-center justify-center gap-2">
-                <BiDetail color="#DB2777" size={19} />
+                <BiDetail color="#EAB308" size={19} />
                 Detail
               </span>
               <span
@@ -140,36 +140,37 @@ const ItemDetails: NextPage = () => {
               </span>
             </div>
             <div
-              className={`w-full p-3 flex items-center justify-between flex-col gap-1 rounded-md border-[1px] border-gray-700 cursor-pointer text-gray-400 ${
+              className={`w-full p-3 flex items-center justify-between flex-col gap-1 rounded-md border border-customborder cursor-pointer text-gray-400 ${
                 !openDetailTag && "hidden"
               }`}
             >
+              {" "}
               <div className="w-full flex items-center justify-between">
                 <span>Mint Address</span>
-                <span>9e2tgt..23fgdrg2</span>
+                <span className="text-white">9e2tgt..23fgdrg2</span>
               </div>
               <div className="w-full flex items-center justify-between">
                 <span>OnChain Collection</span>
-                <span>9e2tgt..23fgdrg2</span>
+                <span className="text-white">9e2tgt..23fgdrg2</span>
               </div>
               <div className="w-full flex items-center justify-between">
                 <span>Token Address</span>
-                <span>9e2tgt..23fgdrg2</span>
+                <span className="text-white">9e2tgt..23fgdrg2</span>
               </div>
               <div className="w-full flex items-center justify-between">
                 <span>Owner</span>
-                <span>9e2tgt..23fgdrg2</span>
+                <span className="text-white">9e2tgt..23fgdrg2</span>
               </div>
             </div>
           </div>
         </div>
         <div className="w-full flex items-center justify-center gap-2 flex-col md:px-10 px-3">
           <div
-            className="w-full p-3 flex items-center justify-between rounded-md border-[1px] border-gray-700 cursor-pointer "
+            className="w-full p-3 flex items-center justify-between rounded-md border border-customborder cursor-pointer "
             onClick={() => setOpenOfferTable(!openOfferTable)}
           >
             <span className="text-white font-bold text-md flex items-center justify-center gap-2">
-              <MdOutlineLocalOffer color="#DB2777" size={20} />
+              <MdOutlineLocalOffer color="#EAB308" size={20} />
               Offers
             </span>
             <span
@@ -186,11 +187,11 @@ const ItemDetails: NextPage = () => {
         </div>
         <div className="w-full flex items-center justify-center gap-2 flex-col md:px-10 px-3 mt-3">
           <div
-            className="w-full p-3 flex items-center justify-between rounded-md border-[1px] border-gray-700 cursor-pointer "
+            className="w-full p-3 flex items-center justify-between rounded-md border border-customborder cursor-pointer "
             onClick={() => setOpenActivityTag(!openActivityTag)}
           >
             <span className="text-white font-bold text-md flex items-center justify-center gap-2">
-              <BiLineChart color="#DB2777" size={20} />
+              <BiLineChart color="#EAB308" size={20} />
               Activities
             </span>
             <span
