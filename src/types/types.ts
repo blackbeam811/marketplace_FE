@@ -73,6 +73,12 @@ export interface RedeemModalProps {
     handleRedeemFunc: (email: string, homeAddr: string) => void;
 }
 
+export interface CollectionFilterbarProps {
+    setFilterOpen: (opened: boolean) => void;
+    filterOpen: boolean
+}
+
 export interface CollectionDetailProps {
     collectionData: collectionDataType;
 }
+

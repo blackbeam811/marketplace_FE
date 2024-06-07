@@ -76,56 +76,58 @@ const Header: FC<HeaderProps> = () => {
 
   return (
     <header className="border-b border-customborder fixed w-full bg-darkgreen z-10">
-      <div className="py-2 px-4 flex items-center justify-between">
-        <Link href={"/"}>
+      <div className="py-2 px-4 flex items-center justify-between relative">
+        <Link href={"/"} className="z-[1]">
           <div className="flex items-center justify-center gap-3">
-            <div className="w-[30px] h-[30px] rounded-full relative">
+            <div className="w-[30px] h-[30px] relative">
               <Image
-                src="/images/logo.png"
+                src="/images/logo6.png"
                 fill
                 alt=""
-                className="object-cover rounded-md"
+                className="object-cover"
               />
             </div>
 
-            <h2 className="text-white text-3xl uppercase font-extrabold hidden lg:block">
+            <h2 className="text-white text-xl uppercase font-extrabold hidden lg:block">
               MUGS
             </h2>
           </div>
         </Link>
-        <div
-          className={`2xl:min-w-[700px] xl:min-w-[500px] md:w-[350px] w-[150px] border rounded-md border-customborder hover:border-gray-400 duration-300 flex items-center justify-center gap-2 md:px-3 px-2 py-[1px]
+        <div className="md:absolute left-0 right-0 flex items-center justify-center z-0">
+          <div
+            className={`2xl:min-w-[600px] xl:min-w-[500px] md:w-[350px] w-[150px] border rounded-md border-customborder hover:border-gray-400 duration-300 flex items-center justify-center gap-2 md:px-3 px-2 py-[1px]
           ${isFocused && "border-gray-400"}`}
-        >
-          <BiSearch color="white" />
-          <input
-            ref={inputRef}
-            placeholder="Search all of Mugs"
-            className={`outline-none bg-transparent w-full text-white py-2 md:py-[5px] md:px-1 font-thin text-[12px] md:text-sm placeholder:text-gray-300 ${
-              isFocused && "border-gray-400"
-            }`}
-            onFocus={() => {
-              setIsFocused(true);
-            }}
-            onClick={openSearchCollectionModal}
-          />
-          <div className="bg-gray-300 rounded-sm text-[12px] text-gray-900 px-1 hidden md:block">
-            CTRL+K
+          >
+            <BiSearch color="white" />
+            <input
+              ref={inputRef}
+              placeholder="Search all of Mugs"
+              className={`outline-none bg-transparent w-full text-white py-2 md:py-[5px] md:px-1 font-thin text-[12px] md:text-sm placeholder:text-gray-300 ${
+                isFocused && "border-gray-400"
+              }`}
+              onFocus={() => {
+                setIsFocused(true);
+              }}
+              onClick={openSearchCollectionModal}
+            />
+            <div className="bg-gray-300 rounded-sm text-[12px] text-gray-900 px-1 hidden md:block">
+              CTRL+K
+            </div>
           </div>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 z-[1]">
           <ul className="lg:flex items-center justify-center gap-3 hidden">
             <li
-              className={` text-white text-sm mr-5 cursor-pointer uppercase font-bold duration-300 hover:text-yellow-400 ${
-                router === "/" ? "text-yellow-400 list-disc" : "list-none"
+              className={` text-white text-sm mr-5 cursor-pointer uppercase font-bold duration-300 hover:text-yellow-600 ${
+                router === "/" ? "text-yellow-600 list-disc" : "list-none"
               }`}
             >
               <Link href={"/"}>Collection</Link>
             </li>
             <li
-              className={` text-white text-sm mr-5 cursor-pointer uppercase font-bold duration-300 hover:text-yellow-400 ${
-                router === "/mint" ? "text-yellow-400 list-disc" : "list-none"
+              className={` text-white text-sm mr-5 cursor-pointer uppercase font-bold duration-300 hover:text-yellow-600 ${
+                router === "/mint" ? "text-yellow-600 list-disc" : "list-none"
               }`}
             >
               <Link href={"/mint"}>Mint</Link>
@@ -172,7 +174,7 @@ const BalanceBox: FC<BalanceProps> = ({ myBalance }) => {
     }
   };
   return (
-    <div className="border p-2 py-2 flex items-center gap-3 rounded-md border-yellow-400">
+    <div className="border p-2 py-2 flex items-center gap-3 rounded-md border-yellow-600">
       <div
         className={`flex gap-2 items-center justify-center cursor-pointer`}
         onClick={() => setOpenModal(true)}
@@ -185,12 +187,12 @@ const BalanceBox: FC<BalanceProps> = ({ myBalance }) => {
             className=""
           />
         </div>
-        <span className="text-yellow-400 text-md leading-[1] font-bold">
+        <span className="text-yellow-600 text-md leading-[1] font-bold">
           {myBalance?.toFixed(2)} SOL
         </span>
       </div>
       <div
-        className={`w-[300px] absolute right-[10px] top-1 bg-darkgreen border-yellow-400 border-opacity-30 shadow-md shadow-[#ebdb6042] border rounded-md hover:duration-300 z-[9999]
+        className={`w-[300px] absolute right-[10px] top-1 bg-darkgreen border-yellow-600 border-opacity-30 shadow-md shadow-[#ebdb6042] border rounded-md hover:duration-300 z-[9999]
         ${!openModal && "hidden"}`}
         ref={elem}
       >
@@ -235,17 +237,17 @@ const BalanceBox: FC<BalanceProps> = ({ myBalance }) => {
               </span>
             </span>
           </li>
-          <li className="flex gap-2 items-center mb-3 text-sm hover:text-yellow-400 duration-300 text-white transition-all cursor-pointer">
+          <li className="flex gap-2 items-center mb-3 text-sm hover:text-yellow-600 duration-300 text-white transition-all cursor-pointer">
             <FaUser size={14} color="#86B0A8" className="pl-[2px]" />
             <Link href="/me">My Items</Link>
           </li>
-          <li className="flex gap-[5px] items-center mb-3 text-sm hover:text-yellow-400 duration-300 text-white transition-all cursor-pointer">
+          <li className="flex gap-[5px] items-center mb-3 text-sm hover:text-yellow-600 duration-300 text-white transition-all cursor-pointer">
             <MdSettings size={17} color="#86B0A8" />
             <Link href="/account/settings">Account Settings</Link>
           </li>
           <li>
             <div
-              className="flex gap-2 items-center mb-3 text-sm hover:text-yellow-400 duration-300 text-white transition-all cursor-pointer"
+              className="flex gap-2 items-center mb-3 text-sm hover:text-yellow-600 duration-300 text-white transition-all cursor-pointer"
               onClick={() => setVisible(true)}
             >
               <FaExchangeAlt size={14} color="#86B0A8" className="pl-[2px]" />{" "}
@@ -254,7 +256,7 @@ const BalanceBox: FC<BalanceProps> = ({ myBalance }) => {
           </li>
           <li className="border-b-[1px] border-white border-opacity-15 pb-3">
             <button
-              className="flex gap-[6px] items-center text-sm hover:text-yellow-400 duration-300 text-white transition-all cursor-pointer"
+              className="flex gap-[6px] items-center text-sm hover:text-yellow-600 duration-300 text-white transition-all cursor-pointer"
               onClick={disconnect}
             >
               <ExitIcon className="brightness-200" /> Disconnect

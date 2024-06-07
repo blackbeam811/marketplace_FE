@@ -24,7 +24,7 @@ export default function CollectionSlider() {
                 max: 3000,
                 min: 1024,
               },
-              items: 4,
+              items: 5,
               partialVisibilityGutter: 40,
             },
             mobile: {
@@ -40,7 +40,7 @@ export default function CollectionSlider() {
                 max: 1024,
                 min: 768,
               },
-              items: 3,
+              items: 4,
               partialVisibilityGutter: 30,
             },
           }}

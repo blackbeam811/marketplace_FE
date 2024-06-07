@@ -72,7 +72,7 @@ const RedeemModal: FC<RedeemModalProps> = ({ handleRedeemFunc }) => {
           </div> */}
         </div>
         <div
-          className="bg-[#151c25b6] rounded-md p-1 text-white w-[290px] sm:w-[350px] text-center flex items-center justify-start gap-2 flex-col
+          className="bg-darkgreen border border-customborder rounded-md p-1 text-white w-[290px] sm:w-[350px] text-center flex items-center justify-start gap-2 flex-col
         max-h-[150px] overflow-y-auto"
         >
           {memoizedOwnNFTs &&
@@ -92,7 +92,7 @@ const RedeemModal: FC<RedeemModalProps> = ({ handleRedeemFunc }) => {
               </div>
             ))}
         </div>
-        <div className="bg-[#151c25b6] rounded-md p-1 text-white w-[290px] sm:w-[350px] text-center flex items-center justify-start gap-2">
+        <div className="bg-drakgreen border border-customborder rounded-md p-1 text-white w-[290px] sm:w-[350px] text-center flex items-center justify-start gap-2">
           <input
             className="outline-none bg-transparent text-gray-400 py-1 w-full px-1 text-sm"
             placeholder="Wallet Address"
@@ -105,7 +105,7 @@ const RedeemModal: FC<RedeemModalProps> = ({ handleRedeemFunc }) => {
             readOnly
           />
         </div>
-        <div className="bg-[#151c25b6] rounded-md p-1 text-white w-[290px] sm:w-[350px] text-center flex items-center justify-start gap-2">
+        <div className="bg-drakgreen border border-customborder rounded-md p-1 text-white w-[290px] sm:w-[350px] text-center flex items-center justify-start gap-2">
           <input
             className="outline-none bg-transparent text-white py-1 w-full px-1 placeholder:text-[14px]"
             placeholder="Email"
@@ -114,7 +114,7 @@ const RedeemModal: FC<RedeemModalProps> = ({ handleRedeemFunc }) => {
             value={email}
           />
         </div>
-        <div className="bg-[#151c25b6] rounded-md p-1 text-white w-[290px] sm:w-[350px] text-center flex items-center justify-start gap-2">
+        <div className="bg-drakgreen border border-customborder rounded-md p-1 text-white w-[290px] sm:w-[350px] text-center flex items-center justify-start gap-2">
           <input
             className="outline-none bg-transparent text-white py-1 w-full px-1 placeholder:text-[14px]"
             placeholder="Home Address"
@@ -122,11 +122,11 @@ const RedeemModal: FC<RedeemModalProps> = ({ handleRedeemFunc }) => {
             value={homeAddr}
           />
         </div>
-        <div className="bg-red-400 rounded-md px-3 py-2 text-white w-[290px] sm:w-[350px] text-center flex items-center justify-center gap-2">
+        <div className="bg-yellow-600 rounded-md px-3 py-2 text-white w-[290px] sm:w-[350px] text-center flex items-center justify-center gap-2">
           <span className="text-[12px]">One NFT will be burned!</span>
         </div>
         <button
-          className="w-full p-2 bg-gray-700 text-white rounded-lg text-sm font-bold hover:bg-gray-600 duration-300 "
+          className="w-full p-2 bg-transparent border border-customborder text-white rounded-lg text-sm font-bold hover:border-white duration-300 "
           onClick={() => (connected ? checkValue() : setVisible(true))}
         >
           {connected ? `Redeem` : "Connect wallet"}

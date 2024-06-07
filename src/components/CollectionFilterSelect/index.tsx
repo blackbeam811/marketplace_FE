@@ -13,7 +13,7 @@ export default function CollectionFilterSelect({ options }: SelectPropsType) {
   return (
     <div className="relative">
       <div
-        className="w-[160px] py-[5px] px-2 border border-customborder rounded-md text-gray-300 text-md flex items-center justify-between gap-2 cursor-pointer
+        className="w-[160px] py-[6px] px-2 border border-customborder rounded-md text-gray-300 text-md flex items-center justify-between gap-2 cursor-pointer
       hover:border-gray-400 duration-300 text-sm"
         onClick={() => setOpen(!open)}
       >
