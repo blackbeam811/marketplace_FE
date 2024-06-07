@@ -217,4 +217,5 @@ export const activityTableData: activityTableDataType[] = [
         buyer: "",
         time: 167238429,
     },
+
 ];

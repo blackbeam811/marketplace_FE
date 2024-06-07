@@ -54,7 +54,7 @@ const ItemDetails: NextPage = () => {
                 <p className="text-2xl text-gray-300">Total Price</p>
                 <span className="text-2xl text-white">5.614 Sol</span>
               </div>
-              <div className="w-full rounded-md py-2 text-center bg-yellow-500 text-white cursor-pointer">
+              <div className="w-full rounded-md py-2 text-center bg-yellow-600 text-white cursor-pointer">
                 Buy now
               </div>
             </div>

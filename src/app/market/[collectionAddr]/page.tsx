@@ -1,12 +1,17 @@
 "use client";
 import { Suspense, useContext, useEffect, useMemo, useState } from "react";
 import { NextPage } from "next";
-import { useParams, usePathname, useRouter } from "next/navigation";
+import {
+  useParams,
+  usePathname,
+  useRouter,
+  useSearchParams,
+} from "next/navigation";
 import { useWallet } from "@solana/wallet-adapter-react";
 
 import { FiFilter } from "react-icons/fi";
 import { BiSearch } from "react-icons/bi";
-
+import { SlBasket } from "react-icons/sl";
 import MainPageLayout from "@/components/Layout";
 import TabsTip from "@/components/TabsTip";
 import NFTCard from "@/components/NFTCard";
@@ -21,16 +26,28 @@ import { collectionItems } from "@/data/collectionItems";
 import { collectionFilterOptions } from "@/data/selectTabData";
 import { collectionTableData } from "@/data/collectionTableData";
 import { collectionDataType } from "@/types/types";
+import { useWindowSize } from "@/hooks/useWindowSize";
+import ActivityTable from "@/components/ActivityTable";
+import ItemMultiSelectbar from "@/components/ItemMultiSelectBar";
+import CollectionFilterbar from "@/components/CollectionFilterbar";
+import MobileItemMultiSelectBar from "@/components/ItemMultiSelectBar/MobileItemMultiSelectBar";
+import MobileTabsTip from "@/components/TabsTip/MobileTabsTip";
+import MobileCollectionDetail from "@/components/CollectionDetail/MobileCollectionDetail";
 
 const Market: NextPage = () => {
   const { publicKey, connected } = useWallet();
   const params = useParams();
+  const searchParam = useSearchParams();
+  const search = searchParam.get("activeTab") || "items";
   const { collectionAddr } = params;
   const { ownNFTs, getOwnNFTsState } = useContext(NFTDataContext);
 
   const memoizedOwnNFTs = useMemo(() => ownNFTs, [ownNFTs]);
   const [collectionData, setCollectionData] = useState<collectionDataType>();
   const [filterOpen, setFilterOpen] = useState(false);
+
+  const { width, height } = useWindowSize();
+  console.log("height =======>", height);
 
   useEffect(() => {
     if (collectionAddr) {
@@ -52,49 +69,60 @@ const Market: NextPage = () => {
           filterOpen={filterOpen}
           onClosebar={() => setFilterOpen(false)}
         />
-        <div className="w-full flex items-start justify-start mt-5 gap-4 flex-col px-2">
+        <div className="w-full flex items-start justify-start mt-2 md:gap-4 gap-1 flex-col relative">
           {collectionData && (
             <CollectionDetail collectionData={collectionData} />
+          )}
+          {collectionData && (
+            <MobileCollectionDetail collectionData={collectionData} />
           )}
           <Suspense fallback={<div />}>
             <TabsTip />
           </Suspense>
-          <div className="w-full flex items-center justify-between gap-3">
-            <div
-              className={`p-2 ${
-                filterOpen
-                  ? "bg-yellow-500 text-white"
-                  : "bg-transparent text-gray-300 border border-customborder"
-              } rounded-md hover:text-white duration-300 cursor-pointer`}
-              onClick={() => setFilterOpen(!filterOpen)}
-            >
-              <FiFilter />
-            </div>
-            <div className="w-full flex items-center justify-start px-2 rounded-md border border-customborder hover:border-[#ffffff87] duration-300">
-              <BiSearch color="white" />
-              <input
-                placeholder="Search items"
-                className="outline-none bg-transparent w-full text-white py-1 px-1 text-sm md:text-lg"
-              />
-            </div>
-            <CollectionFilterSelect options={collectionFilterOptions} />
-          </div>
+
+          <CollectionFilterbar
+            setFilterOpen={() => setFilterOpen(!filterOpen)}
+            filterOpen={filterOpen}
+          />
+          <ItemMultiSelectbar />
           <CollectionItemSkeleton />
-          <div className="w-full max-h-[70vh] overflow-y-auto pb-10">
-            <div
-              className={`w-full grid grid-cols-2 md:grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-5 ${
-                getOwnNFTsState && "hidden"
-              }`}
-            >
-              {collectionItems?.map((item, index) => (
-                <NFTCard
-                  imgUrl={item.imgUrl}
-                  tokenId={item.tokenId}
-                  key={index}
-                  mintAddr={item.mintAddr}
-                />
-              ))}
+          <div className="w-full flex items-center justify-center flex-col relative">
+            <div className="w-full md:max-h-[62vh] max-h-[62vh] overflow-y-auto px-2 pb-1">
+              <div
+                className={`relative ${
+                  search === "items" || search === null ? "block" : "hidden"
+                }`}
+              >
+                <div
+                  className={`w-full grid grid-cols-2 md:grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-5 ${
+                    getOwnNFTsState && "hidden"
+                  }`}
+                >
+                  {collectionItems?.map((item, index) => (
+                    <NFTCard
+                      imgUrl={item.imgUrl}
+                      tokenId={item.tokenId}
+                      key={index}
+                      mintAddr={item.mintAddr}
+                    />
+                  ))}
+                </div>
+              </div>
             </div>
+          </div>
+          <div
+            className={`w-full flex items-center justify-center ${
+              search === "offers" ? "block" : "hidden"
+            }`}
+          >
+            <ActivityTable />
+          </div>
+          <div
+            className={`w-full flex items-center justify-center ${
+              search === "activity" ? "block" : "hidden"
+            }`}
+          >
+            <ActivityTable />
           </div>
           <div
             className={`${
@@ -110,6 +138,8 @@ const Market: NextPage = () => {
             </p>
           </div>
         </div>
+        <MobileItemMultiSelectBar />
+        <MobileTabsTip />
       </div>
       <div
         className={`${

@@ -264,7 +264,7 @@ const Home: NextPage = () => {
     <MainPageLayout>
       <div className="w-full flex items-center justify-center px-5 duration-300">
         <div className="flex items-center justify-center sm:w-[400px] w-full flex-col gap-3 my-10">
-          <div className="rounded-lg p-4 flex items-center justify-center flex-col gap-2 bg-gray-800 relative w-full">
+          <div className="rounded-lg p-4 flex items-center justify-center flex-col gap-2 bg-darkgreen border border-customborder relative w-full">
             <h1 className="text-white text-2xl font-bold uppercase">
               Mugs Edition
             </h1>
@@ -286,7 +286,7 @@ const Home: NextPage = () => {
               </span>
             </div>
           </div>
-          <div className="w-full rounded-lg bg-gray-800 p-2 flex items-center justify-center">
+          <div className="w-full rounded-lg bg-darkgreen border border-customborder p-2 flex items-center justify-center">
             <span className="text-gray-200 text-[12px] font-normal text-center">
               Buy and sell real products with digital currency. Delivered on
               demand.
@@ -294,7 +294,7 @@ const Home: NextPage = () => {
           </div>
           <div className="w-full grid grid-cols-2 gap-3">
             <button
-              className="w-full p-2 bg-pink-500 text-white rounded-lg text-sm font-bold hover:bg-pink-600 duration-300"
+              className="w-full p-2 bg-yellow-600 text-white rounded-lg text-sm font-bold hover:bg-yellow-600 duration-300"
               onClick={() => !mintDisabled && handleMintFunc()}
             >
               Mint
@@ -303,9 +303,9 @@ const Home: NextPage = () => {
               className={`w-full p-2  rounded-lg text-sm font-bold duration-300
               ${
                 connected && memorizedOwnNFTs.length !== 0
-                  ? "cursor-pointer hover:bg-gray-700 bg-gray-800 text-white"
-                  : "cursor-not-allowed bg-gray-800 text-gray-600"
-              }`}
+                  ? "cursor-pointer hover:bg-transparent bg-transparent text-white hover:border-white"
+                  : "cursor-not-allowed bg-transparent text-gray-600"
+              } border border-customborder`}
               onClick={() =>
                 connected && ownNFTs.length !== 0 && openRedeemModal()
               }

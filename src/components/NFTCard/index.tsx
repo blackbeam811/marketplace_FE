@@ -1,9 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 import { FC, useContext, useState } from "react";
-import { TbListDetails } from "react-icons/tb";
 import Link from "next/link";
 import { NFTCardType } from "@/types/types";
-import { PiPlus } from "react-icons/pi";
 import { CgCheck } from "react-icons/cg";
 import { BiPlus } from "react-icons/bi";
 import { VscScreenFull } from "react-icons/vsc";
@@ -30,7 +28,7 @@ const NFTCard: FC<NFTCardType> = ({ imgUrl, tokenId, mintAddr }) => {
           />
           <div
             className={`absolute top-2 right-2 p-1 rounded-full ${
-              seleted ? "bg-yellow-500" : "bg-gray-700"
+              seleted ? "bg-yellow-600" : "bg-gray-800 bg-opacity-80"
             } group-hover:block ${seleted ? "block" : "hidden"}`}
           >
             {seleted ? (
@@ -42,13 +40,6 @@ const NFTCard: FC<NFTCardType> = ({ imgUrl, tokenId, mintAddr }) => {
         </div>
         <div className="w-full flex items-center justify-between pr-2">
           <p className="text-white text-left px-2 text-lg">Mugs #{tokenId}</p>
-          {/* <span className="cursor-pointer rounded-md text-gray-400 hover:text-white duration-300">
-          <Link
-            href={"/item-details/0xed5af388653567af2f388e6224dc7c4b3244c544"}
-          >
-            <VscScreenFull size={22} />
-          </Link>
-        </span> */}
           <span
             className="cursor-pointer rounded-md text-gray-300 hover:text-white duration-300"
             onClick={() => openNFTDetailModal(mintAddr, mintAddr)}

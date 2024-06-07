@@ -12,7 +12,7 @@ const MainPageLayout: FC<PageProps> = ({ children }) => {
       animate={{ y: 0, opacity: 1 }}
       transition={{ ease: "easeInOut", duration: 0.5 }}
     >
-      <main className="main-page w-full items-center justify-center flex px-3 pt-16">
+      <main className="main-page w-full items-center justify-center flex px-3 pt-14 flex-col relative">
         {children}
       </main>
     </motion.div>

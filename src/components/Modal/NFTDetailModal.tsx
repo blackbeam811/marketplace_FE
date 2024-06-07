@@ -48,7 +48,7 @@ const NFTDetailModal = () => {
             onClick={closeNFTDetailModal}
           >
             <Link href={`/item-details/${memoSelectedNFTDetail[0]}`}>
-              <GoLinkExternal color="#F0DC04" size={22} />
+              <GoLinkExternal color="#CA8A04" size={22} />
             </Link>
           </div>
           <div className="cursor-pointer" onClick={closeNFTDetailModal}>
@@ -62,7 +62,7 @@ const NFTDetailModal = () => {
             {ModalTabMenu.map((item, index) => (
               <div
                 className={`px-2 cursor-pointer ${
-                  showState === index && "bg-yellow-500"
+                  showState === index && "bg-yellow-600"
                 } rounded-md w-[100px] text-white text-center text-[12px] py-1`}
                 onClick={() => setShowState(index)}
                 key={index}
@@ -108,7 +108,7 @@ const NFTDetailModal = () => {
                   <p className="text-2xl text-gray-300">Total Price</p>
                   <span className="text-2xl text-white">5.614 Sol</span>
                 </div>
-                <div className="w-full rounded-md py-2 text-center bg-yellow-500 text-white cursor-pointer">
+                <div className="w-full rounded-md py-2 text-center bg-yellow-600 text-white cursor-pointer">
                   Buy now
                 </div>
               </div>
