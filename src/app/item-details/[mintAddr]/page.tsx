@@ -12,6 +12,8 @@ import { MdOutlineLocalOffer } from "react-icons/md";
 import MainPageLayout from "@/components/Layout";
 import { ArrowIcon } from "@/components/SvgIcons";
 import ActivityTable from "@/components/ActivityTable";
+import MobileItemMultiSelectBar from "@/components/ItemMultiSelectBar/MobileItemMultiSelectBar";
+import MobileTabsTip from "@/components/TabsTip/MobileTabsTip";
 
 const ItemDetails: NextPage = () => {
   const [openAboutTag, setOpenAboutTag] = useState(false);
@@ -22,8 +24,8 @@ const ItemDetails: NextPage = () => {
 
   return (
     <MainPageLayout>
-      <div className={`w-full max-w-[1240px] pt-3 pb-12`}>
-        <div className="w-full grid md:grid-cols-2 grid-cols-1 gap-5 lg:gap-10 md:p-10 p-3">
+      <div className={`w-full max-w-[1240px] pt-3 pb-12 relative`}>
+        <div className="w-full grid md:grid-cols-2 grid-cols-1 gap-5 lg:gap-10 md:p-10 p-3 relative">
           <div className="lg:w-full relative lg:h-[450px] xl:h-[550px] h-[350px] cursor-pointer">
             <Image
               src={"/images/collectionSliderImgs/4.png"}

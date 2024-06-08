@@ -50,7 +50,6 @@ export function NFTDataProvider({ children }: NFTDataProviderProps) {
       .then((response) => {
         const solanaUsd: number = response.solana.usd;
         setSolPrice(solanaUsd);
-        console.log(`Solana price in USD: $\[${solanaUsd}\]`);
       })
       .catch((err) => console.error(err));
   };

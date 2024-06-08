@@ -9,7 +9,7 @@ import { BiSkipNext } from "react-icons/bi";
 
 export default function ActivityTable() {
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(5);
+  const [itemsPerPage, setItemsPerPage] = useState(8);
 
   // Calculate the current items to display
   const indexOfLastItem = currentPage * itemsPerPage;
