@@ -21,6 +21,8 @@ import {
   collectionFilterOptions,
   myItemFilterOptions,
 } from "@/data/selectTabData";
+import MobileItemMultiSelectBar from "@/components/ItemMultiSelectBar/MobileItemMultiSelectBar";
+import MobileTabsTip from "@/components/TabsTip/MobileTabsTip";
 
 const MyItem: NextPage = () => {
   const param = useSearchParams();
@@ -118,6 +120,8 @@ const MyItem: NextPage = () => {
             </p>
           </div>
         </div>
+        <MobileItemMultiSelectBar />
+        <MobileTabsTip />
       </div>
       <div
         className={`${

@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { useRef, useState } from "react";
 
 import { BsTwitterX } from "react-icons/bs";
 import { FaDiscord } from "react-icons/fa";
@@ -7,12 +8,15 @@ import { CollectionDetailProps } from "@/types/types";
 import { ArrowIcon } from "../SvgIcons";
 import { BiArrowFromLeft } from "react-icons/bi";
 import { TiArrowSortedDown } from "react-icons/ti";
-import { useState } from "react";
+import { useOnClickOutside } from "@/hooks/useOnClickOutside";
 
 export default function MobileCollectionDetail({
   collectionData,
 }: CollectionDetailProps) {
+  const elem = useRef(null);
   const [showDetail, setShowDetail] = useState(false);
+  useOnClickOutside(elem, () => setShowDetail(false));
+
   return (
     <div
       className="md:hidden flex items-center justify-between gap-3 w-full md:w-auto px-2
@@ -38,6 +42,7 @@ export default function MobileCollectionDetail({
       <div
         className={`absolute z-[9999] p-4 top-[2.5rem] min-h-[60vh] bg-darkgreen rounded-b-md shadow-sm shadow-green-800 left-0 right-0 bottom-0 
         ${!showDetail && "hidden"}`}
+        ref={elem}
       >
         <div className="flex items-center justify-start">
           <div className="flex items-center justify-start gap-2 w-full">
