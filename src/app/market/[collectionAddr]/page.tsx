@@ -124,7 +124,7 @@ const Market: NextPage = () => {
           >
             <ActivityTable />
           </div>
-          <div
+          {/* <div
             className={`${
               connected && !getOwnNFTsState && memoizedOwnNFTs.length === 0
                 ? "flex"
@@ -136,7 +136,7 @@ const Market: NextPage = () => {
               <br />
               Items you own will appear here in your Portfolio
             </p>
-          </div>
+          </div> */}
         </div>
         <MobileItemMultiSelectBar />
         <MobileTabsTip />
