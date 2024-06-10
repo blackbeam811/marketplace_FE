@@ -37,7 +37,7 @@ const AccountSettings: NextPage = () => {
           />
         </div>
         <div
-          className="w-full text-sm flex items-center justify-center text-white rounded-md bg-pink-500 py-2 mt-5 cursor-pointer hover:bg-pink-600
+          className="w-full text-sm flex items-center justify-center text-white rounded-md bg-yellow-600 py-2 mt-5 cursor-pointer hover:bg-yellow-500
         duration-300"
         >
           Save Settings

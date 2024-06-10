@@ -64,7 +64,7 @@ const Market: NextPage = () => {
   return (
     <MainPageLayout>
       <div
-        className={`w-full flex items-start justify-start flex-row ${
+        className={`w-full flex items-start justify-start flex-row${
           !connected && "hidden"
         }`}
       >
@@ -100,10 +100,10 @@ const Market: NextPage = () => {
             />
             <ItemMultiSelectbar />
           </div>
-          <div className={`${search !== "offers" && "hidden"} `}>
+          <div className={`${search !== "offers" && "hidden"} px-2`}>
             <OfferFilterSelect />
           </div>
-          <div className={`${search !== "activity" && "hidden"}`}>
+          <div className={`${search !== "activity" && "hidden"} px-2`}>
             <ActivityFilterSelect />
           </div>
           <CollectionItemSkeleton />
@@ -132,14 +132,14 @@ const Market: NextPage = () => {
             </div>
           </div>
           <div
-            className={`w-full flex items-center justify-center ${
+            className={`w-full flex items-center justify-center px-2 ${
               search === "offers" ? "block" : "hidden"
             }`}
           >
             <ActivityTable />
           </div>
           <div
-            className={`w-full flex items-center justify-center ${
+            className={`w-full flex items-center justify-center px-2 ${
               search === "activity" ? "block" : "hidden"
             }`}
           >
