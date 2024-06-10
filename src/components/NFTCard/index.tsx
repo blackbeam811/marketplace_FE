@@ -18,7 +18,7 @@ const NFTCard: FC<NFTCardType> = ({ imgUrl, tokenId, mintAddr }) => {
         }`}
       >
         <div
-          className="overflow-hidden rounded-t-md md:h-[230px] h-[170px] sm:h-[180px] cursor-pointer group relative"
+          className="overflow-hidden rounded-t-md aspect-square cursor-pointer group relative"
           onClick={() => setSeleted(!seleted)}
         >
           <img

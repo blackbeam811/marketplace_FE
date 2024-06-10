@@ -78,7 +78,7 @@ const NFTDetailModal = () => {
               showState !== 0 && "hidden"
             }`}
           >
-            <div className="lg:w-full relative lg:h-[450px] xl:h-[550px] h-[350px] cursor-pointer">
+            <div className="lg:w-full relative aspect-square cursor-pointer">
               <Image
                 src={selectedNFT?.imgUrl!}
                 fill

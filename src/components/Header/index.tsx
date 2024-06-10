@@ -193,8 +193,13 @@ const BalanceBox: FC<BalanceProps> = ({ myBalance }) => {
       </div>
       <div
         className={`w-[300px] absolute right-[10px] top-1 bg-darkgreen border-yellow-600 border-opacity-30 shadow-md shadow-[#ebdb6042] border rounded-md hover:duration-300 z-[9999]
-        ${!openModal && "hidden"}`}
+       duration-200 origin-top-right`}
         ref={elem}
+        style={{
+          opacity: openModal ? 1 : 0,
+          scale: openModal ? 1 : 0.6,
+          pointerEvents: openModal ? "all" : "none",
+        }}
       >
         <div className="w-full flex items-center justify-between px-2 py-2 border-b border-customborder">
           <div className="flex items-center justify-center gap-2">

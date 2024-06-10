@@ -2,22 +2,21 @@ import { SidebarPropsType } from "@/types/types";
 import { CloseIcon } from "../SvgIcons";
 import { CgClose } from "react-icons/cg";
 
-export default function CollectionFilterSidebar({
+export default function MobileCollectionFilterSidebar({
   filterOpen,
   onClosebar,
 }: SidebarPropsType) {
   return (
     <div
-      className={`border-r-[1px] border-customborder h-[93vh] relative duration-200 hidden lg:block`}
+      className={`border-r-[1px] border-customborder top-0 bottom-0 duration-200 fixed lg:hidden bg-darkgreen px-3 z-[999]`}
       style={{
         opacity: filterOpen ? 1 : 0,
-        width: filterOpen ? "300px" : "0px",
-        paddingRight: filterOpen ? "8px" : "",
+        width: filterOpen ? "100%" : "0px",
         pointerEvents: filterOpen ? "all" : "none",
       }}
     >
       <div
-        className="absolute top-1 right-3 cursor-pointer"
+        className="absolute top-6 right-3 cursor-pointer"
         onClick={onClosebar}
       >
         <CgClose color="white" size={20} />

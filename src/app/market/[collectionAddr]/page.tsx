@@ -33,6 +33,9 @@ import CollectionFilterbar from "@/components/CollectionFilterbar";
 import MobileItemMultiSelectBar from "@/components/ItemMultiSelectBar/MobileItemMultiSelectBar";
 import MobileTabsTip from "@/components/TabsTip/MobileTabsTip";
 import MobileCollectionDetail from "@/components/CollectionDetail/MobileCollectionDetail";
+import OfferFilterSelect from "@/components/OfferFilterSelect";
+import ActivityFilterSelect from "@/components/ActivityFilterSelect";
+import MobileCollectionFilterSidebar from "@/components/CollectionFilterSidebar/MobileCollectionFilterSidebar";
 
 const Market: NextPage = () => {
   const { publicKey, connected } = useWallet();
@@ -69,6 +72,12 @@ const Market: NextPage = () => {
           filterOpen={filterOpen}
           onClosebar={() => setFilterOpen(false)}
         />
+
+        <MobileCollectionFilterSidebar
+          filterOpen={filterOpen}
+          onClosebar={() => setFilterOpen(false)}
+        />
+
         <div className="w-full flex items-start justify-start mt-2 md:gap-4 gap-1 flex-col relative">
           {collectionData && (
             <CollectionDetail collectionData={collectionData} />
@@ -80,19 +89,31 @@ const Market: NextPage = () => {
             <TabsTip />
           </Suspense>
 
-          <CollectionFilterbar
-            setFilterOpen={() => setFilterOpen(!filterOpen)}
-            filterOpen={filterOpen}
-          />
-          <ItemMultiSelectbar />
+          <div
+            className={`${
+              (search === "activity" || search === "offers") && "hidden"
+            } flex gap-2 w-full flex-col`}
+          >
+            <CollectionFilterbar
+              setFilterOpen={() => setFilterOpen(!filterOpen)}
+              filterOpen={filterOpen}
+            />
+            <ItemMultiSelectbar />
+          </div>
+          <div className={`${search !== "offers" && "hidden"} `}>
+            <OfferFilterSelect />
+          </div>
+          <div className={`${search !== "activity" && "hidden"}`}>
+            <ActivityFilterSelect />
+          </div>
           <CollectionItemSkeleton />
           <div className="w-full flex items-center justify-center flex-col relative">
-            <div className="w-full md:max-h-[62vh] max-h-[62vh] overflow-y-auto px-2 pb-1">
-              <div
-                className={`relative ${
-                  search === "items" || search === null ? "block" : "hidden"
-                }`}
-              >
+            <div
+              className={`w-full md:max-h-[60vh] max-h-[62vh] overflow-y-auto px-2 pb-12 ${
+                search === "items" || search === null ? "block" : "hidden"
+              }`}
+            >
+              <div className={`relative `}>
                 <div
                   className={`w-full grid grid-cols-2 md:grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-5 ${
                     getOwnNFTsState && "hidden"

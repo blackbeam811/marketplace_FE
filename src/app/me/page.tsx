@@ -23,6 +23,7 @@ import {
 } from "@/data/selectTabData";
 import MobileItemMultiSelectBar from "@/components/ItemMultiSelectBar/MobileItemMultiSelectBar";
 import MobileTabsTip from "@/components/TabsTip/MobileTabsTip";
+import ItemMultiSelectbar from "@/components/ItemMultiSelectBar";
 
 const MyItem: NextPage = () => {
   const param = useSearchParams();
@@ -62,12 +63,20 @@ const MyItem: NextPage = () => {
               <CollectionFilterSelect options={collectionFilterOptions} />
               <CollectionFilterSelect options={myItemFilterOptions} />
             </div>
+
             <div className={`${search !== "offers" && "hidden"} `}>
               <OfferFilterSelect />
             </div>
             <div className={`${search !== "activity" && "hidden"}`}>
               <ActivityFilterSelect />
             </div>
+          </div>
+          <div
+            className={`${
+              (search === "activity" || search === "offers") && "hidden"
+            } w-full`}
+          >
+            <ItemMultiSelectbar />
           </div>
           <div className="w-full max-h-[70vh] overflow-y-auto pb-10">
             <div

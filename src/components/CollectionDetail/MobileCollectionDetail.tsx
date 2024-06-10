@@ -21,6 +21,7 @@ export default function MobileCollectionDetail({
     <div
       className="md:hidden flex items-center justify-between gap-3 w-full md:w-auto px-2
     border-b border-customborder pb-1 relative"
+      ref={elem}
     >
       <div
         className="flex items-center justify-start gap-2 w-full"
@@ -41,8 +42,12 @@ export default function MobileCollectionDetail({
       </span>
       <div
         className={`absolute z-[9999] p-4 top-[2.5rem] min-h-[60vh] bg-darkgreen rounded-b-md shadow-sm shadow-green-800 left-0 right-0 bottom-0 
-        ${!showDetail && "hidden"}`}
-        ref={elem}
+        duration-200 origin-top`}
+        style={{
+          opacity: showDetail ? 1 : 0,
+          scale: showDetail ? 1 : 0.6,
+          pointerEvents: showDetail ? "all" : "none",
+        }}
       >
         <div className="flex items-center justify-start">
           <div className="flex items-center justify-start gap-2 w-full">
