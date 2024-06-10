@@ -1,15 +1,23 @@
+"use client";
 import { BiSearch } from "react-icons/bi";
 import { FiFilter } from "react-icons/fi";
 import CollectionFilterSelect from "../CollectionFilterSelect";
 import { collectionFilterOptions } from "@/data/selectTabData";
 import { CollectionFilterbarProps } from "@/types/types";
+import { useSearchParams } from "next/navigation";
 
 export default function CollectionFilterbar({
   setFilterOpen,
   filterOpen,
 }: CollectionFilterbarProps) {
+  const param = useSearchParams();
+  const search = param.get("activeTab") || "items";
   return (
-    <div className="w-full flex items-center justify-between gap-3 px-2">
+    <div
+      className={`w-full flex items-center justify-between gap-3 px-2 ${
+        (search === "activity" || search === "offers") && "hidden"
+      }`}
+    >
       <div
         className={`p-2 ${
           filterOpen

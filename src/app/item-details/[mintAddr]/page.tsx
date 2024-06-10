@@ -27,7 +27,7 @@ const ItemDetails: NextPage = () => {
       <div className={`w-full max-w-[1240px] pt-3 pb-12 relative`}>
         <div className="w-full grid lg:grid-cols-2 grid-cols-1 gap-5 lg:gap-10 md:p-10 p-3 relative">
           <div className="w-full flex items-start justify-center">
-            <div className="lg:w-[450px] relative lg:h-[450px] xl:h-[550px] xl:w-full h-[350px] w-[350px] md:w-[450px] md:h-[450px] cursor-pointer">
+            <div className="lg:w-[450px] relative xl:w-full w-[350px] md:w-[450px] aspect-square cursor-pointer">
               <Image
                 src={"/images/collectionSliderImgs/4.png"}
                 fill

@@ -11,7 +11,7 @@ export default function CollectionFilterSelect({ options }: SelectPropsType) {
   useOnClickOutside(elem, () => setOpen(false));
 
   return (
-    <div className="relative">
+    <div className="relative" ref={elem}>
       <div
         className="w-[160px] py-[6px] px-2 border border-customborder rounded-md text-gray-300 text-md flex items-center justify-between gap-2 cursor-pointer
       hover:border-gray-400 duration-300 text-sm"
@@ -23,10 +23,13 @@ export default function CollectionFilterSelect({ options }: SelectPropsType) {
         </span>
       </div>
       <div
-        className={`absolute top-10 w-[160px] min-h-[70px] rounded-md bg-green-950 flex items-start shadow-sm shadow-green-300 justify-between flex-col z-50 py-2 ${
-          !open && "hidden"
-        }`}
-        ref={elem}
+        className={`absolute top-10 w-[160px] min-h-[70px] rounded-md bg-green-950 flex items-start shadow-sm shadow-green-300 justify-between flex-col z-50 py-2 duration-200
+          origin-top`}
+        style={{
+          opacity: open ? 1 : 0,
+          scale: open ? 1 : 0.6,
+          pointerEvents: open ? "all" : "none",
+        }}
       >
         {options.map((item, index) => (
           <p

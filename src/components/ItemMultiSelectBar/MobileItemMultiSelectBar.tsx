@@ -1,13 +1,17 @@
 /* eslint-disable @next/next/no-img-element */
+import { useOnClickOutside } from "@/hooks/useOnClickOutside";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { CgClose } from "react-icons/cg";
 import { SlBasket } from "react-icons/sl";
 
 export default function MobileItemMultiSelectBar() {
+  const elem = useRef(null);
   const param = useSearchParams();
   const search = param.get("activeTab") || "items";
   const [openBasket, setOpenBasket] = useState(false);
+  useOnClickOutside(elem, () => setOpenBasket(false));
+
   return (
     <div
       className={`w-full md:hidden fixed bottom-[3.4rem] border-t border-customborder bg-darkgreen left-0 right-0 p-1 z-50 flex items-center justify-between
@@ -17,7 +21,7 @@ export default function MobileItemMultiSelectBar() {
         Buy now
       </div>
 
-      <div className="flex items-center justify-center gap-2">
+      <div className="flex items-center justify-center gap-2 ">
         <div className="items-center gap-2 justify-center flex border border-customborder rounded-md px-1">
           <input
             placeholder="0"
@@ -34,9 +38,12 @@ export default function MobileItemMultiSelectBar() {
         </div>{" "}
       </div>
       <div
-        className={`fixed top-0 bottom-[3.35rem] left-0 right-0 bg-darkgreen z-[51] flex flex-col justify-start items-center ${
-          !openBasket && "hidden"
-        }`}
+        className={`fixed top-0 bottom-[3.35rem] left-0 right-0 bg-darkgreen z-[51] flex flex-col justify-start items-center duration-200 origin-bottom`}
+        style={{
+          opacity: openBasket ? 1 : 0,
+          scale: openBasket ? 1 : 0.6,
+          pointerEvents: openBasket ? "all" : "none",
+        }}
       >
         <div className="w-full flex items-center justify-between p-3 border-b border-customborder">
           <p className="text-white text-xl">Cart</p>
