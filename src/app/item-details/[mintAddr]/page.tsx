@@ -25,14 +25,16 @@ const ItemDetails: NextPage = () => {
   return (
     <MainPageLayout>
       <div className={`w-full max-w-[1240px] pt-3 pb-12 relative`}>
-        <div className="w-full grid md:grid-cols-2 grid-cols-1 gap-5 lg:gap-10 md:p-10 p-3 relative">
-          <div className="lg:w-full relative lg:h-[450px] xl:h-[550px] h-[350px] cursor-pointer">
-            <Image
-              src={"/images/collectionSliderImgs/4.png"}
-              fill
-              className="rounded-lg object-cover"
-              alt=""
-            />
+        <div className="w-full grid lg:grid-cols-2 grid-cols-1 gap-5 lg:gap-10 md:p-10 p-3 relative">
+          <div className="w-full flex items-start justify-center">
+            <div className="lg:w-[450px] relative lg:h-[450px] xl:h-[550px] xl:w-full h-[350px] w-[350px] md:w-[450px] md:h-[450px] cursor-pointer">
+              <Image
+                src={"/images/collectionSliderImgs/4.png"}
+                fill
+                className="rounded-lg object-cover"
+                alt=""
+              />
+            </div>
           </div>
           <div className="w-full flex flex-col justify-start items-start gap-2">
             <div className="flex flex-col gap-1">
@@ -41,20 +43,24 @@ const ItemDetails: NextPage = () => {
             </div>
             <div className="w-full flex items-center justify-start gap-2 rounded-md bg-darkgreen border border-customborder min-h-[200px] flex-col p-3">
               <div className="w-full flex items-center justify-between">
-                <p className="text-md text-gray-300">List Price</p>
-                <span className="text-md text-white">5.614 Sol</span>
+                <p className="md:text-md text-sm text-gray-300">List Price</p>
+                <span className="md:text-md text-sm text-white">5.614 Sol</span>
               </div>
               <div className="w-full flex items-center justify-between">
-                <p className="text-md text-gray-300">Taker Price</p>
-                <span className="text-md text-white">5.614 Sol</span>
+                <p className="md:text-md text-sm text-gray-300">Taker Price</p>
+                <span className="md:text-md text-sm text-white">5.614 Sol</span>
               </div>
               <div className="w-full flex items-center justify-between">
-                <p className="text-md text-gray-300">Royalty Price</p>
-                <span className="text-md text-white">5.614 Sol</span>
+                <p className="md:text-md text-sm text-gray-300">
+                  Royalty Price
+                </p>
+                <span className="md:text-md text-sm text-white">5.614 Sol</span>
               </div>
               <div className="w-full flex items-center justify-between">
-                <p className="text-2xl text-gray-300">Total Price</p>
-                <span className="text-2xl text-white">5.614 Sol</span>
+                <p className="md:text-3xl text-xl text-gray-300">Total Price</p>
+                <span className="md:text-3xl text-xl text-white">
+                  5.614 Sol
+                </span>
               </div>
               <div className="w-full rounded-md py-2 text-center bg-yellow-600 text-white cursor-pointer">
                 Buy now
@@ -78,7 +84,7 @@ const ItemDetails: NextPage = () => {
               </span>
             </div>
             <div
-              className={`w-full p-3 flex items-center justify-between rounded-md border border-customborder cursor-pointer text-gray-400 ${
+              className={`w-full p-3 flex items-center justify-between rounded-md border border-customborder cursor-pointer text-sm text-gray-200 ${
                 !openAboutTag && "hidden"
               }`}
             >
@@ -108,20 +114,20 @@ const ItemDetails: NextPage = () => {
               }`}
             >
               <div className="rounded-md bg-darkgreen border border-customborder p-2">
-                <p className="text-gray-400">Renewed</p>
-                <span className="text-white">False</span>
+                <p className="text-gray-400 text-sm">Renewed</p>
+                <span className="text-white text-lg">False</span>
               </div>
               <div className="rounded-md bg-darkgreen border border-customborder p-2">
-                <p className="text-gray-400">Renewed</p>
-                <span className="text-white">False</span>
+                <p className="text-gray-400 text-sm">Renewed</p>
+                <span className="text-white text-lg">False</span>
               </div>
               <div className="rounded-md bg-darkgreen border border-customborder p-2">
-                <p className="text-gray-400">Renewed</p>
-                <span className="text-white">False</span>
+                <p className="text-gray-400 text-sm">Renewed</p>
+                <span className="text-white text-lg">False</span>
               </div>
               <div className="rounded-md bg-darkgreen border border-customborder p-2">
-                <p className="text-gray-400">Renewed</p>
-                <span className="text-white">False</span>
+                <p className="text-gray-400 text-sm">Renewed</p>
+                <span className="text-white text-lg">False</span>
               </div>
             </div>
 
