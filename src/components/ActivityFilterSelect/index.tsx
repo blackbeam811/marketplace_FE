@@ -73,17 +73,12 @@ export default function ActivityFilterSelect() {
         <CgClose />
       </button>
       <div
-        className={`absolute w-full bg-darkgreen z-40 ${
-          (!open || filteredOptions.length === 0) && "hidden"
+        className={`absolute w-full bg-darkgreen z-40 duration-300 ${
+          !open || filteredOptions.length === 0
+            ? "opacity-0 pointer-events-none"
+            : " opacity-100 pointer-events-auto"
         } mt-1`}
       >
-        {/* <input
-          type="text"
-          placeholder="Search..."
-          className="w-full p-2 border rounded-md mb-2"
-          value={searchKeyword}
-          onChange={(e) => setSearchKeyword(e.target.value)}
-        /> */}
         <ul className="w-full border border-customborder bg-transparent text-white rounded-md py-2 max-h-40 overflow-y-auto">
           {filteredOptions.map((option) => (
             <li

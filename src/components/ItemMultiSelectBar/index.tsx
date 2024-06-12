@@ -35,13 +35,12 @@ export default function ItemMultiSelectbar() {
           <SlBasket color="black" onClick={() => setOpenBasket(!openBasket)} />
         </div>
         <div
-          className="w-[350px] absolute right-0 top-10 rounded-md border border-customborder
-            bg-darkgreen shadow-lg shadow-black z-50 duration-300 origin-top"
-          style={{
-            opacity: openBasket ? 1 : 0,
-            scale: openBasket ? 1 : 0.6,
-            pointerEvents: openBasket ? "all" : "none",
-          }}
+          className={`w-[350px] absolute right-0 top-10 rounded-md border border-customborder
+            bg-darkgreen shadow-lg shadow-black z-50 duration-300 origin-top ${
+              openBasket
+                ? "scale-100 opacity-100 pointer-events-auto"
+                : "scale-75 opacity-0 pointer-events-none"
+            }`}
           ref={elem}
         >
           <div className="w-full flex items-center justify-start flex-col gap-2 min-h-[20vh] max-h-[30vh] overflow-y-auto bg-[#14532d44] border-b border-customborder p-2">

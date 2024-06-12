@@ -12,10 +12,10 @@ export default function NFTItemSkeleton() {
           !getOwnNFTsState && "hidden"
         }`}
       >
-        <div className="w-full h-[230px] animate-pulse bg-gray-600 rounded-md" />
-        <div className="w-full h-[230px] animate-pulse bg-gray-600 rounded-md" />
-        <div className="w-full h-[230px] animate-pulse bg-gray-600 rounded-md" />
-        <div className="w-full h-[230px] animate-pulse bg-gray-600 rounded-md" />
+        <div className="w-full aspect-square animate-pulse bg-gray-600 rounded-md" />
+        <div className="w-full aspect-square animate-pulse bg-gray-600 rounded-md" />
+        <div className="w-full aspect-square animate-pulse bg-gray-600 rounded-md" />
+        <div className="w-full aspect-square animate-pulse bg-gray-600 rounded-md" />
       </div>
     </div>
   );
