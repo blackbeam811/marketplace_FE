@@ -8,12 +8,12 @@ export default function MobileCollectionFilterSidebar({
 }: SidebarPropsType) {
   return (
     <div
-      className={`border-r-[1px] border-customborder top-0 bottom-0 duration-200 fixed lg:hidden bg-darkgreen px-3 z-[999]`}
-      style={{
-        opacity: filterOpen ? 1 : 0,
-        width: filterOpen ? "100%" : "0px",
-        pointerEvents: filterOpen ? "all" : "none",
-      }}
+      className={`border-r-[1px] border-customborder top-0 bottom-0 duration-200 fixed lg:hidden bg-darkgreen px-3 z-[999]
+        ${
+          filterOpen
+            ? "opacity-100 w-full pointer-events-auto "
+            : "opacity-0 pointer-events-none w-0"
+        }`}
     >
       <div
         className="absolute top-6 right-3 cursor-pointer"

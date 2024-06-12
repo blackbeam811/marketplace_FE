@@ -57,7 +57,6 @@ export function ModalProvider({ children }: ModalProviderProps) {
   };
 
   const openNFTDetailModal = (nftAddr: string, collectionAddr: string) => {
-    console.log("nftAddr", nftAddr);
     setSelectedNFTDetail([nftAddr, collectionAddr]);
     setnftDetailModalShow(true);
   };

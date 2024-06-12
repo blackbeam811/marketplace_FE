@@ -123,6 +123,7 @@ const Home: NextPage = () => {
 
   useEffect(() => {
     retrieveAvailability();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mintCreated]);
 
   //Loading dot function

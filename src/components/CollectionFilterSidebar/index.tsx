@@ -8,13 +8,11 @@ export default function CollectionFilterSidebar({
 }: SidebarPropsType) {
   return (
     <div
-      className={`border-r-[1px] border-customborder h-[93vh] relative duration-200 hidden lg:block`}
-      style={{
-        opacity: filterOpen ? 1 : 0,
-        width: filterOpen ? "300px" : "0px",
-        paddingRight: filterOpen ? "8px" : "",
-        pointerEvents: filterOpen ? "all" : "none",
-      }}
+      className={`border-r-[1px] border-customborder h-[93vh] relative duration-200 hidden lg:block ${
+        filterOpen
+          ? "opacity-100 w-[300px] pr-[8px] pointer-events-auto"
+          : "opacity-0 w-0 pr-0 pointer-events-none"
+      }`}
     >
       <div
         className="absolute top-1 right-3 cursor-pointer"

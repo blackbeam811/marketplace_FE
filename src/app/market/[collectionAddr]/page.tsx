@@ -49,9 +49,6 @@ const Market: NextPage = () => {
   const [collectionData, setCollectionData] = useState<collectionDataType>();
   const [filterOpen, setFilterOpen] = useState(false);
 
-  const { width, height } = useWindowSize();
-  console.log("height =======>", height);
-
   useEffect(() => {
     if (collectionAddr) {
       const collection = collectionTableData.filter(

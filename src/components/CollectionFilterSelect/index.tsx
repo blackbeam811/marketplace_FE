@@ -24,12 +24,11 @@ export default function CollectionFilterSelect({ options }: SelectPropsType) {
       </div>
       <div
         className={`absolute top-10 w-[160px] min-h-[70px] rounded-md bg-green-950 flex items-start shadow-sm shadow-green-300 justify-between flex-col z-50 py-2 duration-200
-          origin-top`}
-        style={{
-          opacity: open ? 1 : 0,
-          scale: open ? 1 : 0.6,
-          pointerEvents: open ? "all" : "none",
-        }}
+          origin-top ${
+            open
+              ? "opacity-100 pointer-events-auto"
+              : "opacity-0 pointer-events-none"
+          }`}
       >
         {options.map((item, index) => (
           <p
