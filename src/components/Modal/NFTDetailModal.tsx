@@ -1,5 +1,5 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
-
 import { FC, useContext, useEffect, useMemo, useState } from "react";
 import { useWalletModal } from "@solana/wallet-adapter-react-ui";
 import { useWallet } from "@solana/wallet-adapter-react";
@@ -17,7 +17,7 @@ import { CgClose } from "react-icons/cg";
 import { GoLinkExternal } from "react-icons/go";
 
 import { collectionItems } from "@/data/collectionItems";
-import { NFTCardType } from "@/types/types";
+import { NFTCardType, OwnNFTDataType } from "@/types/types";
 import Link from "next/link";
 
 const NFTDetailModal = () => {
@@ -25,14 +25,17 @@ const NFTDetailModal = () => {
   const { closeNFTDetailModal, nftDetailModalShow, selectedNFTDetail } =
     useContext(ModalContext);
   const [showState, setShowState] = useState(0);
-  const [selectedNFT, setSelectedNFT] = useState<NFTCardType>();
+  const [selectedNFT, setSelectedNFT] = useState<OwnNFTDataType | undefined>(
+    undefined
+  );
+  const { ownNFTs } = useContext(NFTDataContext);
 
   const memoSelectedNFTDetail = useMemo(
     () => selectedNFTDetail,
     [selectedNFTDetail]
   );
   useEffect(() => {
-    const data = collectionItems.filter(
+    const data = ownNFTs.filter(
       (item) => item.mintAddr === memoSelectedNFTDetail[0]
     );
     setSelectedNFT(data[0]!);
@@ -79,10 +82,9 @@ const NFTDetailModal = () => {
             }`}
           >
             <div className="lg:w-full relative aspect-square cursor-pointer">
-              <Image
+              <img
                 src={selectedNFT?.imgUrl!}
-                fill
-                className="rounded-lg object-cover"
+                className="rounded-lg object-cover w-full h-full"
                 alt=""
               />
             </div>
@@ -120,22 +122,18 @@ const NFTDetailModal = () => {
                 </span>
               </div>
               <div className={`w-full py-3 grid grid-cols-3 gap-3 rounded-md`}>
-                <div className="rounded-md bg-darkgreen border border-customborder p-2">
-                  <p className="text-gray-400">Renewed</p>
-                  <span className="text-white">False</span>
-                </div>
-                <div className="rounded-md bg-darkgreen border border-customborder p-2">
-                  <p className="text-gray-400">Renewed</p>
-                  <span className="text-white">False</span>
-                </div>
-                <div className="rounded-md bg-darkgreen border border-customborder p-2">
-                  <p className="text-gray-400">Renewed</p>
-                  <span className="text-white">False</span>
-                </div>
-                <div className="rounded-md bg-darkgreen border border-customborder p-2">
-                  <p className="text-gray-400">Renewed</p>
-                  <span className="text-white">False</span>
-                </div>
+                {selectedNFT &&
+                  selectedNFT.attribute.map((detail, index) => (
+                    <div
+                      className="rounded-md bg-darkgreen border border-customborder p-2"
+                      key={index}
+                    >
+                      <p className="text-gray-400 text-sm">
+                        {detail.trait_type}
+                      </p>
+                      <span className="text-white text-lg">{detail.value}</span>
+                    </div>
+                  ))}
               </div>
 
               <div className="w-full p-3 flex items-center justify-between rounded-md border-b border-customborder cursor-pointer">
@@ -148,20 +146,33 @@ const NFTDetailModal = () => {
                 className={`w-full py-3 flex items-center justify-between flex-col gap-1 rounded-md cursor-pointer text-gray-400`}
               >
                 <div className="w-full flex items-center justify-between">
-                  <span className="text-white">Mint Address</span>
-                  <span>9e2tgt..23fgdrg2</span>
+                  <span>Mint Address</span>
+                  <span className="text-white">
+                    {selectedNFT &&
+                      selectedNFT.mintAddr.slice(0, 4) +
+                        " ... " +
+                        selectedNFT.mintAddr.slice(-4)}
+                  </span>
                 </div>
                 <div className="w-full flex items-center justify-between">
-                  <span className="text-white">OnChain Collection</span>
-                  <span>9e2tgt..23fgdrg2</span>
+                  <span>OnChain Collection</span>
+                  <span className="text-white">
+                    {" "}
+                    {selectedNFT &&
+                      selectedNFT.collectionAddr.slice(0, 4) +
+                        " ... " +
+                        selectedNFT.collectionAddr.slice(-4)}
+                  </span>
                 </div>
                 <div className="w-full flex items-center justify-between">
-                  <span className="text-white">Token Address</span>
-                  <span>9e2tgt..23fgdrg2</span>
-                </div>
-                <div className="w-full flex items-center justify-between">
-                  <span className="text-white">Owner</span>
-                  <span>9e2tgt..23fgdrg2</span>
+                  <span>Owner</span>
+                  <span className="text-white">
+                    {" "}
+                    {selectedNFT &&
+                      selectedNFT.owner.slice(0, 4) +
+                        " ... " +
+                        selectedNFT.owner.slice(-4)}
+                  </span>
                 </div>
               </div>
             </div>

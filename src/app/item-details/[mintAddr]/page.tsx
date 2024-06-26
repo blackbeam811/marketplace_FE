@@ -1,5 +1,7 @@
+/* eslint-disable @next/next/no-img-element */
+
 "use client";
-import { useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import { NextPage } from "next";
 import Image from "next/image";
 
@@ -14,35 +16,74 @@ import { ArrowIcon } from "@/components/SvgIcons";
 import ActivityTable from "@/components/ActivityTable";
 import MobileItemMultiSelectBar from "@/components/ItemMultiSelectBar/MobileItemMultiSelectBar";
 import MobileTabsTip from "@/components/TabsTip/MobileTabsTip";
+import { NFTDataContext } from "@/contexts/NFTDataContext";
+import { useParams } from "next/navigation";
+import { OwnNFTDataType } from "@/types/types";
+import { DiscordSpinner, FoldingCubeSpinner } from "@/components/Spinners";
 
 const ItemDetails: NextPage = () => {
+  const router = useParams();
+  const { mintAddr } = router;
+
   const [openAboutTag, setOpenAboutTag] = useState(false);
   const [openOfferTable, setOpenOfferTable] = useState(false);
   const [openAttributeTag, setOpenAttributeTag] = useState(false);
   const [openDetailTag, setOpenDetailTag] = useState(false);
   const [openActivityTag, setOpenActivityTag] = useState(false);
+  const [itemDetail, setItemDetail] = useState<OwnNFTDataType | undefined>(
+    undefined
+  );
+
+  const { getOwnNFTs, ownNFTs } = useContext(NFTDataContext);
+
+  const item = useMemo(() => {
+    if (ownNFTs.length !== 0 && mintAddr !== "") {
+      return ownNFTs.filter((items) => items.mintAddr === mintAddr);
+    }
+  }, [ownNFTs, mintAddr]);
+
+  useEffect(() => {
+    if (item && item.length !== 0) {
+      console.log("item =>", item);
+      setItemDetail(item[0]);
+    }
+  }, [item]);
 
   return (
     <MainPageLayout>
-      <div className={`w-full max-w-[1240px] pt-3 pb-12 relative`}>
+      <div
+        className={`w-full flex items-center justify-center min-h-screen ${
+          itemDetail !== undefined && "hidden"
+        }`}
+      >
+        <DiscordSpinner />
+      </div>
+      <div
+        className={`w-full max-w-[1240px] pt-3 pb-12 relative ${
+          itemDetail === undefined && "hidden"
+        }`}
+      >
         <div className="w-full grid lg:grid-cols-2 grid-cols-1 gap-5 lg:gap-10 md:p-10 p-3 relative">
           <div className="w-full flex items-start justify-center">
             <div className="lg:w-[450px] relative xl:w-full w-[350px] md:w-[450px] aspect-square cursor-pointer">
-              <Image
-                src={"/images/collectionSliderImgs/4.png"}
-                fill
-                className="rounded-lg object-cover"
+              <img
+                src={itemDetail?.imgUrl}
+                className="rounded-lg object-cover w-full h-full"
                 alt=""
               />
             </div>
           </div>
           <div className="w-full flex flex-col justify-start items-start gap-2">
             <div className="flex flex-col gap-1">
-              <h1 className="text-white text-2xl">Validat3rs #73</h1>
-              <p className="text-yellow-500 texl-md">Validat3rs #73</p>
+              <h1 className="text-white text-2xl">
+                {itemDetail && itemDetail.collectionName}
+              </h1>
+              <p className="text-yellow-500 texl-md">
+                {itemDetail && itemDetail.collectionName} #73
+              </p>
             </div>
-            <div className="w-full flex items-center justify-start gap-2 rounded-md bg-darkgreen border border-customborder min-h-[200px] flex-col p-3">
-              <div className="w-full flex items-center justify-between">
+            <div className="w-full flex items-center justify-start gap-2 rounded-md bg-darkgreen border border-customborder flex-col p-3">
+              {/* <div className="w-full flex items-center justify-between">
                 <p className="md:text-md text-sm text-gray-300">List Price</p>
                 <span className="md:text-md text-sm text-white">5.614 Sol</span>
               </div>
@@ -61,8 +102,13 @@ const ItemDetails: NextPage = () => {
                 <span className="md:text-3xl text-xl text-white">
                   5.614 Sol
                 </span>
-              </div>
-              <div className="w-full rounded-md py-2 text-center bg-yellow-600 text-white cursor-pointer">
+              </div> */}
+              <input
+                className="w-full p-3 flex items-center placeholder:text-gray-500 outline-none text-white justify-between rounded-md border border-customborder bg-transparent"
+                placeholder="Input the price"
+                type="number"
+              />
+              <div className="w-full rounded-md py-2 text-center bg-yellow-600 duration-300 hover:bg-yellow-700 text-white cursor-pointer">
                 Buy now
               </div>
             </div>
@@ -73,7 +119,7 @@ const ItemDetails: NextPage = () => {
             >
               <span className="text-white font-bold text-md flex items-center justify-center gap-2">
                 <TfiAnnouncement color="#EAB308" />
-                About Validat3rs
+                Description
               </span>
               <span
                 className={`duration-300 ${
@@ -88,8 +134,7 @@ const ItemDetails: NextPage = () => {
                 !openAboutTag && "hidden"
               }`}
             >
-              Validat3rs NFT provides access to top-tier RPC nodes on the Solana
-              blockchain, optimized for speed and efficiency.
+              {itemDetail && itemDetail?.description}
             </div>
 
             <div
@@ -113,22 +158,16 @@ const ItemDetails: NextPage = () => {
                 !openAttributeTag && "hidden"
               }`}
             >
-              <div className="rounded-md bg-darkgreen border border-customborder p-2">
-                <p className="text-gray-400 text-sm">Renewed</p>
-                <span className="text-white text-lg">False</span>
-              </div>
-              <div className="rounded-md bg-darkgreen border border-customborder p-2">
-                <p className="text-gray-400 text-sm">Renewed</p>
-                <span className="text-white text-lg">False</span>
-              </div>
-              <div className="rounded-md bg-darkgreen border border-customborder p-2">
-                <p className="text-gray-400 text-sm">Renewed</p>
-                <span className="text-white text-lg">False</span>
-              </div>
-              <div className="rounded-md bg-darkgreen border border-customborder p-2">
-                <p className="text-gray-400 text-sm">Renewed</p>
-                <span className="text-white text-lg">False</span>
-              </div>
+              {itemDetail &&
+                itemDetail.attribute.map((detail, index) => (
+                  <div
+                    className="rounded-md bg-darkgreen border border-customborder p-2"
+                    key={index}
+                  >
+                    <p className="text-gray-400 text-sm">{detail.trait_type}</p>
+                    <span className="text-white text-lg">{detail.value}</span>
+                  </div>
+                ))}
             </div>
 
             <div
@@ -155,19 +194,32 @@ const ItemDetails: NextPage = () => {
               {" "}
               <div className="w-full flex items-center justify-between">
                 <span>Mint Address</span>
-                <span className="text-white">9e2tgt..23fgdrg2</span>
+                <span className="text-white">
+                  {itemDetail &&
+                    itemDetail.mintAddr.slice(0, 4) +
+                      " ... " +
+                      itemDetail.mintAddr.slice(-4)}
+                </span>
               </div>
               <div className="w-full flex items-center justify-between">
                 <span>OnChain Collection</span>
-                <span className="text-white">9e2tgt..23fgdrg2</span>
-              </div>
-              <div className="w-full flex items-center justify-between">
-                <span>Token Address</span>
-                <span className="text-white">9e2tgt..23fgdrg2</span>
+                <span className="text-white">
+                  {" "}
+                  {itemDetail &&
+                    itemDetail.collectionAddr.slice(0, 4) +
+                      " ... " +
+                      itemDetail.collectionAddr.slice(-4)}
+                </span>
               </div>
               <div className="w-full flex items-center justify-between">
                 <span>Owner</span>
-                <span className="text-white">9e2tgt..23fgdrg2</span>
+                <span className="text-white">
+                  {" "}
+                  {itemDetail &&
+                    itemDetail.owner.slice(0, 4) +
+                      " ... " +
+                      itemDetail.owner.slice(-4)}
+                </span>
               </div>
             </div>
           </div>

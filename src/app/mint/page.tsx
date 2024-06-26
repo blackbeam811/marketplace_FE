@@ -173,13 +173,13 @@ const Home: NextPage = () => {
             nftMint: nftSigner,
             collectionMint: candyMachine.collectionMint,
             collectionUpdateAuthority: candyMachine.authority,
-            group: some("OGs"),
+            group: some("Public"),
             candyGuard: candyGuard.publicKey,
             tokenStandard: TokenStandard.ProgrammableNonFungible,
             mintArgs: {
               solPayment: some({
                 destination: publicKey(
-                  "DYwWmoK74TbHGZZjbM7jH3RZW61siUTvJaBrsyeu4mVx"
+                  "6jojFKxL5RiY1giD8hEXcL7b2ANsHLqF1YboZEBj1qcP"
                 ),
               }),
             },

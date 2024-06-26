@@ -36,6 +36,7 @@ interface ModalProviderProps {
 export function ModalProvider({ children }: ModalProviderProps) {
   const [redeemModalShow, setRedeemModalShow] = useState(false);
   const [nftDetailModalShow, setnftDetailModalShow] = useState(false);
+  const [selectedNFTMintAddr, setSelectedNFTMintAddr] = useState("");
   const [searchCollectionModalShow, setSearchCollectionModalShow] =
     useState(false);
   const [selectedNFTDetail, setSelectedNFTDetail] = useState<string[]>([]);

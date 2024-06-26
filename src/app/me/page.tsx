@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 import { Suspense, useContext, useMemo } from "react";
 import { NextPage } from "next";
@@ -93,6 +94,7 @@ const MyItem: NextPage = () => {
                 {ownNFTs?.map((item, index) => (
                   <NFTCard
                     imgUrl={item.imgUrl}
+                    collectionName={item.collectionName}
                     tokenId={item.tokenId}
                     key={index}
                     mintAddr={item.mintAddr}

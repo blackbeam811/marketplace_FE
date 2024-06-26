@@ -7,7 +7,12 @@ import { BiPlus } from "react-icons/bi";
 import { VscScreenFull } from "react-icons/vsc";
 import { ModalContext } from "@/contexts/ModalContext";
 
-const NFTCard: FC<NFTCardType> = ({ imgUrl, tokenId, mintAddr }) => {
+const NFTCard: FC<NFTCardType> = ({
+  imgUrl,
+  tokenId,
+  mintAddr,
+  collectionName,
+}) => {
   const { openNFTDetailModal } = useContext(ModalContext);
   const [seleted, setSeleted] = useState(false);
   return (
@@ -39,7 +44,9 @@ const NFTCard: FC<NFTCardType> = ({ imgUrl, tokenId, mintAddr }) => {
           </div>
         </div>
         <div className="w-full flex items-center justify-between pr-2">
-          <p className="text-white text-left px-2 text-lg">Mugs #{tokenId}</p>
+          <p className="text-white text-left px-2 text-lg">
+            {collectionName} #{tokenId}
+          </p>
           <span
             className="cursor-pointer rounded-md text-gray-300 hover:text-white duration-300"
             onClick={() => openNFTDetailModal(mintAddr, mintAddr)}
