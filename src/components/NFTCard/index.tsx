@@ -18,7 +18,7 @@ const NFTCard: FC<NFTCardType> = ({
   return (
     <>
       <div
-        className={`flex items-start justify-start flex-col gap-2 bg-[#0f4223b9] rounded-md pb-2 border ${
+        className={`flex items-start justify-start flex-col gap-2 bg-[#0f4223b9] min-h-[250px] rounded-md pb-2 border ${
           seleted ? "border-yellow-500" : "border-customborder"
         }`}
       >

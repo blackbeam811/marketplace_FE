@@ -23,6 +23,18 @@ export type activityTableDataType = {
   time: number;
 };
 
+export type ListNFTItemType = {
+  tokenId: string;
+  listed: boolean;
+  collectionName: string;
+  collectionAddr: string;
+  imgUrl: string;
+  mintAddr: string;
+  metaDataUrl: string;
+  price: number;
+  seller: string;
+};
+
 export type SelectPropsType = {
   options: string[];
 };
