@@ -119,6 +119,7 @@ const Market: NextPage = () => {
                   {collectionItems?.map((item, index) => (
                     <NFTCard
                       imgUrl={item.imgUrl}
+                      collectionName={""}
                       tokenId={item.tokenId}
                       key={index}
                       mintAddr={item.mintAddr}
