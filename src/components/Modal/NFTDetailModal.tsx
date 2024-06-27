@@ -2,7 +2,8 @@
 "use client";
 import { FC, useContext, useEffect, useMemo, useState } from "react";
 import { useWalletModal } from "@solana/wallet-adapter-react-ui";
-import { useWallet } from "@solana/wallet-adapter-react";
+import { PublicKey } from "@solana/web3.js";
+import { useAnchorWallet, useWallet } from "@solana/wallet-adapter-react";
 import Modal from "react-responsive-modal";
 import { ArrowIcon, CloseIcon } from "@/components/SvgIcons";
 import { NFTDataContext } from "@/contexts/NFTDataContext";
@@ -19,9 +20,14 @@ import { GoLinkExternal } from "react-icons/go";
 import { collectionItems } from "@/data/collectionItems";
 import { NFTCardType, OwnNFTDataType } from "@/types/types";
 import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
+import { listPNftForSale } from "@/utils/contractScript";
 
 const NFTDetailModal = () => {
+  const wallet = useAnchorWallet();
   const { connected, publicKey } = useWallet();
+  const pathName = usePathname();
+  const currentRouter = pathName.split("/")[1];
   const { closeNFTDetailModal, nftDetailModalShow, selectedNFTDetail } =
     useContext(ModalContext);
   const [showState, setShowState] = useState(0);
@@ -40,6 +46,14 @@ const NFTDetailModal = () => {
     );
     setSelectedNFT(data[0]!);
   }, [memoSelectedNFTDetail]);
+
+  // NFT List Function
+  const handlelistMyNFTFunc = async () => {
+    if (wallet && selectedNFT !== undefined) {
+      const mintPubkey = new PublicKey(selectedNFT?.mintAddr);
+      // const tx = await listPNftForSale(wallet, mintPubkey, 0.2);
+    }
+  };
   return (
     <Modal open={nftDetailModalShow} onClose={closeNFTDetailModal} center>
       <div
@@ -93,8 +107,8 @@ const NFTDetailModal = () => {
                 <h1 className="text-white text-2xl">Validat3rs #73</h1>
                 <p className="text-yellow-500 texl-md">Validat3rs #73</p>
               </div>
-              <div className="w-full flex items-center justify-start gap-2 rounded-md bg-transparant border border-customborder min-h-[200px] flex-col p-3">
-                <div className="w-full flex items-center justify-between">
+              <div className="w-full flex items-center justify-start gap-2 rounded-md bg-transparant border border-customborder flex-col p-3">
+                {/* <div className="w-full flex items-center justify-between">
                   <p className="text-sm text-gray-300">List Price</p>
                   <span className="text-md text-white">5.614 Sol</span>
                 </div>
@@ -109,9 +123,17 @@ const NFTDetailModal = () => {
                 <div className="w-full flex items-center justify-between">
                   <p className="text-2xl text-gray-300">Total Price</p>
                   <span className="text-2xl text-white">5.614 Sol</span>
-                </div>
-                <div className="w-full rounded-md py-2 text-center bg-yellow-600 text-white cursor-pointer">
-                  Buy now
+                </div> */}
+                <input
+                  className="w-full p-3 flex items-center placeholder:text-gray-500 outline-none text-white justify-between rounded-md border border-customborder bg-transparent"
+                  placeholder="Input the price"
+                  type="number"
+                />
+                <div
+                  className="w-full rounded-md py-2 text-center bg-yellow-600 text-white cursor-pointer"
+                  onClick={handlelistMyNFTFunc}
+                >
+                  {currentRouter === "me" ? "List Now" : "Buy now"}
                 </div>
               </div>
 

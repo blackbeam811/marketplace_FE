@@ -26,7 +26,7 @@ export default function PageProvider({ children }: { children: ReactNode }) {
             <ProgressBar
               height="1px"
               color="#fffd00"
-              // options={{ showSpinner: true }}
+              options={{ showSpinner: false }}
               shallowRouting
             />
           </div>
