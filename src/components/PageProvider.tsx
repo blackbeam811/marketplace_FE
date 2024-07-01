@@ -9,29 +9,34 @@ import Header from "./Header";
 import SearchCollectionModal from "./Modal/SearchCollectionModal";
 import Footer from "./Footer";
 import NFTDetailModal from "./Modal/NFTDetailModal";
+import { DiscordSpinner } from "./Spinners";
+import { LoadingProvider } from "@/contexts/LoadingContext";
+import { CollectionProvider } from "@/contexts/CollectionContext";
+import Progressbar from "./Progressbar";
 
 export default function PageProvider({ children }: { children: ReactNode }) {
   return (
     <SolanaWalletProvider>
-      <NFTDataProvider>
-        <ModalProvider>
-          {/* <MobileSearchCollectionBar /> */}
-          <Header />
-          {children}
-          <Footer />
-          <NFTDetailModal />
-          <SearchCollectionModal />
-          <ToastContainer pauseOnFocusLoss={false} theme="colored" stacked />
-          <div className="z-[9999]">
-            <ProgressBar
-              height="1px"
-              color="#fffd00"
-              options={{ showSpinner: false }}
-              shallowRouting
-            />
-          </div>
-        </ModalProvider>
-      </NFTDataProvider>
+      <CollectionProvider>
+        <NFTDataProvider>
+          <ModalProvider>
+            <LoadingProvider>
+              {/* <MobileSearchCollectionBar /> */}
+              <Header />
+              {children}
+              <Footer />
+              <NFTDetailModal />
+              <SearchCollectionModal />
+              <ToastContainer
+                pauseOnFocusLoss={false}
+                theme="colored"
+                stacked
+              />
+              <Progressbar />
+            </LoadingProvider>
+          </ModalProvider>
+        </NFTDataProvider>
+      </CollectionProvider>
     </SolanaWalletProvider>
   );
 }

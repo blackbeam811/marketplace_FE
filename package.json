@@ -16,7 +16,7 @@
     "@metaplex-foundation/umi": "^0.9.1",
     "@metaplex-foundation/umi-bundle-defaults": "^0.9.1",
     "@metaplex-foundation/umi-signer-wallet-adapters": "^0.9.1",
-    "@metaplex/js": "^4.12.0",
+    "@metaplex/js": "4.12.0",
     "@nfteyez/sol-rayz": "^0.10.2",
     "@project-serum/anchor": "^0.25.0",
     "@solana/spl-token": "^0.1.8",
@@ -25,6 +25,7 @@
     "@solana/wallet-adapter-react-ui": "^0.9.17",
     "@solana/wallet-adapter-wallets": "^0.19.0",
     "@solana/web3.js": "^1.63.1",
+    "@types/webpack": "^5.28.5",
     "axios": "^1.7.2",
     "framer-motion": "^11.2.10",
     "next": "14.2.2",
@@ -39,7 +40,7 @@
     "react-toastify": "^10.0.4"
   },
   "devDependencies": {
-    "@types/node": "^20",
+    "@types/node": "^20.14.9",
     "@types/nprogress": "^0.2.3",
     "@types/react": "^18",
     "@types/react-dom": "^18",

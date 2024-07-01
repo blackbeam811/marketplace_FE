@@ -1,12 +1,17 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
-import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { collectionTableData } from "@/data/collectionTableData";
 import { collectionTableTH } from "@/data/tableTHData";
+import { useContext } from "react";
+import { CollectionContext } from "@/contexts/CollectionContext";
+import { PINATA_URL } from "@/config";
+import { NormalSpinner } from "../Spinners";
 
 export default function CollectionTable() {
   const router = useRouter();
+  const { collectionData, collectionDataState } = useContext(CollectionContext);
   return (
     <div className="w-full overflow-x-auto">
       <table className="min-w-[1024px] lg:w-full bg-transparent">
@@ -23,7 +28,7 @@ export default function CollectionTable() {
           </tr>
         </thead>
         <tbody>
-          {collectionTableData.map((row, index) => (
+          {collectionData.map((row, index) => (
             <tr
               key={index}
               className={
@@ -36,14 +41,13 @@ export default function CollectionTable() {
               </td>
               <td className="relative py-2 px-4 text-white font-light text-md flex items-center justify-start gap-3">
                 <div className="relative w-[50px] h-[50px]">
-                  <Image
-                    fill
-                    src={row.imgUrl}
+                  <img
+                    src={PINATA_URL + row.imgUrl}
                     alt="Collection Image"
-                    className="object-cover rounded-md"
+                    className="object-cover rounded-md w-full h-full"
                   />
                 </div>
-                {row.name}
+                {row.collectionName}
               </td>
               <td className="py-2 px-4 text-[#8DEEC4]">
                 {row.currentPrice} SOL
@@ -70,6 +74,20 @@ export default function CollectionTable() {
           ))}
         </tbody>
       </table>
+      <div
+        className={`w-full flex items-center justify-center my-5 ${
+          !collectionDataState && "hidden"
+        }`}
+      >
+        <NormalSpinner width={9} height={10} />
+      </div>
+      <div
+        className={`${
+          collectionData.length !== 0 && "hidden"
+        } w-full flex items-center justify-center my-5`}
+      >
+        <span className="text-[#ffffff]">Nothing to show 😒</span>
+      </div>
     </div>
   );
 }

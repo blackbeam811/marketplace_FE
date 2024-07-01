@@ -22,6 +22,8 @@ import { NFTCardType, OwnNFTDataType } from "@/types/types";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { listPNftForSale } from "@/utils/contractScript";
+import { errorAlert } from "../ToastGroup";
+import { listNft } from "@/utils/api";
 
 const NFTDetailModal = () => {
   const wallet = useAnchorWallet();
@@ -45,13 +47,21 @@ const NFTDetailModal = () => {
       (item) => item.mintAddr === memoSelectedNFTDetail[0]
     );
     setSelectedNFT(data[0]!);
-  }, [memoSelectedNFTDetail]);
+  }, [ownNFTs, memoSelectedNFTDetail]);
 
   // NFT List Function
   const handlelistMyNFTFunc = async () => {
     if (wallet && selectedNFT !== undefined) {
-      const mintPubkey = new PublicKey(selectedNFT?.mintAddr);
-      // const tx = await listPNftForSale(wallet, mintPubkey, 0.2);
+      try {
+        const tx = await listPNftForSale(wallet, [selectedNFT]);
+        // if (tx) {
+        //   const result = await listNft(tx.transactions, tx.listData);
+        //   console.log("result => ", result);
+        // }
+      } catch (e) {
+        console.log("err =>", e);
+        errorAlert("Something went wrong.");
+      }
     }
   };
   return (
@@ -128,6 +138,11 @@ const NFTDetailModal = () => {
                   className="w-full p-3 flex items-center placeholder:text-gray-500 outline-none text-white justify-between rounded-md border border-customborder bg-transparent"
                   placeholder="Input the price"
                   type="number"
+                  onChange={(e) => {
+                    if (selectedNFT) {
+                      selectedNFT.price = Number(e.target.value);
+                    }
+                  }}
                 />
                 <div
                   className="w-full rounded-md py-2 text-center bg-yellow-600 text-white cursor-pointer"

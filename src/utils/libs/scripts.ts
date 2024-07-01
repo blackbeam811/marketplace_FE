@@ -8,7 +8,6 @@ import {
   Connection,
   SystemProgram,
   SYSVAR_RENT_PUBKEY,
-  Transaction,
   SYSVAR_INSTRUCTIONS_PUBKEY,
 } from "@solana/web3.js";
 import {
@@ -1958,6 +1957,7 @@ export const createCreateAuctionTx = async (
 
   return tx;
 };
+
 export const createCreateAuctionPnftTx = async (
   mint: PublicKey,
   userAddress: PublicKey,

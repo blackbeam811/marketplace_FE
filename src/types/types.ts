@@ -68,7 +68,24 @@ export type OwnNFTDataType = {
   description: string;
   collectionAddr: string;
   owner: string;
+  metaDataUrl: string;
+  price: number;
   attribute: NFTAttribute[];
+};
+
+export type CollectionDataType = {
+  imgUrl: string;
+  collectionName: string;
+  collectionAddr: string;
+  twitterLink: string;
+  discordLink: string;
+  currentPrice: number;
+  previousPrice: number;
+  volume: number;
+  change: number;
+  sales: number;
+  marketCap: number;
+  totalVolume: number;
 };
 
 export interface NFTDataContextType {
@@ -77,6 +94,12 @@ export interface NFTDataContextType {
   getOwnNFTsState: boolean;
   ownNFTs: OwnNFTDataType[];
   getOwnNFTs: () => Promise<void>;
+}
+
+export interface CollectionContextType {
+  collectionDataState: boolean;
+  collectionData: CollectionDataType[];
+  getAllCollectionData: () => Promise<void>;
 }
 
 export interface SidebarPropsType {
