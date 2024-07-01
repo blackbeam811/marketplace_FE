@@ -1,7 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 import { NextPage } from "next";
-import { useWallet } from "@solana/wallet-adapter-react";
 import MainPageLayout from "@/components/Layout";
 import { useRef, useState } from "react";
 import { UploadIcon } from "@/components/SvgIcons/UploadIcon";
@@ -82,9 +81,6 @@ const Admin: NextPage = () => {
     } else {
       setSaveLoadingState(true);
       const collectionImgUrl = await saveCollectionImage();
-      console.log("collectionImgUrl => ", collectionImgUrl);
-      console.log("collectionAddr => ", collectionAddr);
-      console.log("collectionName => ", collectionName);
 
       const dataToSave: CollectionDataType = {
         imgUrl: collectionImgUrl,
@@ -126,9 +122,6 @@ const Admin: NextPage = () => {
             alt="Profile Avatar"
             className="rounded-2xl w-full h-full object-cover"
           />
-          {/* {selectedAvatarImg === null && (
-                  <p className="text-[#f7f7f77c] text-center text-sm">{`No Image.`}</p>
-                )} */}
           <input
             style={{ display: "none" }}
             accept="image/*"

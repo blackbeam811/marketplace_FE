@@ -10,7 +10,7 @@ import React, {
 } from "react";
 import { web3 } from "@project-serum/anchor";
 import { useWallet } from "@solana/wallet-adapter-react";
-import { CloseIcon, ExitIcon } from "../SvgIcons";
+import { ExitIcon } from "../SvgIcons";
 import ConnectButton from "../WalletConnectButton";
 import { SOLANA_RPC, SOL_DECIMAL } from "@/config";
 import { usePathname } from "next/navigation";
@@ -35,8 +35,8 @@ import { BalanceProps, HeaderProps } from "@/types/types";
 const Header: FC<HeaderProps> = () => {
   const inputRef = useRef<HTMLInputElement>(null);
   const router = usePathname();
-  const { publicKey, disconnect, connected } = useWallet();
-  const { openSearchCollectionModal } = useContext(ModalContext);
+  const { publicKey, connected } = useWallet();
+  const { openSearchCollectionModal, setFilterWith } = useContext(ModalContext);
   const [myBalance, setMyBalance] = useState<number>(0);
   const [isFocused, setIsFocused] = useState(false);
   const [openMobileMenu, setOpenMobileMenu] = useState(false);
@@ -110,6 +110,7 @@ const Header: FC<HeaderProps> = () => {
                 setIsFocused(true);
               }}
               onClick={openSearchCollectionModal}
+              onChange={(e) => setFilterWith(e.target.value)}
             />
             <div className="bg-gray-300 rounded-sm text-[12px] text-gray-900 px-1 hidden md:block">
               CTRL+K

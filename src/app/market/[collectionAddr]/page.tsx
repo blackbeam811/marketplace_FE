@@ -9,24 +9,17 @@ import {
 } from "next/navigation";
 import { useWallet } from "@solana/wallet-adapter-react";
 
-import { FiFilter } from "react-icons/fi";
-import { BiSearch } from "react-icons/bi";
-import { SlBasket } from "react-icons/sl";
 import MainPageLayout from "@/components/Layout";
 import TabsTip from "@/components/TabsTip";
 import NFTCard from "@/components/NFTCard";
 import CollectionDetail from "@/components/CollectionDetail";
 import CollectionItemSkeleton from "@/components/CollectionItemSkeleton";
-import CollectionFilterSelect from "@/components/CollectionFilterSelect";
 import CollectionFilterSidebar from "@/components/CollectionFilterSidebar";
 
 import { NFTDataContext } from "@/contexts/NFTDataContext";
 
 import { collectionItems } from "@/data/collectionItems";
-import { collectionFilterOptions } from "@/data/selectTabData";
-import { collectionTableData } from "@/data/collectionTableData";
-import { collectionDataType } from "@/types/types";
-import { useWindowSize } from "@/hooks/useWindowSize";
+import { CollectionDataType, collectionDataType } from "@/types/types";
 import ActivityTable from "@/components/ActivityTable";
 import ItemMultiSelectbar from "@/components/ItemMultiSelectBar";
 import CollectionFilterbar from "@/components/CollectionFilterbar";
@@ -36,6 +29,7 @@ import MobileCollectionDetail from "@/components/CollectionDetail/MobileCollecti
 import OfferFilterSelect from "@/components/OfferFilterSelect";
 import ActivityFilterSelect from "@/components/ActivityFilterSelect";
 import MobileCollectionFilterSidebar from "@/components/CollectionFilterSidebar/MobileCollectionFilterSidebar";
+import { CollectionContext } from "@/contexts/CollectionContext";
 
 const Market: NextPage = () => {
   const { publicKey, connected } = useWallet();
@@ -44,19 +38,22 @@ const Market: NextPage = () => {
   const search = searchParam.get("activeTab") || "items";
   const { collectionAddr } = params;
   const { ownNFTs, getOwnNFTsState } = useContext(NFTDataContext);
+  const { collectionData } = useContext(CollectionContext);
+  const [filterOpen, setFilterOpen] = useState(false);
 
   const memoizedOwnNFTs = useMemo(() => ownNFTs, [ownNFTs]);
-  const [collectionData, setCollectionData] = useState<collectionDataType>();
-  const [filterOpen, setFilterOpen] = useState(false);
+  const [filterCollectionData, setFilterCollectionData] =
+    useState<CollectionDataType>();
 
   useEffect(() => {
     if (collectionAddr) {
-      const collection = collectionTableData.filter(
+      const collection = collectionData.filter(
         (item) => item.collectionAddr === collectionAddr
       );
-      setCollectionData(collection[0]);
+      console.log("collection ====> ", collection);
+      setFilterCollectionData(collection[0]);
     }
-  }, [collectionAddr]);
+  }, [collectionAddr, collectionData]);
 
   return (
     <MainPageLayout>
@@ -77,10 +74,10 @@ const Market: NextPage = () => {
 
         <div className="w-full flex items-start justify-start mt-2 md:gap-4 gap-1 flex-col relative">
           {collectionData && (
-            <CollectionDetail collectionData={collectionData} />
+            <CollectionDetail collectionData={filterCollectionData} />
           )}
           {collectionData && (
-            <MobileCollectionDetail collectionData={collectionData} />
+            <MobileCollectionDetail collectionData={filterCollectionData} />
           )}
           <Suspense fallback={<div />}>
             <TabsTip />
