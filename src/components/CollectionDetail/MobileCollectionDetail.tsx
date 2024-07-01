@@ -1,4 +1,4 @@
-import Image from "next/image";
+/* eslint-disable @next/next/no-img-element */
 import { useRef, useState } from "react";
 
 import { BsTwitterX } from "react-icons/bs";
@@ -9,6 +9,7 @@ import { ArrowIcon } from "../SvgIcons";
 import { BiArrowFromLeft } from "react-icons/bi";
 import { TiArrowSortedDown } from "react-icons/ti";
 import { useOnClickOutside } from "@/hooks/useOnClickOutside";
+import { PINATA_URL } from "@/config";
 
 export default function MobileCollectionDetail({
   collectionData,
@@ -28,14 +29,15 @@ export default function MobileCollectionDetail({
         onClick={() => setShowDetail(!showDetail)}
       >
         <div className="w-[25px] h-[25px] relative">
-          <Image
-            src={collectionData?.imgUrl}
+          <img
+            src={PINATA_URL + collectionData?.imgUrl}
             alt="Avatar"
-            fill
             className="rounded-full"
           />
         </div>
-        <span className="text-white text-2xl">{collectionData?.name}</span>
+        <span className="text-white text-2xl">
+          {collectionData?.collectionName}
+        </span>
       </div>
       <span className={`duration-300 cursor-pointer`}>
         <TiArrowSortedDown color="white" />
@@ -52,22 +54,41 @@ export default function MobileCollectionDetail({
         <div className="flex items-center justify-start">
           <div className="flex items-center justify-start gap-2 w-full">
             <div className="w-[50px] h-[50px] relative">
-              <Image
-                src={collectionData?.imgUrl}
+              <img
+                src={PINATA_URL + collectionData?.imgUrl}
                 alt="Avatar"
-                fill
-                className="rounded-full"
+                className="rounded-full w-full h-full"
               />
             </div>
-            <span className="text-white text-2xl">{collectionData?.name}</span>
+            <span className="text-white text-2xl">
+              {collectionData?.collectionName}
+            </span>
           </div>
           <div className="flex items-start justify-center flex-col">
             <div className="flex items-center justify-start gap-4">
               <span className="cursor-pointer hover:text-white text-gray-300 duration-300">
-                <FaDiscord size={16} />
+                <a
+                  className={`${
+                    collectionData?.discordLink === "" && "hidden"
+                  }`}
+                  href={collectionData?.discordLink}
+                  target="_blank"
+                  rel="referrer"
+                >
+                  <FaDiscord size={16} />
+                </a>
               </span>
               <span className="cursor-pointer hover:text-white text-gray-300 duration-300">
-                <BsTwitterX size={14} />
+                <a
+                  className={`${
+                    collectionData?.twitterLink === "" && "hidden"
+                  }`}
+                  href={collectionData?.twitterLink}
+                  target="_blank"
+                  rel="referrer"
+                >
+                  <BsTwitterX size={14} />
+                </a>
               </span>
             </div>
           </div>

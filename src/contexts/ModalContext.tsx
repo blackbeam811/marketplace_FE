@@ -5,6 +5,7 @@ interface ModalContextType {
   redeemModalShow: boolean;
   searchCollectionModalShow: boolean;
   nftDetailModalShow: boolean;
+  filterWithSearchCollectionAddr: string;
   selectedNFTDetail: string[];
   openRedeemModal: () => void;
   closeRedeemModal: () => void;
@@ -12,6 +13,7 @@ interface ModalContextType {
   closeSearchCollectionModal: () => void;
   openNFTDetailModal: (nftAddr: string, collectionAddr: string) => void;
   closeNFTDetailModal: () => void;
+  setFilterWith: (filterData: string) => void;
 }
 
 // Create the modal context
@@ -19,6 +21,7 @@ export const ModalContext = createContext<ModalContextType>({
   redeemModalShow: false,
   searchCollectionModalShow: false,
   nftDetailModalShow: false,
+  filterWithSearchCollectionAddr: "",
   selectedNFTDetail: [],
   openRedeemModal: () => {},
   closeRedeemModal: () => {},
@@ -26,6 +29,7 @@ export const ModalContext = createContext<ModalContextType>({
   closeSearchCollectionModal: () => {},
   openNFTDetailModal: () => {},
   closeNFTDetailModal: () => {},
+  setFilterWith: () => {},
 });
 
 interface ModalProviderProps {
@@ -37,6 +41,8 @@ export function ModalProvider({ children }: ModalProviderProps) {
   const [redeemModalShow, setRedeemModalShow] = useState(false);
   const [nftDetailModalShow, setnftDetailModalShow] = useState(false);
   const [selectedNFTMintAddr, setSelectedNFTMintAddr] = useState("");
+  const [filterWithSearchCollectionAddr, setFilterWithSearchCollectionAddr] =
+    useState("");
   const [searchCollectionModalShow, setSearchCollectionModalShow] =
     useState(false);
   const [selectedNFTDetail, setSelectedNFTDetail] = useState<string[]>([]);
@@ -66,17 +72,23 @@ export function ModalProvider({ children }: ModalProviderProps) {
     setnftDetailModalShow(false);
   };
 
+  const setFilterWith = (filterData: string) => {
+    setFilterWithSearchCollectionAddr(filterData);
+  };
+
   const ModalContextValue: ModalContextType = {
     redeemModalShow: redeemModalShow,
     searchCollectionModalShow: searchCollectionModalShow,
     nftDetailModalShow: nftDetailModalShow,
     selectedNFTDetail: selectedNFTDetail,
+    filterWithSearchCollectionAddr: filterWithSearchCollectionAddr,
     openRedeemModal: openRedeemModal,
     closeRedeemModal: closeRedeemModal,
     openSearchCollectionModal: openSearchCollectionModal,
     closeSearchCollectionModal: closeSearchCollectionModal,
     openNFTDetailModal: openNFTDetailModal,
     closeNFTDetailModal: closeNFTDetailModal,
+    setFilterWith: setFilterWith,
   };
 
   return (

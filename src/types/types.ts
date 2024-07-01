@@ -117,5 +117,5 @@ export interface CollectionFilterbarProps {
 }
 
 export interface CollectionDetailProps {
-  collectionData: collectionDataType;
+  collectionData: CollectionDataType | undefined;
 }

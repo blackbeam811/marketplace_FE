@@ -2,7 +2,6 @@
 "use client";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { collectionTableData } from "@/data/collectionTableData";
 import { collectionTableTH } from "@/data/tableTHData";
 import { useContext } from "react";
 import { CollectionContext } from "@/contexts/CollectionContext";
@@ -34,7 +33,7 @@ export default function CollectionTable() {
               className={
                 "bg-darkgreen hover:bg-[#225e451f] cursor-pointer duration-200"
               }
-              onClick={() => router.push("/market/" + row.collectionAddr)}
+              // onClick={() => router.push("/market/" + row.collectionAddr)}
             >
               <td className="py-2 px-4 text-white font-light text-md">
                 {index + 1}
@@ -47,7 +46,9 @@ export default function CollectionTable() {
                     className="object-cover rounded-md w-full h-full"
                   />
                 </div>
-                {row.collectionName}
+                <Link href={`${"/market/" + row.collectionAddr}`}>
+                  {row.collectionName}
+                </Link>
               </td>
               <td className="py-2 px-4 text-[#8DEEC4]">
                 {row.currentPrice} SOL

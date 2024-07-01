@@ -1,5 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 import { useOnClickOutside } from "@/hooks/useOnClickOutside";
+import { usePathname } from "next/navigation";
 import { useRef, useState } from "react";
 import { CgClose } from "react-icons/cg";
 import { SlBasket } from "react-icons/sl";
@@ -8,6 +9,11 @@ export default function ItemMultiSelectbar() {
   const elem = useRef(null);
   const [openBasket, setOpenBasket] = useState(false);
   useOnClickOutside(elem, () => setOpenBasket(false));
+
+  const pathName = usePathname();
+  const currentRouter = pathName.split("/")[1];
+
+  const canListState = currentRouter === "me" ? true : false;
 
   return (
     <div className="bg-darkgreen w-full md:flex hidden items-center justify-between md:flex-row flex-col border-t px-2 border-customborder pt-3">
@@ -29,7 +35,7 @@ export default function ItemMultiSelectbar() {
       </div>
       <div className="flex items-center justify-center gap-2 relative">
         <div className="bg-yellow-600 rounded-md py-1 text-white px-10 cursor-pointer hover:bg-yellow-500 duration-300">
-          Buy now
+          {canListState ? "List now" : "Buy now"}
         </div>
         <div className="p-2 rounded-md bg-white cursor-pointer relative">
           <SlBasket color="black" onClick={() => setOpenBasket(!openBasket)} />
