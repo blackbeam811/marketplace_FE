@@ -74,8 +74,10 @@ export function NFTDataProvider({ children }: NFTDataProviderProps) {
       mintAddr: acc.mint,
       imgUrl: metadata.image,
       description: metadata.description,
+      metaDataUrl: acc.data.uri,
       collectionAddr: acc.data.creators[0].address,
       owner: publicKey?.toBase58()!,
+      price: 0,
       attribute,
     };
   };

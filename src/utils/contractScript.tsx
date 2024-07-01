@@ -227,10 +227,9 @@ export const listNftForSale = async (
 
 export const listPNftForSale = async (
   payer: AnchorWallet,
-  mint: PublicKey,
-  items: OwnNFTDataType[],
-  price: number
+  items: OwnNFTDataType[]
 ) => {
+  console.log("items =>", items);
   let cloneWindow = window;
   let provider = new anchor.AnchorProvider(
     solConnection,
@@ -246,65 +245,73 @@ export const listPNftForSale = async (
     await initUserPool(payer);
   }
 
-  const [sellData, _] = await PublicKey.findProgramAddress(
-    [Buffer.from(SELL_DATA_SEED), mint.toBuffer()],
-    MARKETPLACE_PROGRAM_ID
+  // const [sellData, _] = await PublicKey.findProgramAddress(
+  //   [Buffer.from(SELL_DATA_SEED), mint.toBuffer()],
+  //   MARKETPLACE_PROGRAM_ID
+  // );
+  // console.log("Sell Data PDA: ", sellData.toBase58());
+
+  // let poolAccount = await solConnection.getAccountInfo(sellData);
+  // if (poolAccount === null || poolAccount.data === null) {
+  //   await initSellData(payer, mint);
+  // }
+
+  // const [auctionData] = await PublicKey.findProgramAddress(
+  //   [Buffer.from(AUCTION_DATA_SEED), mint.toBuffer()],
+  //   MARKETPLACE_PROGRAM_ID
+  // );
+  // console.log("Auction Data PDA: ", auctionData.toBase58());
+
+  // poolAccount = await solConnection.getAccountInfo(auctionData);
+  // if (poolAccount === null || poolAccount.data === null) {
+  //   await initAuctionData(payer, mint);
+  //   }
+  const { blockhash } = await solConnection.getLatestBlockhash("confirmed");
+  const listTx = await createListForSellPNftTx(
+    new PublicKey(items[0].mintAddr),
+    payer.publicKey,
+    program,
+    solConnection,
+    items[0].price * SOL_DECIMAL
   );
-  console.log("Sell Data PDA: ", sellData.toBase58());
+  if (!listTx) return;
+  listTx.feePayer = payer.publicKey;
+  listTx.recentBlockhash = blockhash;
+  let stx = (await payer.signTransaction(listTx)).serialize();
+  //   const txs = [];
+  //   for (let i = 0; i < items.length; i++) {
+  //     const listTx = await createListForSellPNftTx(
+  //       new PublicKey(items[i].mintAddr),
+  //       payer.publicKey,
+  //       program,
+  //       solConnection,
+  //       items[i].price * SOL_DECIMAL
+  //     );
+  //     if (!listTx) return;
+  //     listTx.feePayer = payer.publicKey;
+  //     txs.push(listTx);
+  //   }
+  //   console.log("tx => ", txs[0]);
+  //   const listData = [];
 
-  let poolAccount = await solConnection.getAccountInfo(sellData);
-  if (poolAccount === null || poolAccount.data === null) {
-    await initSellData(payer, mint);
-  }
+  //   for (let i = 0; i < items.length; i++) {
+  //     txs[i].recentBlockhash = blockhash;
 
-  const [auctionData] = await PublicKey.findProgramAddress(
-    [Buffer.from(AUCTION_DATA_SEED), mint.toBuffer()],
-    MARKETPLACE_PROGRAM_ID
-  );
-  console.log("Auction Data PDA: ", auctionData.toBase58());
-
-  poolAccount = await solConnection.getAccountInfo(auctionData);
-  if (poolAccount === null || poolAccount.data === null) {
-    await initAuctionData(payer, mint);
-  }
-
-  const { blockhash } = await solConnection.getRecentBlockhash("confirmed");
-
-  //   //   const txs = [];
-  //   //   for (let i = 0; i < items.length; i++) {
-  //   //     const listTx = await createListForSellPNftTx(
-  //   //       new PublicKey(items[i].mintAddr),
-  //   //       payer.publicKey,
-  //   //       program,
-  //   //       solConnection,
-  //   //       price * SOL_DECIMAL
-  //   //     );
-  //   //     if (!listTx) return;
-  //   //     listTx.feePayer = payer.publicKey;
-  //   //     txs.push(listTx);
-  //   //   }
-
-  //   //   const listData = [];
-
-  //   //   for (let i = 0; i < items.length; i++) {
-  //   //     txs[i].recentBlockhash = blockhash;
-
-  //   //     listData.push({
-  //   //       tokenId: items[i].tokenId,
-  //   //       imgUrl: items[i].imgUrl,
-  //   //       mintAddr: items[i].mintAddr,
-  //   //       seller: payer?.publicKey.toBase58(),
-  //   //       buyer: "",
-  //   //       collectionAddr: items[i].collectionAddr,
-  //   //       metaDataUrl: items[i].metaDataUrl,
-  //   //       solPrice: items[i].price,
-  //   //       txType: 0,
-  //   //     });
-  //   //   }
+  //     listData.push({
+  //       tokenId: items[i].tokenId,
+  //       imgUrl: items[i].imgUrl,
+  //       mintAddr: items[i].mintAddr,
+  //       seller: payer?.publicKey.toBase58(),
+  //       buyer: "",
+  //       collectionAddr: items[i].collectionAddr,
+  //       metaDataUrl: items[i].metaDataUrl,
+  //       solPrice: items[i].price,
+  //       txType: 0,
+  //     });
+  //   }
 
   //   let signedTxs = await payer.signAllTransactions(txs);
   //   let serializedTxs = signedTxs.map((tx) => tx.serialize());
-
   //   return { listData, transactions: serializedTxs };
   //   let txId = await solConnection.sendTransaction(tx, [
   //     (payer as NodeWallet).payer,

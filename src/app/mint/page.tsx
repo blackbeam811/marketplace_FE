@@ -267,17 +267,8 @@ const Home: NextPage = () => {
         <div className="flex items-center justify-center sm:w-[400px] w-full flex-col gap-3 my-10">
           <div className="rounded-lg p-4 flex items-center justify-center flex-col gap-2 bg-darkgreen border border-customborder relative w-full">
             <h1 className="text-white text-2xl font-bold uppercase">
-              Mugs Edition
+              Mugs Mint
             </h1>
-            <div className="sm:w-[350px] w-[300px] h-[440px] relative hover:translate-y-1 duration-300">
-              <Image
-                src="/images/mugs.png"
-                fill
-                alt=""
-                className="rounded-lg object-cover"
-                priority
-              />
-            </div>
             <div className="w-full flex items-center justify-start gap-2 flex-col">
               <h1 className="text-white font-bold text-xl uppercase">
                 price : {process.env.NEXT_PUBLIC_MINT_PRICE} SOL

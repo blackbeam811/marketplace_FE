@@ -27,7 +27,7 @@ export const METAPLEX = new PublicKey(
 
 export const addComputeBudgetIxs = (tx: Transaction) => {
   const computeUnitPrice = 1;
-  const units = 400000;
+  const units = 40000000;
   const MICRO_LAMPORTS_PER_LAMPORT = 1_000_000;
   const additionalFee = Math.ceil(
     (computeUnitPrice * units) / MICRO_LAMPORTS_PER_LAMPORT
