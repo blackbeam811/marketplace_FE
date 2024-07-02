@@ -46,6 +46,7 @@ import { NFTDataContext } from "@/contexts/NFTDataContext";
 import { redeemAPI } from "@/utils/api";
 
 import { CANDYMACHINE_ID, COLLECTION_MINT, SOLANA_RPC } from "@/config";
+import { NormalSpinner } from "@/components/Spinners";
 
 const Home: NextPage = () => {
   const wallet = useWallet();
@@ -314,16 +315,11 @@ const Home: NextPage = () => {
       />
 
       <div
-        className={`fixed top-0 bottom-0 left-0 right-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center ${
+        className={`fixed top-0 bottom-0 left-0 right-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-[9999] ${
           !mintLoading && !redeemLoading && "hidden"
         }`}
       >
-        <span className="text-white text-center text-3xl font-bold uppercase">
-          {mintLoading && `Minting`}
-          {redeemLoading && `Burning`}
-          <br />
-          {"." + ".".repeat(dotCount)}
-        </span>
+        <NormalSpinner width={8} height={8} />
       </div>
     </MainPageLayout>
   );

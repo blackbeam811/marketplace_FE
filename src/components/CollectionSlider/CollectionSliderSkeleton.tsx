@@ -6,7 +6,7 @@ export default function CollectionSlider(props: { loadingState: boolean }) {
   return (
     <div
       className={`flex justify-center items-center my-10 w-full ${
-        props.loadingState && "hidden"
+        !props.loadingState && "hidden"
       }`}
     >
       <div className="w-full">
@@ -14,8 +14,7 @@ export default function CollectionSlider(props: { loadingState: boolean }) {
           className="relative z-[1] bg-transparent"
           containerClass="container-with-dots"
           draggable
-          autoPlay={true}
-          autoPlaySpeed={2000}
+          autoPlay={false}
           focusOnSelect={false}
           infinite
           keyBoardControl
@@ -53,16 +52,9 @@ export default function CollectionSlider(props: { loadingState: boolean }) {
           arrows={true}
           slidesToSlide={1}
         >
-          {collectionSliderData.map((data, index) => (
+          {[...Array(5)].map((_, index) => (
             <div className="relative px-2" key={index}>
-              <div className="relative border-gray-500 border-7 bg-white bg-opacity-10 backdrop-blur-md p-2 rounded-lg w-full cursor-pointer aspect-square border overflow-hidden">
-                <Image
-                  src={data.imgUrl}
-                  fill
-                  className="rounded-lg w-[40px] hover:scale-105 duration-300"
-                  alt=""
-                />
-              </div>
+              <div className="w-full aspect-square animate-pulse bg-green-900 rounded-md" />
             </div>
           ))}
         </Carousel>

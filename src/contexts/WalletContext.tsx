@@ -12,9 +12,8 @@ import {
   TorusWalletAdapter,
 } from "@solana/wallet-adapter-wallets";
 import { clusterApiUrl } from "@solana/web3.js";
-import * as anchor from "@project-serum/anchor";
 import { WalletModalProvider } from "@solana/wallet-adapter-react-ui";
-import { ModalProvider } from "./ModalContext";
+import { SOLANA_RPC } from "@/config";
 // Default styles that can be overridden by your app
 require("@solana/wallet-adapter-react-ui/styles.css");
 
@@ -39,7 +38,7 @@ export default function Wallet(props: { children: any }) {
   );
 
   return (
-    <ConnectionProvider endpoint={endpoint}>
+    <ConnectionProvider endpoint={SOLANA_RPC}>
       <WalletProvider wallets={wallets} autoConnect={true}>
         <WalletModalProvider>{props.children}</WalletModalProvider>
       </WalletProvider>

@@ -39,7 +39,6 @@ import {
   findTokenRecordPda,
   txWithComputeUnitsIxs,
 } from "./utils";
-import { programs } from "@metaplex/js";
 import { PROGRAM_ID as TOKEN_AUTH_RULES_ID } from "@metaplex-foundation/mpl-token-auth-rules";
 export const MPL_DEFAULT_RULE_SET = new PublicKey(
   "H6mX25exrJBXk86zGMX6Dd4WJoR6ZbjnzqUVT8d3NjAT"
@@ -1201,13 +1200,6 @@ export const createPurchaseTx = async (
   const mintMetadata = await getMetadata(mint);
   console.log("Metadata=", mintMetadata.toBase58());
 
-  let {
-    metadata: { Metadata },
-  } = programs;
-  let metadataAccount = await Metadata.getPDA(mint);
-  const metadata = await Metadata.load(connection, metadataAccount);
-  let creators = metadata.data.data.creators;
-
   let treasuryAccounts: PublicKey[] = treasuryAddresses;
   console.log(
     "=> Treasury Accounts:",
@@ -1222,13 +1214,6 @@ export const createPurchaseTx = async (
   treasuryAccounts.map((address) => {
     remainingAccounts.push({
       pubkey: address,
-      isWritable: true,
-      isSigner: false,
-    });
-  });
-  creators?.map((creator) => {
-    remainingAccounts.push({
-      pubkey: new PublicKey(creator.address),
       isWritable: true,
       isSigner: false,
     });
@@ -1330,12 +1315,12 @@ export const createPurchasePNftTx = async (
   const mintMetadata = await getMetadata(mint);
   console.log("Metadata=", mintMetadata.toBase58());
 
-  let {
-    metadata: { Metadata },
-  } = programs;
-  let metadataAccount = await Metadata.getPDA(mint);
-  const metadata = await Metadata.load(connection, metadataAccount);
-  let creators = metadata.data.data.creators;
+  // let {
+  //   metadata: { Metadata },
+  // } = programs;
+  // let metadataAccount = await Metadata.getPDA(mint);
+  // const metadata = await Metadata.load(connection, metadataAccount);
+  // let creators = metadata.data.data.creators;
 
   let treasuryAccounts: PublicKey[] = treasuryAddresses;
   console.log(
@@ -1355,13 +1340,13 @@ export const createPurchasePNftTx = async (
       isSigner: false,
     });
   });
-  creators?.map((creator: { address: anchor.web3.PublicKeyInitData }) => {
-    remainingAccounts.push({
-      pubkey: new PublicKey(creator.address),
-      isWritable: true,
-      isSigner: false,
-    });
-  });
+  // creators?.map((creator: { address: anchor.web3.PublicKeyInitData }) => {
+  //   remainingAccounts.push({
+  //     pubkey: new PublicKey(creator.address),
+  //     isWritable: true,
+  //     isSigner: false,
+  //   });
+  // });
 
   if (ret.instructions.length > 0)
     ret.instructions.map((ix: any) => tx.add(ix));
@@ -1587,12 +1572,12 @@ export const createAcceptOfferTx = async (
   const mintMetadata = await getMetadata(mint);
   console.log("Metadata=", mintMetadata.toBase58());
 
-  let {
-    metadata: { Metadata },
-  } = programs;
-  let metadataAccount = await Metadata.getPDA(mint);
-  const metadata = await Metadata.load(connection, metadataAccount);
-  let creators = metadata.data.data.creators;
+  // let {
+  //   metadata: { Metadata },
+  // } = programs;
+  // let metadataAccount = await Metadata.getPDA(mint);
+  // const metadata = await Metadata.load(connection, metadataAccount);
+  // let creators = metadata.data.data.creators;
 
   if (ret.instructions.length > 0) ret.instructions.map((ix) => tx.add(ix));
 
@@ -1614,13 +1599,13 @@ export const createAcceptOfferTx = async (
       isSigner: false,
     });
   });
-  creators?.map((creator: { address: anchor.web3.PublicKeyInitData }) => {
-    remainingAccounts.push({
-      pubkey: new PublicKey(creator.address),
-      isWritable: true,
-      isSigner: false,
-    });
-  });
+  // creators?.map((creator: { address: anchor.web3.PublicKeyInitData }) => {
+  //   remainingAccounts.push({
+  //     pubkey: new PublicKey(creator.address),
+  //     isWritable: true,
+  //     isSigner: false,
+  //   });
+  // });
 
   console.log(
     "==> Accept Offer  Mint:",
@@ -1742,12 +1727,12 @@ export const createAcceptOfferPNftTx = async (
   const mintMetadata = await getMetadata(mint);
   console.log("Metadata=", mintMetadata.toBase58());
 
-  let {
-    metadata: { Metadata },
-  } = programs;
-  let metadataAccount = await Metadata.getPDA(mint);
-  const metadata = await Metadata.load(connection, metadataAccount);
-  let creators = metadata.data.data.creators;
+  // let {
+  //   metadata: { Metadata },
+  // } = programs;
+  // let metadataAccount = await Metadata.getPDA(mint);
+  // const metadata = await Metadata.load(connection, metadataAccount);
+  // let creators = metadata.data.data.creators;
 
   if (ret.instructions.length > 0) ret.instructions.map((ix) => tx.add(ix));
 
@@ -1769,13 +1754,13 @@ export const createAcceptOfferPNftTx = async (
       isSigner: false,
     });
   });
-  creators?.map((creator: { address: anchor.web3.PublicKeyInitData }) => {
-    remainingAccounts.push({
-      pubkey: new PublicKey(creator.address),
-      isWritable: true,
-      isSigner: false,
-    });
-  });
+  // creators?.map((creator: { address: anchor.web3.PublicKeyInitData }) => {
+  //   remainingAccounts.push({
+  //     pubkey: new PublicKey(creator.address),
+  //     isWritable: true,
+  //     isSigner: false,
+  //   });
+  // });
 
   console.log(
     "==> Accept Offer  Mint:",
@@ -2200,12 +2185,12 @@ export const createClaimAuctionTx = async (
   const mintMetadata = await getMetadata(mint);
   console.log("Metadata=", mintMetadata.toBase58());
 
-  let {
-    metadata: { Metadata },
-  } = programs;
-  let metadataAccount = await Metadata.getPDA(mint);
-  const metadata = await Metadata.load(connection, metadataAccount);
-  let creators = metadata.data.data.creators;
+  // let {
+  //   metadata: { Metadata },
+  // } = programs;
+  // let metadataAccount = await Metadata.getPDA(mint);
+  // const metadata = await Metadata.load(connection, metadataAccount);
+  // let creators = metadata.data.data.creators;
 
   let treasuryAccounts: PublicKey[] = treasuryAddresses;
   console.log(
@@ -2225,13 +2210,13 @@ export const createClaimAuctionTx = async (
       isSigner: false,
     });
   });
-  creators?.map((creator: { address: anchor.web3.PublicKeyInitData }) => {
-    remainingAccounts.push({
-      pubkey: new PublicKey(creator.address),
-      isWritable: true,
-      isSigner: false,
-    });
-  });
+  // creators?.map((creator: { address: anchor.web3.PublicKeyInitData }) => {
+  //   remainingAccounts.push({
+  //     pubkey: new PublicKey(creator.address),
+  //     isWritable: true,
+  //     isSigner: false,
+  //   });
+  // });
 
   console.log(
     "==> claiming Auction",
@@ -2340,12 +2325,12 @@ export const createClaimAuctionPnftTx = async (
   const mintMetadata = await getMetadata(mint);
   console.log("Metadata=", mintMetadata.toBase58());
 
-  let {
-    metadata: { Metadata },
-  } = programs;
-  let metadataAccount = await Metadata.getPDA(mint);
-  const metadata = await Metadata.load(connection, metadataAccount);
-  let creators = metadata.data.data.creators;
+  // let {
+  //   metadata: { Metadata },
+  // } = programs;
+  // let metadataAccount = await Metadata.getPDA(mint);
+  // const metadata = await Metadata.load(connection, metadataAccount);
+  // let creators = metadata.data.data.creators;
 
   let treasuryAccounts: PublicKey[] = treasuryAddresses;
   console.log(
@@ -2365,13 +2350,13 @@ export const createClaimAuctionPnftTx = async (
       isSigner: false,
     });
   });
-  creators?.map((creator: { address: anchor.web3.PublicKeyInitData }) => {
-    remainingAccounts.push({
-      pubkey: new PublicKey(creator.address),
-      isWritable: true,
-      isSigner: false,
-    });
-  });
+  // creators?.map((creator: { address: anchor.web3.PublicKeyInitData }) => {
+  //   remainingAccounts.push({
+  //     pubkey: new PublicKey(creator.address),
+  //     isWritable: true,
+  //     isSigner: false,
+  //   });
+  // });
 
   console.log(
     "==> claiming Auction",
