@@ -7,6 +7,8 @@ export default function TabsTip() {
   const router = useRouter();
   const param = useSearchParams();
   const search = param.get("activeTab") || "items";
+  // const showQuery = param.getAll("show") || "unlisted";
+  // console.log("showQuery ===>", showQuery[0]);
   return (
     <div className="w-full border-b-[1px] border-customborder md:flex items-center justify-start gap-5 hidden">
       {TabMenu.map((item, index) => (

@@ -5,14 +5,14 @@ import { FaDiscord } from "react-icons/fa";
 
 import { CollectionDetailProps } from "@/types/types";
 import { PINATA_URL } from "@/config";
-import { useParams } from "next/navigation";
+import { usePathname } from "next/navigation";
 
 export default function CollectionDetail({
   collectionData,
 }: CollectionDetailProps) {
-  const params = useParams();
-  const { collectionAddr } = params;
+  const params = usePathname();
 
+  console.log;
   return (
     <div className="md:flex items-start justify-center md:justify-start gap-3 md:flex-row flex-col w-full md:w-auto px-2 hidden">
       <div className="flex items-center justify-start gap-5 w-full">
