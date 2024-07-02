@@ -12,6 +12,8 @@ import {
   useEffect,
   useState,
 } from "react";
+import { CollectionContext } from "./CollectionContext";
+import { getAllNFTs } from "@/utils/contractScript";
 
 export const NFTDataContext = createContext<NFTDataContextType>({
   walletAddr: "",
@@ -32,6 +34,7 @@ export function NFTDataProvider({ children }: NFTDataProviderProps) {
   const [solPrice, setSolPrice] = useState(0);
   const [getOwnNFTsState, setGetOwnNFTsState] = useState(false);
   const [ownNFTs, setOwnNFTs] = useState<OwnNFTDataType[]>([]);
+  const { collectionData } = useContext(CollectionContext);
 
   const getSolPriceFromCoinGeckio = async () => {
     const options = {
@@ -90,14 +93,16 @@ export function NFTDataProvider({ children }: NFTDataProviderProps) {
       publicAddress: wallet.publicKey.toBase58(),
       connection: connection,
     });
-
+    console.log("collectionData2 ===> ", collectionData);
     const data: OwnNFTDataType[] = [];
     await Promise.all(
       nftList
         .filter(
           (acc) =>
             acc.data.creators !== undefined &&
-            acc.data.creators[0].address === COLLECTION_ID
+            collectionData.filter(
+              (item) => item.collectionAddr === acc.data.creators[0].address
+            )
         )
         .map(async (acc) => {
           try {
@@ -109,9 +114,15 @@ export function NFTDataProvider({ children }: NFTDataProviderProps) {
           }
         })
     );
+    console.log("getOwnNFTs ===> ", data);
 
     setOwnNFTs(data);
     setGetOwnNFTsState(false);
+  };
+
+  const getAllListedNFts = async (): Promise<void> => {
+    const data = await getAllNFTs();
+    console.log("listedData =====> ", data);
   };
 
   useEffect(() => {
@@ -135,6 +146,7 @@ export function NFTDataProvider({ children }: NFTDataProviderProps) {
       const fetchData = async () => {
         try {
           await getOwnNFTs();
+          await getAllListedNFts();
         } catch (error) {
           console.error("Error fetching Own NFTs:", error);
         }

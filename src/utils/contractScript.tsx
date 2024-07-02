@@ -107,7 +107,7 @@ export const initSellData = async (payer: AnchorWallet, mint: PublicKey) => {
     skipPreflight: true,
     maxRetries: 2,
   });
-  await solConnection.confirmTransaction(txId, "finalized");
+  await solConnection.confirmTransaction(txId, "confirmed");
   console.log("Your transaction signature", txId);
 };
 
@@ -124,7 +124,7 @@ export const initAuctionData = async (payer: AnchorWallet, mint: PublicKey) => {
     provider
   );
   const tx = await createInitAuctionDataTx(mint, payer.publicKey, program);
-  const { blockhash } = await solConnection.getLatestBlockhash("confirmed");
+  const { blockhash } = await solConnection.getRecentBlockhash("confirmed");
 
   tx.feePayer = payer.publicKey;
   tx.recentBlockhash = blockhash;
@@ -135,7 +135,7 @@ export const initAuctionData = async (payer: AnchorWallet, mint: PublicKey) => {
     skipPreflight: true,
     maxRetries: 2,
   });
-  await solConnection.confirmTransaction(txId, "finalized");
+  await solConnection.confirmTransaction(txId, "confirmed");
   console.log("Your transaction signature", txId);
 };
 
@@ -215,6 +215,7 @@ export const listNftForSale = async (
     priceSol
   );
   const { blockhash } = await solConnection.getRecentBlockhash("confirmed");
+
   tx.feePayer = payer.publicKey;
   tx.recentBlockhash = blockhash;
   payer.signTransaction(tx);
@@ -224,6 +225,18 @@ export const listNftForSale = async (
   await solConnection.confirmTransaction(txId, "confirmed");
   console.log("Your transaction signature", txId);
 };
+
+async function checkAndInitData(
+  accountData: any,
+  initDataFunc: (payer: any, publicKey: PublicKey) => Promise<void>,
+  payer: any,
+  mintAddr: string
+): Promise<void> {
+  let poolAccount = await solConnection.getAccountInfo(accountData);
+  if (poolAccount === null || poolAccount.data === null) {
+    await initDataFunc(payer, new PublicKey(mintAddr));
+  }
+}
 
 export const listPNftForSale = async (
   payer: AnchorWallet,
@@ -245,79 +258,96 @@ export const listPNftForSale = async (
     await initUserPool(payer);
   }
 
-  // const [sellData, _] = await PublicKey.findProgramAddress(
-  //   [Buffer.from(SELL_DATA_SEED), mint.toBuffer()],
-  //   MARKETPLACE_PROGRAM_ID
-  // );
-  // console.log("Sell Data PDA: ", sellData.toBase58());
-
-  // let poolAccount = await solConnection.getAccountInfo(sellData);
-  // if (poolAccount === null || poolAccount.data === null) {
-  //   await initSellData(payer, mint);
-  // }
-
-  // const [auctionData] = await PublicKey.findProgramAddress(
-  //   [Buffer.from(AUCTION_DATA_SEED), mint.toBuffer()],
-  //   MARKETPLACE_PROGRAM_ID
-  // );
-  // console.log("Auction Data PDA: ", auctionData.toBase58());
-
-  // poolAccount = await solConnection.getAccountInfo(auctionData);
-  // if (poolAccount === null || poolAccount.data === null) {
-  //   await initAuctionData(payer, mint);
-  //   }
-  const { blockhash } = await solConnection.getLatestBlockhash("confirmed");
-  const listTx = await createListForSellPNftTx(
-    new PublicKey(items[0].mintAddr),
-    payer.publicKey,
-    program,
-    solConnection,
-    items[0].price * SOL_DECIMAL
+  const [sellData, _] = await PublicKey.findProgramAddress(
+    [Buffer.from(SELL_DATA_SEED), new PublicKey(items[0].mintAddr).toBuffer()],
+    MARKETPLACE_PROGRAM_ID
   );
-  if (!listTx) return;
-  listTx.feePayer = payer.publicKey;
-  listTx.recentBlockhash = blockhash;
-  let stx = (await payer.signTransaction(listTx)).serialize();
-  //   const txs = [];
-  //   for (let i = 0; i < items.length; i++) {
-  //     const listTx = await createListForSellPNftTx(
-  //       new PublicKey(items[i].mintAddr),
-  //       payer.publicKey,
-  //       program,
-  //       solConnection,
-  //       items[i].price * SOL_DECIMAL
-  //     );
-  //     if (!listTx) return;
-  //     listTx.feePayer = payer.publicKey;
-  //     txs.push(listTx);
-  //   }
-  //   console.log("tx => ", txs[0]);
-  //   const listData = [];
+  console.log("Sell Data PDA: ", sellData.toBase58());
 
-  //   for (let i = 0; i < items.length; i++) {
-  //     txs[i].recentBlockhash = blockhash;
+  const [auctionData] = await PublicKey.findProgramAddress(
+    [
+      Buffer.from(AUCTION_DATA_SEED),
+      new PublicKey(items[0].mintAddr).toBuffer(),
+    ],
+    MARKETPLACE_PROGRAM_ID
+  );
+  console.log("Auction Data PDA: ", auctionData.toBase58());
 
-  //     listData.push({
-  //       tokenId: items[i].tokenId,
-  //       imgUrl: items[i].imgUrl,
-  //       mintAddr: items[i].mintAddr,
-  //       seller: payer?.publicKey.toBase58(),
-  //       buyer: "",
-  //       collectionAddr: items[i].collectionAddr,
-  //       metaDataUrl: items[i].metaDataUrl,
-  //       solPrice: items[i].price,
-  //       txType: 0,
-  //     });
-  //   }
+  await Promise.all(
+    items.map(async (item) => {
+      await checkAndInitData(sellData, initSellData, payer, item.mintAddr);
+      await checkAndInitData(
+        auctionData,
+        initAuctionData,
+        payer,
+        item.mintAddr
+      );
+    })
+  );
 
-  //   let signedTxs = await payer.signAllTransactions(txs);
-  //   let serializedTxs = signedTxs.map((tx) => tx.serialize());
-  //   return { listData, transactions: serializedTxs };
-  //   let txId = await solConnection.sendTransaction(tx, [
-  //     (payer as NodeWallet).payer,
-  //   ]);
-  //   await solConnection.confirmTransaction(txId, "confirmed");
-  //   console.log("Your transaction signature", txId);
+  let poolAccount = await solConnection.getAccountInfo(sellData);
+  if (poolAccount === null || poolAccount.data === null) {
+    await initSellData(payer, new PublicKey(items[0].mintAddr));
+  }
+
+  poolAccount = await solConnection.getAccountInfo(auctionData);
+  if (poolAccount === null || poolAccount.data === null) {
+    await initAuctionData(payer, new PublicKey(items[0].mintAddr));
+  }
+  const { blockhash } = await solConnection.getLatestBlockhash("confirmed");
+  const txs = [];
+  const listData = [];
+  for (let i = 0; i < items.length; i++) {
+    try {
+      const listTx = await createListForSellPNftTx(
+        new PublicKey(items[i].mintAddr),
+        payer.publicKey,
+        program,
+        solConnection,
+        items[i].price * SOL_DECIMAL
+      );
+      if (!listTx) throw new Error("Transaction creation failed");
+
+      listTx.feePayer = payer.publicKey;
+      txs.push(listTx);
+
+      listData.push({
+        tokenId: items[i].tokenId,
+        imgUrl: items[i].imgUrl,
+        mintAddr: items[i].mintAddr,
+        seller: payer.publicKey.toBase58(),
+        buyer: "",
+        collectionAddr: items[i].collectionAddr,
+        metaDataUrl: items[i].metaDataUrl,
+        solPrice: items[i].price,
+        txType: 0,
+      });
+    } catch (error) {
+      console.error(`Failed to create transaction for item ${i}:`, error);
+      return;
+    }
+  }
+
+  try {
+    for (let i = 0; i < txs.length; i++) {
+      txs[i].recentBlockhash = blockhash;
+    }
+
+    const signedTxs = await payer.signAllTransactions(txs);
+    const serializedTxs = signedTxs.map((tx: any) => tx.serialize());
+    const simulatieTx = await solConnection.simulateTransaction(signedTxs[0]);
+    console.log("tx =====>", simulatieTx);
+    // Here you can handle the serialized transactions as needed
+    // const txId = await solConnection.sendRawTransaction(simulatieTx[0], {
+    //   skipPreflight: true,
+    //   maxRetries: 2,
+    // });
+    // await solConnection.confirmTransaction(txId, "finalized");
+
+    return { listData, transactions: serializedTxs };
+  } catch (error) {
+    console.error("Failed to sign or serialize transactions:", error);
+  }
 };
 
 export const delistNft = async (payer: AnchorWallet, mint: PublicKey) => {

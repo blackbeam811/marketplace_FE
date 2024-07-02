@@ -25,6 +25,7 @@ import {
 import MobileItemMultiSelectBar from "@/components/ItemMultiSelectBar/MobileItemMultiSelectBar";
 import MobileTabsTip from "@/components/TabsTip/MobileTabsTip";
 import ItemMultiSelectbar from "@/components/ItemMultiSelectBar";
+import ListNFTFilterSelect from "@/components/ListNFTFilterSelect";
 
 const MyItem: NextPage = () => {
   const param = useSearchParams();
@@ -45,16 +46,19 @@ const MyItem: NextPage = () => {
           <MyItemDetail />
           <TabsTip />
           <div className="w-full flex items-center justify-between flex-col md:flex-row gap-3">
-            <div
-              className={`w-full flex items-center justify-start px-2 rounded-md border border-customborder ${
-                (search === "activity" || search === "offers") && "hidden"
-              }`}
-            >
-              <BiSearch color="white" />
-              <input
-                placeholder="Search items"
-                className="outline-none bg-transparent w-full text-white py-1 px-1 font-thin placeholder:text-gray-600"
-              />
+            <div className="flex items-center justify-center gap-2 w-full">
+              <ListNFTFilterSelect />
+              <div
+                className={`w-full flex items-center justify-start px-2 rounded-md border border-customborder ${
+                  (search === "activity" || search === "offers") && "hidden"
+                }`}
+              >
+                <BiSearch color="white" />
+                <input
+                  placeholder="Search items"
+                  className="outline-none bg-transparent w-full text-white py-1 px-1 font-thin placeholder:text-gray-600"
+                />
+              </div>
             </div>
             <div
               className={`${

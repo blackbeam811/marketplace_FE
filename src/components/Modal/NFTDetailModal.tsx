@@ -22,8 +22,9 @@ import { NFTCardType, OwnNFTDataType } from "@/types/types";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { listPNftForSale } from "@/utils/contractScript";
-import { errorAlert } from "../ToastGroup";
+import { errorAlert, successAlert } from "../ToastGroup";
 import { listNft } from "@/utils/api";
+import { CollectionContext } from "@/contexts/CollectionContext";
 
 const NFTDetailModal = () => {
   const wallet = useAnchorWallet();
@@ -37,7 +38,6 @@ const NFTDetailModal = () => {
     undefined
   );
   const { ownNFTs } = useContext(NFTDataContext);
-
   const memoSelectedNFTDetail = useMemo(
     () => selectedNFTDetail,
     [selectedNFTDetail]
@@ -54,10 +54,16 @@ const NFTDetailModal = () => {
     if (wallet && selectedNFT !== undefined) {
       try {
         const tx = await listPNftForSale(wallet, [selectedNFT]);
-        // if (tx) {
-        //   const result = await listNft(tx.transactions, tx.listData);
-        //   console.log("result => ", result);
-        // }
+        if (tx) {
+          const result = await listNft(tx.transactions, tx.listData);
+          if (result.type === "success") {
+            successAlert("Success");
+          } else {
+            errorAlert("Something went wrong.");
+          }
+        } else {
+          errorAlert("Something went wrong.");
+        }
       } catch (e) {
         console.log("err =>", e);
         errorAlert("Something went wrong.");

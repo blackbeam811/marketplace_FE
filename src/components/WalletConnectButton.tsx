@@ -28,7 +28,7 @@ const ConnectButton: FC = () => {
             <ul className="border border-gray-500 rounded-lg bg-grayborder-gray-500 p-2 mt-1">
               <li className="flex gap-2 items-center mb-3 text-sm hover:text-yellow-600 duration-300 text-white transition-all">
                 <ProfileIcon className="brightness-200" />
-                <Link href="/myitem">My Items</Link>
+                <Link href="/me?activityTab=items">My Items</Link>
               </li>
               <li>
                 <div

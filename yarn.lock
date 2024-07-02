@@ -2250,7 +2250,7 @@
   dependencies:
     "@solana/wallet-adapter-react" "^0.15.35"
 
-"@solana/wallet-adapter-base@^0.9.17", "@solana/wallet-adapter-base@^0.9.23":
+"@solana/wallet-adapter-base@^0.9.17", "@solana/wallet-adapter-base@^0.9.22", "@solana/wallet-adapter-base@^0.9.23":
   version "0.9.23"
   resolved "https://registry.yarnpkg.com/@solana/wallet-adapter-base/-/wallet-adapter-base-0.9.23.tgz#3b17c28afd44e173f44f658bf9700fd637e12a11"
   integrity sha512-apqMuYwFp1jFi55NxDfvXUX2x1T0Zh07MxhZ/nCCTGys5raSfYUh82zen2BLv8BSDj/JxZ2P/s7jrQZGrX8uAw==
@@ -2401,7 +2401,7 @@
   dependencies:
     "@solana/wallet-adapter-base" "^0.9.23"
 
-"@solana/wallet-adapter-react-ui@^0.9.17":
+"@solana/wallet-adapter-react-ui@^0.9.31":
   version "0.9.35"
   resolved "https://registry.yarnpkg.com/@solana/wallet-adapter-react-ui/-/wallet-adapter-react-ui-0.9.35.tgz#f44bf71a636845cf6862ac7fd556ee6f7b1a3757"
   integrity sha512-SyHUavEAyzBL5zim5xAlYaqP5jF3bOtxi/02wgXzMpKXUYpG4EiXXY3DeGw5eUbcvvej45rQENtTHWEEH9fW+A==
@@ -2410,7 +2410,7 @@
     "@solana/wallet-adapter-base-ui" "^0.1.2"
     "@solana/wallet-adapter-react" "^0.15.35"
 
-"@solana/wallet-adapter-react@^0.15.19", "@solana/wallet-adapter-react@^0.15.35":
+"@solana/wallet-adapter-react@^0.15.32", "@solana/wallet-adapter-react@^0.15.35":
   version "0.15.35"
   resolved "https://registry.yarnpkg.com/@solana/wallet-adapter-react/-/wallet-adapter-react-0.15.35.tgz#0d42e6774c0d55f3782d3eb5edb6ac9888858b08"
   integrity sha512-i4hc/gNLTYNLMEt2LS+4lrrc0QAwa5SU2PtYMnZ2A3rsoKF5m1bv1h6cjLj2KBry4/zRGEBoqkiMOC5zHkLnRQ==
@@ -2533,7 +2533,7 @@
     "@jnwng/walletconnect-solana" "^0.2.0"
     "@solana/wallet-adapter-base" "^0.9.23"
 
-"@solana/wallet-adapter-wallets@^0.19.0":
+"@solana/wallet-adapter-wallets@^0.19.18":
   version "0.19.32"
   resolved "https://registry.yarnpkg.com/@solana/wallet-adapter-wallets/-/wallet-adapter-wallets-0.19.32.tgz#2b3c887e825a480c7c210d2794c19a7c2c1ed57a"
   integrity sha512-voZYQiIy1yXuKvm7x7YpnQ53eiJC7NpIYSQjzApOUiswiBRVeYcnPO4O/MMPUwsGkS7iZKqKZjo5CnOaN44n+g==
