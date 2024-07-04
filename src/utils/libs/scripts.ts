@@ -40,6 +40,7 @@ import {
   txWithComputeUnitsIxs,
 } from "./utils";
 import { PROGRAM_ID as TOKEN_AUTH_RULES_ID } from "@metaplex-foundation/mpl-token-auth-rules";
+import { programs } from "@metaplex/js";
 export const MPL_DEFAULT_RULE_SET = new PublicKey(
   "H6mX25exrJBXk86zGMX6Dd4WJoR6ZbjnzqUVT8d3NjAT"
 );
@@ -1286,14 +1287,14 @@ export const createPurchasePNftTx = async (
     MARKETPLACE_PROGRAM_ID
   );
 
-  let sellInfo: SellData | null = await getNFTPoolState(mint, program);
-  let seller: any = sellInfo?.seller;
+  let sellInfo: any = await getNFTPoolState(mint, program);
+  let seller = sellInfo?.seller;
   const [sellerUserPool, seller_bump] = await PublicKey.findProgramAddress(
     [Buffer.from(USER_DATA_SEED), seller.toBuffer()],
     MARKETPLACE_PROGRAM_ID
   );
 
-  console.log("Seller = ", seller?.toBase58());
+  console.log("Seller = ", seller.toBase58());
 
   // let { destinationAccounts } = await getATokenAccountsNeedCreate(connection, userAddress, globalAuthority, [mint]);
   let destNftTokenAccount = await getAssociatedTokenAccount(seller, mint);
@@ -1315,12 +1316,14 @@ export const createPurchasePNftTx = async (
   const mintMetadata = await getMetadata(mint);
   console.log("Metadata=", mintMetadata.toBase58());
 
-  // let {
-  //   metadata: { Metadata },
-  // } = programs;
-  // let metadataAccount = await Metadata.getPDA(mint);
-  // const metadata = await Metadata.load(connection, metadataAccount);
-  // let creators = metadata.data.data.creators;
+  let {
+    metadata: { Metadata },
+  } = programs;
+
+  let metadataAccount = await Metadata.getPDA(mint);
+  const metadata = await Metadata.load(connection, metadataAccount);
+  let creators = metadata.data.data.creators;
+  console.log("creators =>", creators);
 
   let treasuryAccounts: PublicKey[] = treasuryAddresses;
   console.log(
@@ -1328,11 +1331,7 @@ export const createPurchasePNftTx = async (
     treasuryAccounts.map((address) => address.toBase58())
   );
 
-  let remainingAccounts: {
-    pubkey: anchor.web3.PublicKey;
-    isWritable: boolean;
-    isSigner: boolean;
-  }[] = [];
+  let remainingAccounts: any = [];
   treasuryAccounts.map((address) => {
     remainingAccounts.push({
       pubkey: address,
@@ -1340,16 +1339,15 @@ export const createPurchasePNftTx = async (
       isSigner: false,
     });
   });
-  // creators?.map((creator: { address: anchor.web3.PublicKeyInitData }) => {
-  //   remainingAccounts.push({
-  //     pubkey: new PublicKey(creator.address),
-  //     isWritable: true,
-  //     isSigner: false,
-  //   });
-  // });
+  creators?.map((creator) => {
+    remainingAccounts.push({
+      pubkey: new PublicKey(creator.address),
+      isWritable: true,
+      isSigner: false,
+    });
+  });
 
-  if (ret.instructions.length > 0)
-    ret.instructions.map((ix: any) => tx.add(ix));
+  if (ret.instructions.length > 0) ret.instructions.map((ix) => tx.add(ix));
   console.log("==> Purchasing", mint.toBase58());
   tx.add(
     program.instruction.purchasePnft(bump, nft_bump, buyer_bump, seller_bump, {

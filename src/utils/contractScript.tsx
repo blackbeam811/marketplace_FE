@@ -395,66 +395,11 @@ export const listPNftForSale = async (
       tx.serialize()
     );
 
-    // Optionally, simulate the first transaction
-    const simulateResult = await solConnection.simulateTransaction(
-      signedListTransactions[0]
-    );
-    // console.log("Simulation result:", simulateResult);
-
-    // // Send transactions
-    // const listSignatures = await Promise.all(
-    //   serializedListTransactions.map((tx) => sendTransaction(tx))
-    // );
-
-    // await Promise.all(
-    //   listSignatures.map((signature) =>
-    //     solConnection.confirmTransaction(signature, "confirmed")
-    //   )
-    // );
-
-    console.log("simulateResult ===> ", simulateResult);
     return { listData, transactions: serializedListTransactions };
   } catch (error) {
     console.error("Failed to sign or serialize transactions:", error);
     throw error;
   }
-};
-
-export const delistNft = async (payer: AnchorWallet, mint: PublicKey) => {
-  let cloneWindow = window;
-  let provider = new anchor.AnchorProvider(
-    solConnection,
-    cloneWindow["solana"],
-    anchor.AnchorProvider.defaultOptions()
-  );
-  const program = new anchor.Program(
-    MugsMarketplace as anchor.Idl,
-    MARKETPLACE_PROGRAM_ID,
-    provider
-  );
-  console.log(mint.toBase58());
-  if (!(await isInitializedUser(payer.publicKey, solConnection))) {
-    console.log(
-      "User PDA is not Initialized. Should Init User PDA for first usage"
-    );
-    await initUserPool(payer);
-  }
-
-  const tx = await createDelistNftTx(
-    mint,
-    payer.publicKey,
-    program,
-    solConnection
-  );
-  const { blockhash } = await solConnection.getRecentBlockhash("confirmed");
-  tx.feePayer = payer.publicKey;
-  tx.recentBlockhash = blockhash;
-  payer.signTransaction(tx);
-  let txId = await solConnection.sendTransaction(tx, [
-    (payer as NodeWallet).payer,
-  ]);
-  await solConnection.confirmTransaction(txId, "confirmed");
-  console.log("Your transaction signature", txId);
 };
 
 export const pNftDelist = async (
@@ -530,12 +475,12 @@ export const pNftDelist = async (
       tx.serialize()
     );
 
-    // Optionally, simulate the first transaction
-    const simulateResult = await solConnection.simulateTransaction(
-      signedListTransactions[0]
-    );
+    // // Optionally, simulate the first transaction
+    // const simulateResult = await solConnection.simulateTransaction(
+    //   signedListTransactions[0]
+    // );
 
-    console.log("simulateResult ===> ", simulateResult);
+    // console.log("simulateResult ===> ", simulateResult);
     return {
       delistData,
       transactions: serializedListTransactions,
@@ -576,19 +521,34 @@ export const setPrice = async (payer: AnchorWallet, items: OwnNFTDataType) => {
 
   tx.feePayer = payer.publicKey;
   tx.recentBlockhash = blockhash;
+  const updateData = [];
+  updateData.push({
+    tokenId: items.tokenId,
+    imgUrl: items.imgUrl,
+    mintAddr: items.mintAddr,
+    seller: payer.publicKey.toBase58(),
+    buyer: "",
+    collectionAddr: items.collectionAddr,
+    metaDataUrl: items.metaDataUrl,
+    solPrice: items.solPrice,
+    txType: 1,
+  });
 
   let stx = (await payer.signTransaction(tx)).serialize();
   // Optionally, simulate the first transaction
-  const simulateResult = await solConnection.simulateTransaction(tx);
-  console.log("Update Price tx simulateResult ===>", simulateResult);
+  // const simulateResult = await solConnection.simulateTransaction(tx);
+  // console.log("Update Price tx simulateResult ===>", simulateResult);
 
   return {
     transactions: stx,
-    updatedPriceItems: items,
+    updatedPriceItems: updateData[0],
   };
 };
 
-export const purchase = async (payer: AnchorWallet, mint: PublicKey) => {
+export const purchasePNft = async (
+  payer: AnchorWallet,
+  items: OwnNFTDataType[]
+) => {
   let cloneWindow = window;
   let provider = new anchor.AnchorProvider(
     solConnection,
@@ -600,75 +560,98 @@ export const purchase = async (payer: AnchorWallet, mint: PublicKey) => {
     MARKETPLACE_PROGRAM_ID,
     provider
   );
-  console.log(mint.toBase58());
+  const { blockhash } = await solConnection.getLatestBlockhash("confirmed");
 
   if (!(await isInitializedUser(payer.publicKey, solConnection))) {
     console.log(
       "User PDA is not Initialized. Should Init User PDA for first usage"
     );
-    await initUserPool(payer);
+    const initUserTx = await initUserPool(payer);
+    initUserTx.feePayer = payer.publicKey;
+    initUserTx.recentBlockhash = blockhash;
+    let stx = (await payer.signTransaction(initUserTx)).serialize();
+
+    const txId = await solConnection.sendRawTransaction(stx, {
+      skipPreflight: true,
+      maxRetries: 2,
+    });
+    await solConnection.confirmTransaction(txId, "finalized");
   }
 
   const globalPool: any = await getGlobalState(program);
+  console.log(
+    "globalPool.teamTreasury.slice(0, globalPool.teamCount.toNumber())",
+    globalPool.teamTreasury.slice(0, globalPool.teamCount.toNumber())
+  );
+  console.log(
+    "globalPool.teamCount.toNumber()",
+    globalPool.teamCount.toNumber()
+  );
+  const purchaseData: any[] = []; // Define the type if possible
+  const purchaseTransactions = [];
+  const mintAddrArray = [];
 
-  const tx = await createPurchaseTx(
-    mint,
-    payer.publicKey,
-    globalPool.teamTreasury.slice(0, globalPool.teamCount.toNumber()),
-    program,
-    solConnection
-  );
-  const { blockhash } = await solConnection.getRecentBlockhash("confirmed");
-  tx.feePayer = payer.publicKey;
-  tx.recentBlockhash = blockhash;
-  payer.signTransaction(tx);
-  let txId = await solConnection.sendTransaction(tx, [
-    (payer as NodeWallet).payer,
-  ]);
-  await solConnection.confirmTransaction(txId, "confirmed");
-  console.log("Your transaction signature", txId);
-};
+  for (const item of items) {
+    try {
+      const tx = await createPurchasePNftTx(
+        new PublicKey(item.mintAddr),
+        payer.publicKey,
+        globalPool.teamTreasury.slice(0, globalPool.teamCount.toNumber()),
+        program,
+        solConnection
+      );
 
-export const purchasePNft = async (payer: AnchorWallet, mint: PublicKey) => {
-  console.log(mint.toBase58());
-  let cloneWindow = window;
-  let provider = new anchor.AnchorProvider(
-    solConnection,
-    cloneWindow["solana"],
-    anchor.AnchorProvider.defaultOptions()
-  );
-  const program = new anchor.Program(
-    MugsMarketplace as anchor.Idl,
-    MARKETPLACE_PROGRAM_ID,
-    provider
-  );
-  if (!(await isInitializedUser(payer.publicKey, solConnection))) {
-    console.log(
-      "User PDA is not Initialized. Should Init User PDA for first usage"
+      tx.feePayer = payer.publicKey;
+      purchaseTransactions.push(tx);
+
+      purchaseData.push({
+        tokenId: item.tokenId,
+        imgUrl: item.imgUrl,
+        mintAddr: item.mintAddr,
+        seller: item.seller,
+        buyer: payer.publicKey.toBase58(),
+        collectionAddr: item.collectionAddr,
+        metaDataUrl: item.metaDataUrl,
+        solPrice: item.solPrice,
+        txType: 2,
+      });
+      mintAddrArray.push(item.mintAddr);
+    } catch (error) {
+      console.error(
+        `Failed to create transaction for item ${item.tokenId}:`,
+        error
+      );
+      throw error;
+    }
+  }
+
+  try {
+    for (const tx of purchaseTransactions) {
+      tx.recentBlockhash = blockhash;
+    }
+
+    const signedListTransactions = await payer.signAllTransactions(
+      purchaseTransactions
     );
-    await initUserPool(payer);
+    const serializedListTransactions = signedListTransactions.map((tx) =>
+      tx.serialize()
+    );
+
+    // // Optionally, simulate the first transaction
+    // const simulateResult = await solConnection.simulateTransaction(
+    //   signedListTransactions[0]
+    // );
+
+    // console.log("simulateResult ===> ", simulateResult);
+    return {
+      purchaseData,
+      transactions: serializedListTransactions,
+      mintAddrArray: mintAddrArray,
+    };
+  } catch (error) {
+    console.error("Failed to sign or serialize transactions:", error);
+    throw error;
   }
-
-  const globalPool: any = await getGlobalState(program);
-
-  const tx = await createPurchasePNftTx(
-    mint,
-    payer.publicKey,
-    globalPool.teamTreasury.slice(0, globalPool.teamCount.toNumber()),
-    program,
-    solConnection
-  );
-  const { blockhash } = await solConnection.getRecentBlockhash("confirmed");
-  tx.feePayer = payer.publicKey;
-  tx.recentBlockhash = blockhash;
-  payer.signTransaction(tx);
-  let simulatieTx = await solConnection.simulateTransaction(tx);
-  console.log("tx =====>", simulatieTx);
-  let txId = await solConnection.sendTransaction(tx, [
-    (payer as NodeWallet).payer,
-  ]);
-  await solConnection.confirmTransaction(txId, "confirmed");
-  console.log("Your transaction signature", txId);
 };
 
 export const initOfferData = async (payer: AnchorWallet, mint: PublicKey) => {
@@ -778,52 +761,6 @@ export const cancelOffer = async (payer: AnchorWallet, mint: PublicKey) => {
   console.log("Your transaction signature", txId);
 };
 
-export const acceptOffer = async (
-  payer: AnchorWallet,
-  mint: PublicKey,
-  buyer: PublicKey
-) => {
-  console.log(mint.toBase58(), buyer.toBase58());
-  let cloneWindow = window;
-  let provider = new anchor.AnchorProvider(
-    solConnection,
-    cloneWindow["solana"],
-    anchor.AnchorProvider.defaultOptions()
-  );
-  const program = new anchor.Program(
-    MugsMarketplace as anchor.Idl,
-    MARKETPLACE_PROGRAM_ID,
-    provider
-  );
-  if (!(await isInitializedUser(payer.publicKey, solConnection))) {
-    console.log(
-      "User PDA is not Initialized. Should Init User PDA for first usage"
-    );
-    await initUserPool(payer);
-  }
-
-  const globalPool: any = await getGlobalState(program);
-
-  const tx = await createAcceptOfferTx(
-    mint,
-    buyer,
-    globalPool.teamTreasury.slice(0, globalPool.teamCount.toNumber()),
-    program,
-    solConnection
-  );
-  const { blockhash } = await solConnection.getRecentBlockhash("confirmed");
-  tx.feePayer = payer.publicKey;
-  tx.recentBlockhash = blockhash;
-  payer.signTransaction(tx);
-  const simulatieTx = await solConnection.simulateTransaction(tx);
-  console.log("tx =====>", simulatieTx);
-  let txId = await solConnection.sendTransaction(tx, [
-    (payer as NodeWallet).payer,
-  ]);
-  await solConnection.confirmTransaction(txId, "confirmed");
-  console.log("Your transaction signature", txId);
-};
-
 export const acceptOfferPNft = async (
   payer: AnchorWallet,
   mint: PublicKey,
@@ -870,75 +807,6 @@ export const acceptOfferPNft = async (
   console.log("Your transaction signature", txId);
 };
 
-export const createAuction = async (
-  payer: AnchorWallet,
-  mint: PublicKey,
-  startPrice: number,
-  minIncrease: number,
-  duration: number,
-  reserved: boolean
-) => {
-  console.log(mint.toBase58(), startPrice, minIncrease, duration, reserved);
-  let cloneWindow = window;
-  let provider = new anchor.AnchorProvider(
-    solConnection,
-    cloneWindow["solana"],
-    anchor.AnchorProvider.defaultOptions()
-  );
-  const program = new anchor.Program(
-    MugsMarketplace as anchor.Idl,
-    MARKETPLACE_PROGRAM_ID,
-    provider
-  );
-  if (!(await isInitializedUser(payer.publicKey, solConnection))) {
-    console.log(
-      "User PDA is not Initialized. Should Init User PDA for first usage"
-    );
-    await initUserPool(payer);
-  }
-
-  const [sellData, _] = await PublicKey.findProgramAddress(
-    [Buffer.from(SELL_DATA_SEED), mint.toBuffer()],
-    MARKETPLACE_PROGRAM_ID
-  );
-  console.log("Sell Data PDA: ", sellData.toBase58());
-
-  let poolAccount = await solConnection.getAccountInfo(sellData);
-  if (poolAccount === null || poolAccount.data === null) {
-    await initSellData(payer, mint);
-  }
-
-  const [auctionData] = await PublicKey.findProgramAddress(
-    [Buffer.from(AUCTION_DATA_SEED), mint.toBuffer()],
-    MARKETPLACE_PROGRAM_ID
-  );
-  console.log("Auction Data PDA: ", auctionData.toBase58());
-
-  poolAccount = await solConnection.getAccountInfo(auctionData);
-  if (poolAccount === null || poolAccount.data === null) {
-    await initAuctionData(payer, mint);
-  }
-
-  const tx = await createCreateAuctionTx(
-    mint,
-    payer.publicKey,
-    startPrice,
-    minIncrease,
-    duration,
-    reserved,
-    program,
-    solConnection
-  );
-  const { blockhash } = await solConnection.getRecentBlockhash("confirmed");
-  tx.feePayer = payer.publicKey;
-  tx.recentBlockhash = blockhash;
-  payer.signTransaction(tx);
-  let txId = await solConnection.sendTransaction(tx, [
-    (payer as NodeWallet).payer,
-  ]);
-  await solConnection.confirmTransaction(txId, "confirmed");
-  console.log("Your transaction signature", txId);
-};
 export const createAuctionPNft = async (
   payer: AnchorWallet,
   mint: PublicKey,
@@ -1048,45 +916,6 @@ export const placeBid = async (
   console.log("Your transaction signature", txId);
 };
 
-export const claimAuction = async (payer: AnchorWallet, mint: PublicKey) => {
-  console.log(mint.toBase58());
-  let cloneWindow = window;
-  let provider = new anchor.AnchorProvider(
-    solConnection,
-    cloneWindow["solana"],
-    anchor.AnchorProvider.defaultOptions()
-  );
-  const program = new anchor.Program(
-    MugsMarketplace as anchor.Idl,
-    MARKETPLACE_PROGRAM_ID,
-    provider
-  );
-  if (!(await isInitializedUser(payer.publicKey, solConnection))) {
-    console.log(
-      "User PDA is not Initialized. Should Init User PDA for first usage"
-    );
-    await initUserPool(payer);
-  }
-
-  const globalPool: any = await getGlobalState(program);
-
-  const tx = await createClaimAuctionTx(
-    mint,
-    payer.publicKey,
-    globalPool.teamTreasury.slice(0, globalPool.teamCount.toNumber()),
-    program,
-    solConnection
-  );
-  const { blockhash } = await solConnection.getRecentBlockhash("confirmed");
-  tx.feePayer = payer.publicKey;
-  tx.recentBlockhash = blockhash;
-  payer.signTransaction(tx);
-  let txId = await solConnection.sendTransaction(tx, [
-    (payer as NodeWallet).payer,
-  ]);
-  await solConnection.confirmTransaction(txId, "confirmed");
-  console.log("Your transaction signature", txId);
-};
 export const claimAuctionPnft = async (
   payer: AnchorWallet,
   mint: PublicKey
@@ -1173,44 +1002,6 @@ export const updateReserve = async (
   console.log("Your transaction signature", txId);
 };
 
-export const cancelAuction = async (payer: AnchorWallet, mint: PublicKey) => {
-  console.log(mint.toBase58());
-  let cloneWindow = window;
-  let provider = new anchor.AnchorProvider(
-    solConnection,
-    cloneWindow["solana"],
-    anchor.AnchorProvider.defaultOptions()
-  );
-  const program = new anchor.Program(
-    MugsMarketplace as anchor.Idl,
-    MARKETPLACE_PROGRAM_ID,
-    provider
-  );
-  if (!(await isInitializedUser(payer.publicKey, solConnection))) {
-    console.log(
-      "User PDA is not Initialized. Should Init User PDA for first usage"
-    );
-    await initUserPool(payer);
-  }
-
-  const tx = await createCancelAuctionTx(
-    mint,
-    payer.publicKey,
-    program,
-    solConnection
-  );
-  const { blockhash } = await solConnection.getRecentBlockhash("confirmed");
-  tx.feePayer = payer.publicKey;
-  tx.recentBlockhash = blockhash;
-  payer.signTransaction(tx);
-  const simulatieTx = await solConnection.simulateTransaction(tx);
-  console.log("tx =====>", simulatieTx);
-  let txId = await solConnection.sendTransaction(tx, [
-    (payer as NodeWallet).payer,
-  ]);
-  await solConnection.confirmTransaction(txId, "confirmed");
-  console.log("Your transaction signature", txId);
-};
 export const cancelAuctionPnft = async (
   payer: AnchorWallet,
   mint: PublicKey

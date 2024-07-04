@@ -70,7 +70,7 @@ export type OwnNFTDataType = {
   imgUrl: string;
   description: string;
   collectionAddr: string;
-  owner: string;
+  seller: string;
   metaDataUrl: string;
   solPrice: number;
   listed: boolean;
@@ -109,8 +109,10 @@ export interface NFTDataContextType {
   getOwnNFTsState: boolean;
   ownNFTs: OwnNFTDataType[];
   ownListedNFTs: OwnNFTDataType[];
+  listedAllNFTs: OwnNFTDataType[];
   getOwnNFTs: () => Promise<void>;
   getAllListedNFTs: () => Promise<void>;
+  getAllListedNFTsBySeller: () => Promise<void>;
 }
 
 export interface CollectionContextType {
