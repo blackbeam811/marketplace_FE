@@ -1,6 +1,6 @@
 "use client";
 
-import { COINGECKOAPIKEY, COLLECTION_ID, SOLANA_RPC } from "@/config";
+import { COINGECKOAPIKEY, SOLANA_RPC } from "@/config";
 import { NFTDataContextType, OwnNFTDataType } from "@/types/types";
 import { getParsedNftAccountsByOwner } from "@nfteyez/sol-rayz";
 import { web3 } from "@project-serum/anchor";
@@ -13,14 +13,16 @@ import {
   useState,
 } from "react";
 import { CollectionContext } from "./CollectionContext";
-import { getAllNFTs } from "@/utils/contractScript";
+import { getAllListedDataBySeller } from "@/utils/api";
 
 export const NFTDataContext = createContext<NFTDataContextType>({
   walletAddr: "",
   solPrice: 0,
   ownNFTs: [],
+  ownListedNFTs: [],
   getOwnNFTsState: false,
   getOwnNFTs: async () => {},
+  getAllListedNFTs: async () => {},
 });
 
 interface NFTDataProviderProps {
@@ -28,141 +30,170 @@ interface NFTDataProviderProps {
 }
 
 export function NFTDataProvider({ children }: NFTDataProviderProps) {
-  const wallet = useWallet();
   const { publicKey } = useWallet();
   const connection = new web3.Connection(SOLANA_RPC);
   const [solPrice, setSolPrice] = useState(0);
   const [getOwnNFTsState, setGetOwnNFTsState] = useState(false);
   const [ownNFTs, setOwnNFTs] = useState<OwnNFTDataType[]>([]);
+  const [ownListedNFTs, setOwnListedNFTs] = useState<OwnNFTDataType[]>([]);
   const { collectionData } = useContext(CollectionContext);
 
-  const getSolPriceFromCoinGeckio = async () => {
-    const options = {
-      method: "GET",
-      headers: {
-        accept: "application/json",
-        "x-cg-demo-api-key": COINGECKOAPIKEY,
-      },
-    };
-
-    await fetch(
-      "https://api.coingecko.com/api/v3/simple/price?ids=solana&vs_currencies=usd",
-      options
-    )
-      .then((response) => response.json())
-      .then((response) => {
-        const solanaUsd: number = response.solana.usd;
-        setSolPrice(solanaUsd);
-      })
-      .catch((err) => console.error(err));
+  const fetchSolPrice = async () => {
+    try {
+      const response = await fetch(
+        "https://api.coingecko.com/api/v3/simple/price?ids=solana&vs_currencies=usd",
+        {
+          method: "GET",
+          headers: {
+            accept: "application/json",
+            "x-cg-demo-api-key": COINGECKOAPIKEY,
+          },
+        }
+      );
+      if (!response.ok) throw new Error("Failed to fetch Solana price");
+      const data = await response.json();
+      setSolPrice(data.solana.usd);
+    } catch (error) {
+      console.error("Error fetching Solana price:", error);
+    }
   };
 
   const fetchNFTMetadata = async (uri: string): Promise<any> => {
-    const metadataRes = await fetch(uri);
-    if (!metadataRes.ok) {
-      throw new Error("Failed to fetch metadata from URI");
-    }
-    return await metadataRes.json();
+    const response = await fetch(uri);
+    if (!response.ok) throw new Error("Failed to fetch metadata from URI");
+    return await response.json();
   };
 
-  const constructNFTData = (acc: any, metadata: any): OwnNFTDataType => {
+  const constructNFTData = (
+    acc: any,
+    metadata: any,
+    listed: boolean
+  ): OwnNFTDataType => {
     const attribute = metadata.attributes.map((attr: any) => ({
       trait_type: attr.trait_type,
       value: attr.value,
     }));
 
-    return {
-      collectionName: acc.data.name.split("#")[0].toString(),
-      tokenId: acc.data.name.split("#")[1].toString(),
-      mintAddr: acc.mint,
-      imgUrl: metadata.image,
-      description: metadata.description,
-      metaDataUrl: acc.data.uri,
-      collectionAddr: acc.data.creators[0].address,
-      owner: publicKey?.toBase58()!,
-      price: 0,
-      attribute,
-    };
+    return listed
+      ? {
+          collectionName: metadata.name.split("#")[0].toString(),
+          tokenId: metadata.name.split("#")[1].toString(),
+          mintAddr: acc.mintAddr,
+          imgUrl: metadata.image,
+          description: metadata.description,
+          metaDataUrl: acc.metaDataUrl,
+          collectionAddr: acc.collectionAddr,
+          owner: publicKey?.toBase58()!,
+          solPrice: acc.solPrice,
+          attribute,
+          listed,
+        }
+      : {
+          collectionName: acc.data.name.split("#")[0].toString(),
+          tokenId: acc.data.name.split("#")[1].toString(),
+          mintAddr: acc.mint,
+          imgUrl: metadata.image,
+          description: metadata.description,
+          metaDataUrl: acc.data.uri,
+          collectionAddr: acc.data.creators[0].address,
+          owner: publicKey?.toBase58()!,
+          solPrice: 0,
+          attribute,
+          listed,
+        };
   };
 
   const getOwnNFTs = async (): Promise<void> => {
-    setGetOwnNFTsState(true);
-    if (!wallet.publicKey) return;
+    console.log("start getting my own nfts");
+    if (!publicKey) return;
+    try {
+      setGetOwnNFTsState(true);
+      const listedData = await getAllListedDataBySeller(publicKey.toBase58());
+      const nftList = await getParsedNftAccountsByOwner({
+        publicAddress: publicKey.toBase58(),
+        connection,
+      });
+      const data: OwnNFTDataType[] = [];
+      await Promise.all(
+        nftList
+          .filter(
+            (acc) =>
+              acc.data.creators !== undefined &&
+              collectionData.some(
+                (item) => item.collectionAddr === acc.data.creators[0].address
+              )
+          )
+          .map(async (nfts) => {
+            try {
+              const metadata = await fetchNFTMetadata(nfts.data.uri);
+              const nft = constructNFTData(nfts, metadata, false);
+              const isListed = listedData.some(
+                (item: any) => item.mintAddr === nft.mintAddr
+              );
+              if (!isListed && nft.tokenId) data.push(nft);
+            } catch (error) {
+              console.error("Error fetching NFT metadata:", error);
+            }
+          })
+      );
+      setOwnNFTs(data);
+    } catch (error) {
+      console.error("Error fetching own NFTs:", error);
+    } finally {
+      setGetOwnNFTsState(false);
+    }
+  };
 
-    const nftList = await getParsedNftAccountsByOwner({
-      publicAddress: wallet.publicKey.toBase58(),
-      connection: connection,
-    });
-    console.log("collectionData2 ===> ", collectionData);
-    const data: OwnNFTDataType[] = [];
-    await Promise.all(
-      nftList
-        .filter(
-          (acc) =>
-            acc.data.creators !== undefined &&
-            collectionData.filter(
-              (item) => item.collectionAddr === acc.data.creators[0].address
-            )
-        )
-        .map(async (acc) => {
+  const getAllListedNFTs = async (): Promise<void> => {
+    if (!publicKey) return;
+    try {
+      const listedData = await getAllListedDataBySeller(publicKey.toBase58());
+      const data: OwnNFTDataType[] = await Promise.all(
+        listedData.map(async (acc: any) => {
           try {
-            const metadata = await fetchNFTMetadata(acc.data.uri);
-            const nft = constructNFTData(acc, metadata);
-            nft.tokenId && data.push(nft);
+            const metadata = await fetchNFTMetadata(acc.metaDataUrl);
+            return constructNFTData(acc, metadata, true);
           } catch (error) {
             console.error("Error fetching NFT metadata:", error);
           }
         })
-    );
-    console.log("getOwnNFTs ===> ", data);
+      );
 
-    setOwnNFTs(data);
-    setGetOwnNFTsState(false);
-  };
-
-  const getAllListedNFts = async (): Promise<void> => {
-    const data = await getAllNFTs();
-    console.log("listedData =====> ", data);
+      setOwnListedNFTs(data.filter((nft) => nft.tokenId));
+    } catch (error) {
+      console.error("Error fetching listed NFTs:", error);
+    }
   };
 
   useEffect(() => {
-    const fetchSolPrice = async () => {
-      try {
-        await getSolPriceFromCoinGeckio();
-      } catch (error) {
-        console.error("Error fetching Sol Price:", error);
-      }
-    };
-
-    const interval = setInterval(fetchSolPrice, 6000); // Call the function every 60 seconds (1 minute)
-
-    // Clean up the interval when the component is unmounted
+    fetchSolPrice();
+    const interval = setInterval(fetchSolPrice, 60000); // Call every 60 seconds
     return () => clearInterval(interval);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
-    if (wallet) {
-      const fetchData = async () => {
+    const fetchData = async () => {
+      if (publicKey) {
         try {
           await getOwnNFTs();
-          await getAllListedNFts();
+          await getAllListedNFTs();
         } catch (error) {
-          console.error("Error fetching Own NFTs:", error);
+          console.error("Error fetching NFTs:", error);
         }
-      };
+      }
+    };
 
-      fetchData(); // Fetch data immediately when component mounts
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [wallet]);
+    fetchData();
+  }, [publicKey, collectionData]);
 
   const NFTDataContextValue: NFTDataContextType = {
     walletAddr: publicKey?.toBase58(),
     solPrice,
     getOwnNFTsState,
     ownNFTs,
+    ownListedNFTs,
     getOwnNFTs,
+    getAllListedNFTs,
   };
 
   return (

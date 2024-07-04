@@ -12,6 +12,8 @@ const NFTCard: FC<NFTCardType> = ({
   tokenId,
   mintAddr,
   collectionName,
+  solPrice,
+  state,
 }) => {
   const { openNFTDetailModal } = useContext(ModalContext);
   const [seleted, setSeleted] = useState(false);
@@ -43,16 +45,30 @@ const NFTCard: FC<NFTCardType> = ({
             )}
           </div>
         </div>
-        <div className="w-full flex items-center justify-between pr-2">
-          <p className="text-white text-left px-2 text-lg">
-            {collectionName} #{tokenId}
-          </p>
-          <span
-            className="cursor-pointer rounded-md text-gray-300 hover:text-white duration-300"
-            onClick={() => openNFTDetailModal(mintAddr, mintAddr)}
-          >
-            <VscScreenFull size={22} />
-          </span>
+        <div className="w-full flex items-center justify-between pr-2 flex-col">
+          <div className="w-full flex items-center justify-between">
+            <p className="text-gray-300 text-left px-2 text-md uppercase">
+              {state}
+            </p>
+            <p
+              className={`text-gray-100 text-left px-2 text-md uppercase ${
+                state === "unlisted" && "hidden"
+              }`}
+            >
+              {solPrice} sol
+            </p>
+          </div>
+          <div className="w-full flex items-center justify-between">
+            <p className="text-white text-left px-2 text-lg">
+              {collectionName} #{tokenId}
+            </p>
+            <span
+              className="cursor-pointer rounded-md text-gray-300 hover:text-white duration-300"
+              onClick={() => openNFTDetailModal(mintAddr, mintAddr)}
+            >
+              <VscScreenFull size={22} />
+            </span>
+          </div>
         </div>
       </div>
     </>

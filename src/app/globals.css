@@ -16,9 +16,9 @@ body {
 }
 
 /*Customize react-responsive-modal style*/
-.react-responsive-modal-container {
+/* .react-responsive-modal-container {
   height: auto !important;
-}
+} */
 .react-responsive-modal-modal {
   border-radius: 10px !important;
   background-color: #022d19 !important;

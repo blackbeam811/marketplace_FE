@@ -1,23 +1,29 @@
-"use client";
+/* eslint-disable @next/next/no-img-element */
 
-import { useState } from "react";
+"use client";
+import { useContext, useEffect, useState } from "react";
 import Image from "next/image";
 import { activityTableData } from "@/data/activityTableData";
 import { activityTableTH } from "@/data/tableTHData";
 import { MdOutlineNavigateNext } from "react-icons/md";
 import { BiSkipNext } from "react-icons/bi";
+import { ActivityContext } from "@/contexts/ActivityContext";
+import { ActivityDataType } from "@/types/types";
 
-export default function ActivityTable() {
+export default function ActivityTable(props: {
+  data: ActivityDataType[] | undefined;
+}) {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(8);
+  const [currentItems, setCurrentItems] = useState<any[]>([]);
 
   // Calculate the current items to display
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = activityTableData.slice(
-    indexOfFirstItem,
-    indexOfLastItem
-  );
+  useEffect(() => {
+    if (props.data === undefined) return;
+    setCurrentItems(props.data.slice(indexOfFirstItem, indexOfLastItem));
+  }, [props.data, indexOfLastItem, indexOfFirstItem]);
 
   // Change page
   const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
@@ -35,7 +41,7 @@ export default function ActivityTable() {
 
   return (
     <div className="w-full flex items-center justify-center gap-2 flex-col">
-      <div className="w-full overflow-x-auto border border-customborder rounded-md mb-4 min-h-[40vh] relative">
+      <div className="w-full overflow-x-auto border border-customborder rounded-md mb-4 min-h-[10vh] relative">
         <table className="min-w-[1000px] lg:w-full bg-transparent">
           <thead className="border-b border-customborder">
             <tr>
@@ -63,34 +69,50 @@ export default function ActivityTable() {
                 </td>
                 <td className="relative py-1 px-4 text-white font-light text-md flex items-center justify-start gap-3">
                   <div className="relative w-[30px] h-[30px]">
-                    <Image
-                      fill
+                    <img
                       src={row.imgUrl}
                       alt="Collection Image"
-                      className="object-cover"
+                      className="object-cover w-full h-full"
                     />
                   </div>
-                  {row.name}
+                  {row.tokenId}
                 </td>
                 <td className="py-2 px-4 text-[#8DEEC4] uppercase">
-                  {row.type === 0 ? "list" : row.type === 1 ? "Unlist" : "Sold"}
+                  {row.txType === 0
+                    ? "list"
+                    : row.txType === 1
+                    ? "Unlist"
+                    : "Sold"}
                 </td>
-                <td className="py-2 px-4 text-[#DD7A98]">{row.total} SOL</td>
+                <td className="py-2 px-4 text-[#DD7A98]">{row.solPrice} SOL</td>
                 <td className="py-2 px-4 text-white font-light">
                   {row.seller.slice(0, 4) + "...." + row.seller.slice(-4)}
                 </td>
                 <td className="py-2 px-4 text-white font-light">
-                  {row.buyer.slice(0, 4) + "...." + row.buyer.slice(-4)}
+                  {row.buyer !== ""
+                    ? row.buyer.slice(0, 4) + "......." + row.buyer.slice(-4)
+                    : "...."}
                 </td>
                 <td className="py-2 px-4 text-white font-light">
-                  {row.time.toLocaleString()}
+                  {new Date(row.updatedAt).toLocaleString()}
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
+        <div
+          className={`${
+            props.data?.length !== 0 && "hidden"
+          } w-full flex items-center justify-center my-5`}
+        >
+          <span className="text-[#ffffff]">Nothing to show 😒</span>
+        </div>
       </div>
-      <div className="flex justify-start items-center p-4 bg-[#022D19]">
+      <div
+        className={`flex justify-start items-center p-4 bg-[#022D19] ${
+          props.data !== undefined && props.data?.length < 5 && "hidden"
+        }`}
+      >
         <div className="flex items-center gap-2">
           <button
             onClick={() => paginate(1)}

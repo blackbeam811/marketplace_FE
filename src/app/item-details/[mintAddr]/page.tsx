@@ -14,8 +14,6 @@ import { MdOutlineLocalOffer } from "react-icons/md";
 import MainPageLayout from "@/components/Layout";
 import { ArrowIcon } from "@/components/SvgIcons";
 import ActivityTable from "@/components/ActivityTable";
-import MobileItemMultiSelectBar from "@/components/ItemMultiSelectBar/MobileItemMultiSelectBar";
-import MobileTabsTip from "@/components/TabsTip/MobileTabsTip";
 import { NFTDataContext } from "@/contexts/NFTDataContext";
 import { useParams } from "next/navigation";
 import { OwnNFTDataType } from "@/types/types";
@@ -242,7 +240,7 @@ const ItemDetails: NextPage = () => {
             </span>
           </div>
           <div className={`w-full ${!openOfferTable && "hidden"}`}>
-            <ActivityTable />
+            {/* <ActivityTable /> */}
           </div>
         </div>
         <div className="w-full flex items-center justify-center gap-2 flex-col md:px-10 px-3 mt-3">
@@ -263,7 +261,7 @@ const ItemDetails: NextPage = () => {
             </span>
           </div>
           <div className={`w-full ${!openActivityTag && "hidden"}`}>
-            <ActivityTable />
+            {/* <ActivityTable /> */}
           </div>
         </div>
       </div>

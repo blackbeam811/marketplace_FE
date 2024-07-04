@@ -1,7 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { collectionTableTH } from "@/data/tableTHData";
 import { useContext } from "react";
 import { CollectionContext } from "@/contexts/CollectionContext";
@@ -9,7 +8,6 @@ import { PINATA_URL } from "@/config";
 import { NormalSpinner } from "../Spinners";
 
 export default function CollectionTable() {
-  const router = useRouter();
   const { collectionData, collectionDataState } = useContext(CollectionContext);
   return (
     <div className="w-full overflow-x-auto">

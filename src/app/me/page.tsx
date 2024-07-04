@@ -1,6 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
-import { Suspense, useContext, useMemo } from "react";
+import { Suspense, useContext, useEffect, useMemo, useState } from "react";
 import { NextPage } from "next";
 import { useSearchParams } from "next/navigation";
 import { useWallet } from "@solana/wallet-adapter-react";
@@ -25,15 +25,32 @@ import {
 import MobileItemMultiSelectBar from "@/components/ItemMultiSelectBar/MobileItemMultiSelectBar";
 import MobileTabsTip from "@/components/TabsTip/MobileTabsTip";
 import ItemMultiSelectbar from "@/components/ItemMultiSelectBar";
-import ListNFTFilterSelect from "@/components/ListNFTFilterSelect";
+import { OwnNFTDataType } from "@/types/types";
+import { ActivityContext } from "@/contexts/ActivityContext";
 
 const MyItem: NextPage = () => {
   const param = useSearchParams();
   const search = param.get("activeTab") || "items";
+  const showQuery = useMemo(
+    () => param.getAll("item") || ["unlisted"],
+    [param]
+  );
   const { publicKey, connected } = useWallet();
-  const { ownNFTs, getOwnNFTsState } = useContext(NFTDataContext);
+  const { ownNFTs, getOwnNFTsState, ownListedNFTs } =
+    useContext(NFTDataContext);
+  const [showNFTs, setShowNFTs] = useState<OwnNFTDataType[]>([]);
 
-  const memoizedOwnNFTs = useMemo(() => ownNFTs, [ownNFTs]);
+  useEffect(() => {
+    const updateShowNFTs = () => {
+      if (showQuery[0] === "listed") {
+        setShowNFTs(ownListedNFTs);
+      } else {
+        setShowNFTs(ownNFTs);
+      }
+    };
+
+    updateShowNFTs();
+  }, [showQuery, ownNFTs, ownListedNFTs]);
 
   return (
     <MainPageLayout>
@@ -45,13 +62,15 @@ const MyItem: NextPage = () => {
         <div className="w-full flex items-start justify-start mt-5 gap-4 flex-col px-2">
           <MyItemDetail />
           <TabsTip />
-          <div className="w-full flex items-center justify-between flex-col md:flex-row gap-3">
-            <div className="flex items-center justify-center gap-2 w-full">
-              <ListNFTFilterSelect />
+          <div className="w-full flex items-center justify-start flex-col md:flex-row gap-3">
+            <div
+              className={`flex items-center justify-center gap-2 w-full ${
+                (search === "activity" || search === "offers") && "hidden"
+              }`}
+            >
+              {/* <ListNFTFilterSelect /> */}
               <div
-                className={`w-full flex items-center justify-start px-2 rounded-md border border-customborder ${
-                  (search === "activity" || search === "offers") && "hidden"
-                }`}
+                className={`w-full flex items-center justify-start px-2 rounded-md border border-customborder `}
               >
                 <BiSearch color="white" />
                 <input
@@ -65,8 +84,14 @@ const MyItem: NextPage = () => {
                 (search === "activity" || search === "offers") && "hidden"
               } flex gap-2`}
             >
-              <CollectionFilterSelect options={collectionFilterOptions} />
-              <CollectionFilterSelect options={myItemFilterOptions} />
+              <CollectionFilterSelect
+                options={collectionFilterOptions}
+                filterType={"price"}
+              />
+              <CollectionFilterSelect
+                options={myItemFilterOptions}
+                filterType={"item"}
+              />
             </div>
 
             <div className={`${search !== "offers" && "hidden"} `}>
@@ -95,13 +120,15 @@ const MyItem: NextPage = () => {
                   getOwnNFTsState && "hidden"
                 }`}
               >
-                {ownNFTs?.map((item, index) => (
+                {showNFTs?.map((item, index) => (
                   <NFTCard
                     imgUrl={item.imgUrl}
                     collectionName={item.collectionName}
                     tokenId={item.tokenId}
                     key={index}
                     mintAddr={item.mintAddr}
+                    solPrice={item.solPrice}
+                    state={item.solPrice === 0 ? "unlisted" : "listed"}
                   />
                 ))}
               </div>
@@ -111,22 +138,22 @@ const MyItem: NextPage = () => {
                 search === "offers" ? "block" : "hidden"
               }`}
             >
-              <ActivityTable />
+              {/* <ActivityTable /> */}
             </div>
             <div
               className={`w-full flex items-center justify-center ${
                 search === "activity" ? "block" : "hidden"
               }`}
             >
-              <ActivityTable />
+              {/* <ActivityTable /> */}
             </div>
           </div>
           <div
             className={`${
-              connected && !getOwnNFTsState && memoizedOwnNFTs.length === 0
+              connected && !getOwnNFTsState && showNFTs.length === 0
                 ? "flex"
                 : "hidden"
-            } items-center justify-center min-h-[70vh] w-full`}
+            } items-center justify-center min-h-[40vh] w-full`}
           >
             <p className="text-gray-400 text-center">
               Nothing to show
@@ -151,7 +178,7 @@ const MyItem: NextPage = () => {
   );
 };
 
-export default function MePage() {
+export default function MyItemPage() {
   return (
     <Suspense>
       <MyItem />

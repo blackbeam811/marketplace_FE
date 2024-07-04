@@ -2,7 +2,7 @@
 "use client";
 import { NextPage } from "next";
 import MainPageLayout from "@/components/Layout";
-import { useRef, useState } from "react";
+import { Suspense, useRef, useState } from "react";
 import { UploadIcon } from "@/components/SvgIcons/UploadIcon";
 import { PINATA_APIKEY } from "@/config";
 import { CollectionDataType } from "@/types/types";

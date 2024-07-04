@@ -180,7 +180,7 @@ const Home: NextPage = () => {
             mintArgs: {
               solPayment: some({
                 destination: publicKey(
-                  "6jojFKxL5RiY1giD8hEXcL7b2ANsHLqF1YboZEBj1qcP"
+                  "8H9fe8eHS8R1tytNUCy5NrVe2DFnLGytkD16gD666EUu"
                 ),
               }),
             },
