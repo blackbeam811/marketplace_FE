@@ -13,15 +13,17 @@ import {
   useState,
 } from "react";
 import { CollectionContext } from "./CollectionContext";
-import { getAllListedDataBySeller } from "@/utils/api";
+import { getAllListed, getAllListedDataBySeller } from "@/utils/api";
 
 export const NFTDataContext = createContext<NFTDataContextType>({
   walletAddr: "",
   solPrice: 0,
   ownNFTs: [],
   ownListedNFTs: [],
+  listedAllNFTs: [],
   getOwnNFTsState: false,
   getOwnNFTs: async () => {},
+  getAllListedNFTsBySeller: async () => {},
   getAllListedNFTs: async () => {},
 });
 
@@ -36,6 +38,7 @@ export function NFTDataProvider({ children }: NFTDataProviderProps) {
   const [getOwnNFTsState, setGetOwnNFTsState] = useState(false);
   const [ownNFTs, setOwnNFTs] = useState<OwnNFTDataType[]>([]);
   const [ownListedNFTs, setOwnListedNFTs] = useState<OwnNFTDataType[]>([]);
+  const [listedAllNFTs, setListedAllNFTs] = useState<OwnNFTDataType[]>([]);
   const { collectionData } = useContext(CollectionContext);
 
   const fetchSolPrice = async () => {
@@ -83,7 +86,7 @@ export function NFTDataProvider({ children }: NFTDataProviderProps) {
           description: metadata.description,
           metaDataUrl: acc.metaDataUrl,
           collectionAddr: acc.collectionAddr,
-          owner: publicKey?.toBase58()!,
+          seller: acc.seller,
           solPrice: acc.solPrice,
           attribute,
           listed,
@@ -96,7 +99,7 @@ export function NFTDataProvider({ children }: NFTDataProviderProps) {
           description: metadata.description,
           metaDataUrl: acc.data.uri,
           collectionAddr: acc.data.creators[0].address,
-          owner: publicKey?.toBase58()!,
+          seller: publicKey?.toBase58()!,
           solPrice: 0,
           attribute,
           listed,
@@ -104,7 +107,6 @@ export function NFTDataProvider({ children }: NFTDataProviderProps) {
   };
 
   const getOwnNFTs = async (): Promise<void> => {
-    console.log("start getting my own nfts");
     if (!publicKey) return;
     try {
       setGetOwnNFTsState(true);
@@ -144,22 +146,52 @@ export function NFTDataProvider({ children }: NFTDataProviderProps) {
     }
   };
 
-  const getAllListedNFTs = async (): Promise<void> => {
+  const getAllListedNFTsBySeller = async (): Promise<void> => {
     if (!publicKey) return;
     try {
-      const listedData = await getAllListedDataBySeller(publicKey.toBase58());
+      let listedData = [];
+      listedData = await getAllListedDataBySeller(publicKey.toBase58());
       const data: OwnNFTDataType[] = await Promise.all(
-        listedData.map(async (acc: any) => {
-          try {
-            const metadata = await fetchNFTMetadata(acc.metaDataUrl);
-            return constructNFTData(acc, metadata, true);
-          } catch (error) {
-            console.error("Error fetching NFT metadata:", error);
-          }
-        })
+        listedData.length !== 0
+          ? listedData.map(async (acc: any) => {
+              try {
+                const metadata = await fetchNFTMetadata(acc.metaDataUrl);
+                return constructNFTData(acc, metadata, true);
+              } catch (error) {
+                console.error("Error fetching NFT metadata:", error);
+                return null; // Return null if there's an error
+              }
+            })
+          : [] // Return an empty array if listedData is empty
       );
 
-      setOwnListedNFTs(data.filter((nft) => nft.tokenId));
+      setOwnListedNFTs(data.filter((nft) => nft && nft.tokenId)); // Filter out null values
+    } catch (error) {
+      console.error("Error fetching listed NFTs:", error);
+    }
+  };
+
+  const getAllListedNFTs = async (): Promise<void> => {
+    try {
+      let listedData = [];
+      listedData = await getAllListed();
+      console.log("========= >listedData", listedData);
+      const data: OwnNFTDataType[] = await Promise.all(
+        listedData.length !== 0
+          ? listedData.map(async (acc: any) => {
+              try {
+                const metadata = await fetchNFTMetadata(acc.metaDataUrl);
+                return constructNFTData(acc, metadata, true);
+              } catch (error) {
+                console.error("Error fetching NFT metadata:", error);
+                return null; // Return null if there's an error
+              }
+            })
+          : [] // Return an empty array if listedData is empty
+      );
+      console.log("All listed NFTs ==> ", data);
+
+      setListedAllNFTs(data.filter((nft) => nft && nft.tokenId)); // Filter out null values
     } catch (error) {
       console.error("Error fetching listed NFTs:", error);
     }
@@ -173,10 +205,22 @@ export function NFTDataProvider({ children }: NFTDataProviderProps) {
 
   useEffect(() => {
     const fetchData = async () => {
+      try {
+        await getAllListedNFTs();
+      } catch (error) {
+        console.error("Error fetching NFTs:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    const fetchData = async () => {
       if (publicKey) {
         try {
           await getOwnNFTs();
-          await getAllListedNFTs();
+          await getAllListedNFTsBySeller();
         } catch (error) {
           console.error("Error fetching NFTs:", error);
         }
@@ -192,7 +236,9 @@ export function NFTDataProvider({ children }: NFTDataProviderProps) {
     getOwnNFTsState,
     ownNFTs,
     ownListedNFTs,
+    listedAllNFTs,
     getOwnNFTs,
+    getAllListedNFTsBySeller,
     getAllListedNFTs,
   };
 

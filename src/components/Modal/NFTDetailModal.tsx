@@ -35,8 +35,13 @@ const NFTDetailModal = () => {
   const param = useSearchParams();
   const pathName = usePathname();
   const currentRouter = pathName.split("/")[1];
-  const { ownNFTs, ownListedNFTs, getAllListedNFTs, getOwnNFTs } =
-    useContext(NFTDataContext);
+  const {
+    ownNFTs,
+    ownListedNFTs,
+    getAllListedNFTs,
+    getOwnNFTs,
+    getAllListedNFTsBySeller,
+  } = useContext(NFTDataContext);
   const { openFunctionLoading, closeFunctionLoading } =
     useContext(LoadingContext);
   const { closeNFTDetailModal, nftDetailModalShow, selectedNFTDetail } =
@@ -81,31 +86,39 @@ const NFTDetailModal = () => {
   // NFT List Function
   const handlelistMyNFTFunc = async () => {
     if (wallet && selectedNFT !== undefined) {
-      try {
-        openFunctionLoading();
-        selectedNFT.solPrice = updatedPrice;
-        const tx = await listPNftForSale(wallet, [selectedNFT]);
-        if (tx) {
-          const result = await listNft(tx.transactions, tx.listData);
-          if (result.type === "success") {
-            await getOwnNFTs();
-            await getAllListedNFTs();
-            await getAllActivityData();
-            closeFunctionLoading();
-            closeNFTDetailModal();
-            successAlert("Success");
+      if (updatedPrice === 0) {
+        errorAlert("Please enter the price.");
+      } else {
+        try {
+          openFunctionLoading();
+          selectedNFT.solPrice = updatedPrice;
+          const tx = await listPNftForSale(wallet, [selectedNFT]);
+          if (tx) {
+            const result = await listNft(tx.transactions, tx.listData);
+            if (result.type === "success") {
+              await getOwnNFTs();
+              await getAllListedNFTs();
+              await getAllListedNFTsBySeller();
+              await getAllActivityData();
+              closeFunctionLoading();
+              closeNFTDetailModal();
+              successAlert("Success");
+            } else {
+              selectedNFT.solPrice = 0;
+              closeFunctionLoading();
+              errorAlert("Something went wrong.");
+            }
           } else {
+            selectedNFT.solPrice = 0;
             closeFunctionLoading();
             errorAlert("Something went wrong.");
           }
-        } else {
+        } catch (e) {
+          selectedNFT.solPrice = 0;
+          console.log("err =>", e);
           closeFunctionLoading();
           errorAlert("Something went wrong.");
         }
-      } catch (e) {
-        console.log("err =>", e);
-        closeFunctionLoading();
-        errorAlert("Something went wrong.");
       }
     }
   };
@@ -125,6 +138,8 @@ const NFTDetailModal = () => {
           if (result.type === "success") {
             await getOwnNFTs();
             await getAllListedNFTs();
+            await getAllListedNFTsBySeller();
+            await getAllActivityData();
             closeFunctionLoading();
             closeNFTDetailModal();
             successAlert("Success");
@@ -147,33 +162,45 @@ const NFTDetailModal = () => {
   // Listed NFT Price Update Function
   const handleUpdatePriceFunc = async () => {
     if (wallet && selectedNFT !== undefined) {
-      try {
-        openFunctionLoading();
-        selectedNFT.solPrice = updatedPrice;
-        const tx = await setPrice(wallet, selectedNFT);
-        if (tx) {
-          const result = await updatePrice(
-            tx.transactions,
-            tx.updatedPriceItems,
-            tx.updatedPriceItems.mintAddr
-          );
-          if (result.type === "success") {
-            await getAllListedNFTs();
-            closeFunctionLoading();
-            closeNFTDetailModal();
-            successAlert("Success");
+      if (updatedPrice === 0) {
+        errorAlert("Please enter the price.");
+      } else {
+        const currentPrice = selectedNFT.solPrice;
+        try {
+          openFunctionLoading();
+          selectedNFT.solPrice = updatedPrice;
+          const tx = await setPrice(wallet, selectedNFT);
+          if (tx) {
+            const result = await updatePrice(
+              tx.transactions,
+              tx.updatedPriceItems,
+              tx.updatedPriceItems.mintAddr
+            );
+            if (result.type === "success") {
+              await getOwnNFTs();
+              await getAllListedNFTs();
+              await getAllListedNFTsBySeller();
+              await getAllActivityData();
+
+              closeFunctionLoading();
+              closeNFTDetailModal();
+              successAlert("Success");
+            } else {
+              selectedNFT.solPrice = currentPrice;
+              closeFunctionLoading();
+              errorAlert("Something went wrong.");
+            }
           } else {
+            selectedNFT.solPrice = currentPrice;
             closeFunctionLoading();
             errorAlert("Something went wrong.");
           }
-        } else {
-          closeFunctionLoading();
+        } catch (e) {
+          console.log("err =>", e);
+          selectedNFT.solPrice = currentPrice;
           errorAlert("Something went wrong.");
+          closeFunctionLoading();
         }
-      } catch (e) {
-        console.log("err =>", e);
-        errorAlert("Something went wrong.");
-        closeFunctionLoading();
       }
     }
   };
@@ -344,9 +371,9 @@ const NFTDetailModal = () => {
                     <span className="text-white">
                       {" "}
                       {selectedNFT &&
-                        selectedNFT.owner.slice(0, 4) +
+                        selectedNFT.seller.slice(0, 4) +
                           " ... " +
-                          selectedNFT.owner.slice(-4)}
+                          selectedNFT.seller.slice(-4)}
                     </span>
                   </div>
                 </div>

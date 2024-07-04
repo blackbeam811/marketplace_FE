@@ -13,39 +13,223 @@ import { MdOutlineLocalOffer } from "react-icons/md";
 
 import MainPageLayout from "@/components/Layout";
 import { ArrowIcon } from "@/components/SvgIcons";
-import ActivityTable from "@/components/ActivityTable";
 import { NFTDataContext } from "@/contexts/NFTDataContext";
 import { useParams } from "next/navigation";
 import { OwnNFTDataType } from "@/types/types";
-import { DiscordSpinner, FoldingCubeSpinner } from "@/components/Spinners";
+import {
+  DiscordSpinner,
+  FoldingCubeSpinner,
+  NormalSpinner,
+} from "@/components/Spinners";
+import { useAnchorWallet } from "@solana/wallet-adapter-react";
+import { LoadingContext } from "@/contexts/LoadingContext";
+import {
+  listPNftForSale,
+  pNftDelist,
+  purchasePNft,
+  setPrice,
+} from "@/utils/contractScript";
+import { delistNft, listNft, purchaseNFT, updatePrice } from "@/utils/api";
+import { ActivityContext } from "@/contexts/ActivityContext";
+import { errorAlert, successAlert } from "@/components/ToastGroup";
 
 const ItemDetails: NextPage = () => {
   const router = useParams();
   const { mintAddr } = router;
+  const wallet = useAnchorWallet();
 
   const [openAboutTag, setOpenAboutTag] = useState(false);
   const [openOfferTable, setOpenOfferTable] = useState(false);
   const [openAttributeTag, setOpenAttributeTag] = useState(false);
   const [openDetailTag, setOpenDetailTag] = useState(false);
   const [openActivityTag, setOpenActivityTag] = useState(false);
-  const [itemDetail, setItemDetail] = useState<OwnNFTDataType | undefined>(
-    undefined
-  );
+  const [itemDetail, setItemDetail] = useState<OwnNFTDataType>();
+  const [updatedPrice, setUpdatedPrice] = useState(0);
 
-  const { getOwnNFTs, ownNFTs } = useContext(NFTDataContext);
-
-  const item = useMemo(() => {
-    if (ownNFTs.length !== 0 && mintAddr !== "") {
-      return ownNFTs.filter((items) => items.mintAddr === mintAddr);
-    }
-  }, [ownNFTs, mintAddr]);
+  const {
+    ownNFTs,
+    ownListedNFTs,
+    listedAllNFTs,
+    getAllListedNFTsBySeller,
+    getAllListedNFTs,
+    getOwnNFTs,
+  } = useContext(NFTDataContext);
+  const { openFunctionLoading, closeFunctionLoading } =
+    useContext(LoadingContext);
+  const { activityData, getAllActivityData } = useContext(ActivityContext);
 
   useEffect(() => {
-    if (item && item.length !== 0) {
-      console.log("item =>", item);
+    console.log("ownNFTs ==>", ownNFTs);
+    console.log("listedAllNFTs ==>", listedAllNFTs);
+    console.log("mintAddr ==>", mintAddr);
+    if (ownNFTs.length === 0) {
+      const item = listedAllNFTs.filter((items) => items.mintAddr === mintAddr);
+      console.log("1");
+      console.log("item ===>", item);
       setItemDetail(item[0]);
+    } else {
+      if (ownNFTs.some((items) => items.mintAddr === mintAddr)) {
+        const item = ownNFTs.filter((items) => items.mintAddr === mintAddr);
+        setItemDetail(item[0]);
+        console.log("2");
+      } else {
+        const item = listedAllNFTs.filter(
+          (items) => items.mintAddr === mintAddr
+        );
+        setItemDetail(item[0]);
+        console.log("3");
+      }
     }
-  }, [item]);
+  }, [ownNFTs, mintAddr, listedAllNFTs]);
+
+  // NFT List Function
+  const handlelistMyNFTFunc = async () => {
+    if (wallet && itemDetail !== undefined) {
+      if (updatedPrice === 0) {
+        errorAlert("Please enter the price.");
+      } else {
+        try {
+          openFunctionLoading();
+          itemDetail.solPrice = updatedPrice;
+          const tx = await listPNftForSale(wallet, [itemDetail]);
+          if (tx) {
+            const result = await listNft(tx.transactions, tx.listData);
+            if (result.type === "success") {
+              await getOwnNFTs();
+              await getAllListedNFTsBySeller();
+              await getAllActivityData();
+              await getAllListedNFTs();
+              closeFunctionLoading();
+              successAlert("Success");
+            } else {
+              itemDetail.solPrice = 0;
+              closeFunctionLoading();
+              errorAlert("Something went wrong.");
+            }
+          } else {
+            itemDetail.solPrice = 0;
+            closeFunctionLoading();
+            errorAlert("Something went wrong.");
+          }
+        } catch (e) {
+          itemDetail.solPrice = 0;
+          console.log("err =>", e);
+          closeFunctionLoading();
+          errorAlert("Something went wrong.");
+        }
+      }
+    }
+  };
+
+  // NFT Delist Function
+  const handleDelistMyNFTFunc = async () => {
+    if (wallet && itemDetail !== undefined) {
+      try {
+        openFunctionLoading();
+        const tx = await pNftDelist(wallet, [itemDetail]);
+        if (tx) {
+          const result = await delistNft(
+            tx.transactions,
+            tx.delistData,
+            tx.mintAddrArray
+          );
+          if (result.type === "success") {
+            await getOwnNFTs();
+            await getAllListedNFTsBySeller();
+            await getAllActivityData();
+            await getAllListedNFTs();
+            closeFunctionLoading();
+            successAlert("Success");
+          } else {
+            closeFunctionLoading();
+            errorAlert("Something went wrong.");
+          }
+        } else {
+          closeFunctionLoading();
+          errorAlert("Something went wrong.");
+        }
+      } catch (e) {
+        console.log("err =>", e);
+        errorAlert("Something went wrong.");
+        closeFunctionLoading();
+      }
+    }
+  };
+
+  // Listed NFT Price Update Function
+  const handleUpdatePriceFunc = async () => {
+    if (wallet && itemDetail !== undefined) {
+      if (updatedPrice === 0) errorAlert("Please enter the value.");
+      try {
+        openFunctionLoading();
+        itemDetail.solPrice = updatedPrice;
+        const tx = await setPrice(wallet, itemDetail);
+        if (tx) {
+          const result = await updatePrice(
+            tx.transactions,
+            tx.updatedPriceItems,
+            tx.updatedPriceItems.mintAddr
+          );
+          if (result.type === "success") {
+            await getOwnNFTs();
+            await getAllListedNFTsBySeller();
+            await getAllActivityData();
+            await getAllListedNFTs();
+            closeFunctionLoading();
+            successAlert("Success");
+          } else {
+            closeFunctionLoading();
+            errorAlert("Something went wrong.");
+          }
+        } else {
+          closeFunctionLoading();
+          errorAlert("Something went wrong.");
+        }
+      } catch (e) {
+        console.log("err =>", e);
+        errorAlert("Something went wrong.");
+        closeFunctionLoading();
+      }
+    }
+  };
+
+  // Make Offer Function
+  const handleMakeOffer = async () => {};
+
+  // Buy NFT Function
+  const handleBuyNFTFunc = async () => {
+    if (wallet && itemDetail !== undefined) {
+      try {
+        openFunctionLoading();
+        const tx = await purchasePNft(wallet, [itemDetail]);
+        if (tx) {
+          const result = await purchaseNFT(
+            tx.transactions,
+            tx.purchaseData,
+            tx.mintAddrArray
+          );
+          if (result.type === "success") {
+            await getOwnNFTs();
+            await getAllListedNFTsBySeller();
+            await getAllActivityData();
+            await getAllListedNFTs();
+            closeFunctionLoading();
+            successAlert("Success");
+          } else {
+            closeFunctionLoading();
+            errorAlert("Something went wrong.");
+          }
+        } else {
+          closeFunctionLoading();
+          errorAlert("Something went wrong.");
+        }
+      } catch (e) {
+        console.log("err =>", e);
+        errorAlert("Something went wrong.");
+        closeFunctionLoading();
+      }
+    }
+  };
 
   return (
     <MainPageLayout>
@@ -54,7 +238,7 @@ const ItemDetails: NextPage = () => {
           itemDetail !== undefined && "hidden"
         }`}
       >
-        <DiscordSpinner />
+        <NormalSpinner width={7} height={7} />
       </div>
       <div
         className={`w-full max-w-[1240px] pt-3 pb-12 relative ${
@@ -80,7 +264,7 @@ const ItemDetails: NextPage = () => {
                 {itemDetail && itemDetail.collectionName} #73
               </p>
             </div>
-            <div className="w-full flex items-center justify-start gap-2 rounded-md bg-darkgreen border border-customborder flex-col p-3">
+            <div className="w-full flex items-start justify-start gap-2 rounded-md bg-darkgreen border border-customborder flex-col p-3">
               {/* <div className="w-full flex items-center justify-between">
                 <p className="md:text-md text-sm text-gray-300">List Price</p>
                 <span className="md:text-md text-sm text-white">5.614 Sol</span>
@@ -101,13 +285,66 @@ const ItemDetails: NextPage = () => {
                   5.614 Sol
                 </span>
               </div> */}
-              <input
-                className="w-full p-3 flex items-center placeholder:text-gray-500 outline-none text-white justify-between rounded-md border border-customborder bg-transparent"
-                placeholder="Input the price"
-                type="number"
-              />
-              <div className="w-full rounded-md py-2 text-center bg-yellow-600 duration-300 hover:bg-yellow-700 text-white cursor-pointer">
-                Buy now
+              <p
+                className={`text-left text-white text-xl ${
+                  itemDetail?.solPrice === 0 && "hidden"
+                }`}
+              >
+                Listed Price : {itemDetail?.solPrice}
+                {" sol"}
+              </p>
+              <div className="w-full flex items-center justify-between gap-2">
+                <input
+                  className="w-full p-2 flex items-center placeholder:text-gray-500 outline-none text-white justify-between rounded-md border border-customborder bg-transparent"
+                  placeholder="Input the price"
+                  type="number"
+                  onChange={(e) => {
+                    setUpdatedPrice(Number(e.target.value));
+                  }}
+                />
+                <div
+                  className={`w-full rounded-md py-2 text-center bg-yellow-600 duration-200 hover:bg-yellow-700 text-white cursor-pointer flex items-center gap-2 justify-center ${
+                    itemDetail?.solPrice === 0 && "hidden"
+                  }`}
+                  onClick={
+                    wallet?.publicKey.toBase58() === itemDetail?.seller
+                      ? handleUpdatePriceFunc
+                      : handleMakeOffer
+                  }
+                >
+                  {wallet?.publicKey.toBase58() === itemDetail?.seller
+                    ? "Update Price"
+                    : "Make Offer"}
+                </div>
+              </div>
+
+              <div
+                className={`w-full rounded-md py-2 text-center bg-yellow-600 duration-200 hover:bg-yellow-700 text-white cursor-pointer
+                  ${
+                    wallet?.publicKey.toBase58() !== itemDetail?.seller &&
+                    "hidden"
+                  }`}
+                onClick={
+                  itemDetail?.solPrice === 0
+                    ? handlelistMyNFTFunc
+                    : handleDelistMyNFTFunc
+                }
+              >
+                {itemDetail?.solPrice === 0 &&
+                wallet?.publicKey.toBase58() === itemDetail.seller
+                  ? "List Now"
+                  : "Delist now"}
+              </div>
+
+              <div
+                className={`w-full rounded-md py-2 text-center bg-yellow-600 duration-200 hover:bg-yellow-700 text-white cursor-pointer
+                  ${
+                    wallet?.publicKey.toBase58() === itemDetail?.seller &&
+                    "hidden"
+                  }`}
+                onClick={handleBuyNFTFunc}
+              >
+                {"Buy now"}
               </div>
             </div>
 
@@ -214,9 +451,9 @@ const ItemDetails: NextPage = () => {
                 <span className="text-white">
                   {" "}
                   {itemDetail &&
-                    itemDetail.owner.slice(0, 4) +
+                    itemDetail.seller.slice(0, 4) +
                       " ... " +
-                      itemDetail.owner.slice(-4)}
+                      itemDetail.seller.slice(-4)}
                 </span>
               </div>
             </div>
