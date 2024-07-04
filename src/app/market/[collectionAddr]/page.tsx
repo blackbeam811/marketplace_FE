@@ -107,7 +107,7 @@ const Market: NextPage = () => {
                 search === "items" || search === null ? "block" : "hidden"
               }`}
             >
-              <div className={`relative `}>
+              {/* <div className={`relative `}>
                 <div
                   className={`w-full grid grid-cols-2 md:grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-5 ${
                     getOwnNFTsState && "hidden"
@@ -120,10 +120,12 @@ const Market: NextPage = () => {
                       tokenId={item.tokenId}
                       key={index}
                       mintAddr={item.mintAddr}
+                      solPrice={item.solPrice}
+                      state={item.solPrice === 0 ? "unlisted" : "listed"}
                     />
                   ))}
                 </div>
-              </div>
+              </div> */}
             </div>
           </div>
           <div
@@ -131,14 +133,14 @@ const Market: NextPage = () => {
               search === "offers" ? "block" : "hidden"
             }`}
           >
-            <ActivityTable />
+            {/* <ActivityTable /> */}
           </div>
           <div
             className={`w-full flex items-center justify-center px-2 ${
               search === "activity" ? "block" : "hidden"
             }`}
           >
-            <ActivityTable />
+            {/* <ActivityTable /> */}
           </div>
           {/* <div
             className={`${
@@ -155,7 +157,9 @@ const Market: NextPage = () => {
           </div> */}
         </div>
         <MobileItemMultiSelectBar />
-        <MobileTabsTip />
+        <Suspense>
+          <MobileTabsTip />
+        </Suspense>
       </div>
       <div
         className={`${

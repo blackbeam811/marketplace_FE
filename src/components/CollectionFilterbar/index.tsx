@@ -35,7 +35,10 @@ export default function CollectionFilterbar({
           className="outline-none bg-transparent w-full text-white py-1 px-1 text-sm md:text-lg"
         />
       </div>
-      <CollectionFilterSelect options={collectionFilterOptions} />
+      <CollectionFilterSelect
+        options={collectionFilterOptions}
+        filterType={""}
+      />
     </div>
   );
 }

@@ -38,6 +38,40 @@ export async function listNft(transactions: any, listData: any) {
   }
 }
 
+export async function delistNft(
+  transactions: any,
+  delistData: any,
+  mintAddrArray: any
+) {
+  try {
+    const response = await axios.post(`${MUGS_ENDPOINT}/nft/delist`, {
+      transactions: transactions,
+      delistData: delistData,
+      mintAddrArray: mintAddrArray,
+    });
+    return response?.data;
+  } catch (err) {
+    console.log("List NFTs err = ", err);
+  }
+}
+
+export async function updatePrice(
+  transactions: any,
+  updateData: any,
+  mintAddr: any
+) {
+  try {
+    const response = await axios.post(`${MUGS_ENDPOINT}/nft/updateprice`, {
+      transaction: transactions,
+      updateData: updateData,
+      mintAddr: mintAddr,
+    });
+    return response?.data;
+  } catch (err) {
+    console.log("Update Price err = ", err);
+  }
+}
+
 // Add collection data to databse by marketplace owner
 export async function createCollection(data: CollectionDataType) {
   try {
@@ -57,5 +91,31 @@ export async function getAllCollections() {
     return response?.data;
   } catch (err) {
     console.log("Getting all collection data err = ", err);
+  }
+}
+
+// Get all listed data by seller from the database
+export async function getAllListedDataBySeller(seller: string) {
+  try {
+    const response = await axios.get(
+      `${MUGS_ENDPOINT}/nft/findAllBySeller/${seller}`
+    );
+    return response?.data;
+  } catch (err) {
+    console.log("Getting all listed data err = ", err);
+  }
+}
+
+// Get all activity data by seller
+export async function getAllActivities(seller: string) {
+  try {
+    const response = await axios.get(
+      `${MUGS_ENDPOINT}/activity/findAllBySeller/${seller}`
+    );
+    console.log("Activity getting  ===> ", response.data);
+
+    return response?.data;
+  } catch (err) {
+    console.log("Getting all listed data err = ", err);
   }
 }

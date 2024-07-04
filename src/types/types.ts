@@ -37,6 +37,7 @@ export type ListNFTItemType = {
 
 export type SelectPropsType = {
   options: string[];
+  filterType: string;
 };
 
 export type HeaderProps = {
@@ -53,6 +54,8 @@ export type NFTCardType = {
   tokenId: string;
   mintAddr: string;
   collectionName: string;
+  solPrice: number;
+  state: string;
 };
 
 export type NFTAttribute = {
@@ -69,7 +72,8 @@ export type OwnNFTDataType = {
   collectionAddr: string;
   owner: string;
   metaDataUrl: string;
-  price: number;
+  solPrice: number;
+  listed: boolean;
   attribute: NFTAttribute[];
 };
 
@@ -88,18 +92,37 @@ export type CollectionDataType = {
   totalVolume: number;
 };
 
+export type ActivityDataType = {
+  imgUrl: string;
+  tokenId: string;
+  mintAddr: string;
+  txType: number;
+  solPrice: number;
+  seller: string;
+  buyer: string;
+  date: string;
+};
+
 export interface NFTDataContextType {
   walletAddr: string | undefined;
   solPrice: number;
   getOwnNFTsState: boolean;
   ownNFTs: OwnNFTDataType[];
+  ownListedNFTs: OwnNFTDataType[];
   getOwnNFTs: () => Promise<void>;
+  getAllListedNFTs: () => Promise<void>;
 }
 
 export interface CollectionContextType {
   collectionDataState: boolean;
   collectionData: CollectionDataType[];
   getAllCollectionData: () => Promise<void>;
+}
+
+export interface ActivityContextType {
+  activityDataState: boolean;
+  activityData: ActivityDataType[];
+  getAllActivityData: () => Promise<void>;
 }
 
 export interface SidebarPropsType {

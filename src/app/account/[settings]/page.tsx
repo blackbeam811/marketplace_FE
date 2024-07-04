@@ -2,6 +2,7 @@
 import { NextPage } from "next";
 import { useWallet } from "@solana/wallet-adapter-react";
 import MainPageLayout from "@/components/Layout";
+import { Suspense } from "react";
 
 const AccountSettings: NextPage = () => {
   const { publicKey } = useWallet();
@@ -47,4 +48,10 @@ const AccountSettings: NextPage = () => {
   );
 };
 
-export default AccountSettings;
+export default function AccountSettingsPage() {
+  return (
+    <Suspense>
+      <AccountSettings />
+    </Suspense>
+  );
+}
