@@ -3,7 +3,7 @@
 import { Suspense, useContext, useEffect, useMemo, useState } from "react";
 import { NextPage } from "next";
 import { useSearchParams } from "next/navigation";
-import { useWallet } from "@solana/wallet-adapter-react";
+import { useAnchorWallet, useWallet } from "@solana/wallet-adapter-react";
 
 import { BiSearch } from "react-icons/bi";
 
@@ -27,8 +27,16 @@ import {
 } from "@/data/selectTabData";
 import { ActivityDataType, OfferDataType, OwnNFTDataType } from "@/types/types";
 import MobileMyItemDetail from "@/components/MyItemDetail/MobileMyItemDetail";
-import { getAllActivitiesByMakerApi } from "@/utils/api";
+import {
+  cancelOfferApi,
+  getAllActivitiesByMakerApi,
+  getAllOffersByMakerApi,
+} from "@/utils/api";
 import ActivityTable from "@/components/ActivityTable";
+import OfferTable from "@/components/OfferTable";
+import { LoadingContext } from "@/contexts/LoadingContext";
+import { cancelOffer } from "@/utils/contractScript";
+import { errorAlert, successAlert } from "@/components/ToastGroup";
 
 const MyItem: NextPage = () => {
   const param = useSearchParams();
@@ -37,60 +45,63 @@ const MyItem: NextPage = () => {
     () => param.getAll("item") || ["unlisted"],
     [param]
   );
+  const wallet = useAnchorWallet();
   const { publicKey, connected } = useWallet();
   const { ownNFTs, getOwnNFTsState, ownListedNFTs } =
     useContext(NFTDataContext);
   const [showNFTs, setShowNFTs] = useState<OwnNFTDataType[]>([]);
   const [nameSearch, setNameSearch] = useState("");
   const [offerData, setOfferData] = useState<OfferDataType[]>([]);
+  const [filterOfferData, setFilterOfferData] = useState<OfferDataType[]>([]);
+  const [offerShowType, setOfferShowType] = useState(0);
   const [activityData, setActivityData] = useState<ActivityDataType[]>([]);
   const [filteredActivityData, setFilteredActivityData] = useState<
     ActivityDataType[]
   >([]);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
-  const [searchKeyword, setSearchKeyword] = useState<string>("");
 
-  const options = ["Sale", "List", "Delist"];
+  const { openFunctionLoading, closeFunctionLoading } =
+    useContext(LoadingContext);
 
-  // const getOfferByMintAddr = async () => {
-  //   try {
-  //     const data = await getAllOffersByMakerApi(publicKey);
+  const getAllOffersByMaker = async () => {
+    try {
+      const data = await getAllOffersByMakerApi(publicKey?.toBase58()!);
+      console.log("offerData => ", data);
 
-  //     if (data.length === 0) {
-  //       setOfferData([]);
-  //       return;
-  //     }
+      if (data.length === 0) {
+        setOfferData([]);
+        return;
+      }
 
-  //     const filteredData = data.map(
-  //       ({
-  //         mintAddr,
-  //         offerPrice,
-  //         tokenId,
-  //         imgUrl,
-  //         seller,
-  //         buyer,
-  //         active,
-  //       }: OfferDataType) => ({
-  //         mintAddr,
-  //         offerPrice,
-  //         tokenId,
-  //         imgUrl,
-  //         seller,
-  //         buyer,
-  //         active,
-  //       })
-  //     );
+      const filteredData = data.map(
+        ({
+          mintAddr,
+          offerPrice,
+          tokenId,
+          imgUrl,
+          seller,
+          buyer,
+          active,
+        }: OfferDataType) => ({
+          mintAddr,
+          offerPrice,
+          tokenId,
+          imgUrl,
+          seller,
+          buyer,
+          active,
+        })
+      );
 
-  //     setOfferData(filteredData);
-  //   } catch (error) {
-  //     console.error("Error fetching data: ", error);
-  //   }
-  // };
+      setOfferData(filteredData);
+    } catch (error) {
+      console.error("Error fetching data: ", error);
+    }
+  };
 
   const getActivityByMintAddr = async () => {
     try {
       const data = await getAllActivitiesByMakerApi(publicKey?.toBase58()!);
-      console.log("activityData => ", data);
       setActivityData(data);
       // You can now use the fetched data (e.g., set it in a state)
     } catch (error) {
@@ -102,7 +113,7 @@ const MyItem: NextPage = () => {
     const fetchData = async () => {
       if (publicKey) {
         try {
-          // await getOfferByMintAddr();
+          await getAllOffersByMaker();
           await getActivityByMintAddr();
         } catch (error) {
           console.error("Error fetching data: ", error);
@@ -161,6 +172,47 @@ const MyItem: NextPage = () => {
     setFilteredActivityData(filtered);
   }, [selectedTags, activityData]);
 
+  useEffect(() => {
+    if (!publicKey || !offerData) return;
+    const filtered =
+      offerShowType === 0
+        ? offerData.filter((item) => item.buyer === publicKey?.toBase58())
+        : offerData.filter((item) => item.seller === publicKey?.toBase58());
+
+    setFilterOfferData(filtered);
+  }, [publicKey, offerShowType, offerData]);
+
+  const handleCancelOffer = async (index: number) => {
+    if (wallet && offerData[index] !== undefined) {
+      try {
+        openFunctionLoading();
+        const tx = await cancelOffer(wallet, offerData[index]);
+        if (tx) {
+          const result = await cancelOfferApi(
+            tx.mintAddr,
+            tx.offerData,
+            tx.transaction
+          );
+          if (result.type === "success") {
+            closeFunctionLoading();
+            successAlert("Success");
+            await getAllOffersByMaker();
+          } else {
+            closeFunctionLoading();
+            errorAlert("Something went wrong.");
+          }
+        } else {
+          closeFunctionLoading();
+          errorAlert("Something went wrong.");
+        }
+      } catch (e) {
+        console.log("err =>", e);
+        closeFunctionLoading();
+        errorAlert("Something went wrong.");
+      }
+    }
+  };
+
   return (
     <MainPageLayout>
       <div
@@ -206,7 +258,10 @@ const MyItem: NextPage = () => {
             </div>
 
             <div className={`${search !== "offers" && "hidden"} `}>
-              <OfferFilterSelect />
+              <OfferFilterSelect
+                setOfferShowType={(index: number) => setOfferShowType(index)}
+                offerShowType={offerShowType}
+              />
             </div>
             <div className={`${search !== "activity" && "hidden"}`}>
               <ActivityFilterSelect
@@ -250,11 +305,29 @@ const MyItem: NextPage = () => {
               </div>
             </div>
             <div
+              className={`${
+                connected && !getOwnNFTsState && showNFTs.length === 0
+                  ? "flex"
+                  : "hidden"
+              } items-center justify-center ${
+                (search === "activity" || search === "offers") && "hidden"
+              }`}
+            >
+              <p className="text-gray-400 text-center">
+                Nothing to show
+                <br />
+                Items you own will appear here in your Portfolio
+              </p>
+            </div>
+            <div
               className={`w-full flex items-center justify-center ${
                 search === "offers" ? "block" : "hidden"
               }`}
             >
-              {/* <ActivityTable /> */}
+              <OfferTable
+                data={filterOfferData}
+                handleCancelOffer={(index: number) => handleCancelOffer(index)}
+              />
             </div>
             <div
               className={`w-full flex items-center justify-center ${
@@ -264,19 +337,6 @@ const MyItem: NextPage = () => {
               <ActivityTable data={filteredActivityData} />
             </div>
           </div>
-          {/* <div
-            className={`${
-              connected && !getOwnNFTsState && showNFTs.length === 0
-                ? "flex"
-                : "hidden"
-            } items-center justify-center min-h-[40vh] w-full`}
-          >
-            <p className="text-gray-400 text-center">
-              Nothing to show
-              <br />
-              Items you own will appear here in your Portfolio
-            </p>
-          </div> */}
         </div>
         <MobileItemMultiSelectBar />
         <MobileTabsTip />

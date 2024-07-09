@@ -38,7 +38,7 @@ export default function ActivityTable(props: {
 
   return (
     <div className="w-full flex items-center justify-center gap-2 flex-col">
-      <div className="w-full overflow-x-auto border border-customborder rounded-md mb-4 min-h-[22vh] relative">
+      <div className="w-full overflow-x-auto border border-customborder rounded-md mb-4 min-h-[10vh] relative">
         <table className="min-w-[1000px] lg:w-full bg-transparent">
           <thead className="border-b border-customborder">
             <tr>

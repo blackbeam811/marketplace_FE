@@ -8,7 +8,7 @@ export const activityTableTH = [
   "Time",
 ];
 
-export const offerTableTH = ["", "price", "From", "Action"];
+export const offerTableTH = ["", "Name", "price", "From", "Action"];
 
 export const collectionTableTH = [
   "",
