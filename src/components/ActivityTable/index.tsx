@@ -2,19 +2,16 @@
 
 "use client";
 import { useContext, useEffect, useState } from "react";
-import Image from "next/image";
-import { activityTableData } from "@/data/activityTableData";
 import { activityTableTH } from "@/data/tableTHData";
 import { MdOutlineNavigateNext } from "react-icons/md";
 import { BiSkipNext } from "react-icons/bi";
-import { ActivityContext } from "@/contexts/ActivityContext";
 import { ActivityDataType } from "@/types/types";
 
 export default function ActivityTable(props: {
   data: ActivityDataType[] | undefined;
 }) {
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(8);
+  const [itemsPerPage, setItemsPerPage] = useState(5);
   const [currentItems, setCurrentItems] = useState<any[]>([]);
 
   // Calculate the current items to display
@@ -29,7 +26,7 @@ export default function ActivityTable(props: {
   const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
 
   // Calculate total pages
-  const totalPages = Math.ceil(activityTableData.length / itemsPerPage);
+  const totalPages = props.data && Math.ceil(props.data.length / itemsPerPage);
 
   // Function to handle items per page change
   const handleItemsPerPageChange = (
@@ -41,7 +38,7 @@ export default function ActivityTable(props: {
 
   return (
     <div className="w-full flex items-center justify-center gap-2 flex-col">
-      <div className="w-full overflow-x-auto border border-customborder rounded-md mb-4 min-h-[10vh] relative">
+      <div className="w-full overflow-x-auto border border-customborder rounded-md mb-4 min-h-[22vh] relative">
         <table className="min-w-[1000px] lg:w-full bg-transparent">
           <thead className="border-b border-customborder">
             <tr>
@@ -118,7 +115,7 @@ export default function ActivityTable(props: {
             onClick={() => paginate(1)}
             className={`flex items-center justify-center mt-1 rotate-180 ${
               currentPage === 1
-                ? "text-gray-400 cursor-not-allowed"
+                ? "text-gray-500 cursor-not-allowed"
                 : "cursor-pointer text-white"
             }`}
           >
@@ -128,7 +125,7 @@ export default function ActivityTable(props: {
             onClick={() => paginate(currentPage > 1 ? currentPage - 1 : 1)}
             className={`flex items-center justify-center mt-1 rotate-180 ${
               currentPage === 1
-                ? "text-gray-400 cursor-not-allowed"
+                ? "text-gray-500 cursor-not-allowed"
                 : "cursor-pointer text-white"
             }`}
           >
@@ -139,21 +136,22 @@ export default function ActivityTable(props: {
           </span>
           <button
             onClick={() =>
+              totalPages &&
               paginate(currentPage < totalPages ? currentPage + 1 : totalPages)
             }
             className={`flex items-center justify-center mt-1 ${
               currentPage === totalPages
-                ? "text-gray-400 cursor-not-allowed"
+                ? "text-gray-500 cursor-not-allowed"
                 : "cursor-pointer text-white"
             }`}
           >
             <MdOutlineNavigateNext size={25} />
           </button>
           <button
-            onClick={() => paginate(totalPages)}
+            onClick={() => totalPages && paginate(totalPages)}
             className={`flex items-center justify-center mt-1 ${
               currentPage === totalPages
-                ? "text-gray-400 cursor-not-allowed"
+                ? "text-gray-500 cursor-not-allowed"
                 : "cursor-pointer text-white"
             }`}
           >

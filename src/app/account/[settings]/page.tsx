@@ -1,8 +1,8 @@
 "use client";
 import { NextPage } from "next";
+import { Suspense } from "react";
 import { useWallet } from "@solana/wallet-adapter-react";
 import MainPageLayout from "@/components/Layout";
-import { Suspense } from "react";
 
 const AccountSettings: NextPage = () => {
   const { publicKey } = useWallet();

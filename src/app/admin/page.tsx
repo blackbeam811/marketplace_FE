@@ -1,14 +1,14 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 import { NextPage } from "next";
+import { useRef, useState } from "react";
 import MainPageLayout from "@/components/Layout";
-import { Suspense, useRef, useState } from "react";
 import { UploadIcon } from "@/components/SvgIcons/UploadIcon";
-import { PINATA_APIKEY } from "@/config";
-import { CollectionDataType } from "@/types/types";
-import { errorAlert, successAlert } from "@/components/ToastGroup";
-import { createCollection } from "@/utils/api";
 import { NormalSpinner } from "@/components/Spinners";
+import { errorAlert, successAlert } from "@/components/ToastGroup";
+import { CollectionDataType } from "@/types/types";
+import { createCollection } from "@/utils/api";
+import { PINATA_APIKEY } from "@/config";
 
 const Admin: NextPage = () => {
   const uploadedAvatarImg = useRef(null);

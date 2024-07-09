@@ -1,7 +1,7 @@
 "use client";
 
 import { ActivityContextType, ActivityDataType } from "@/types/types";
-import { getAllActivities } from "@/utils/api";
+import { getAllActivitiesApi } from "@/utils/api";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { createContext, ReactNode, useEffect, useState } from "react";
 
@@ -22,7 +22,7 @@ export function ActivityProvider({ children }: ActivityProviderProps) {
 
   const getAllActivityData = async (): Promise<void> => {
     if (!publicKey) return;
-    const result = await getAllActivities(publicKey.toBase58());
+    const result = await getAllActivitiesApi(publicKey.toBase58());
 
     const data: ActivityDataType[] = [];
     await Promise.all(

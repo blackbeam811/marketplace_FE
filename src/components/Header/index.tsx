@@ -141,17 +141,17 @@ const Header: FC<HeaderProps> = () => {
             <BalanceBox myBalance={myBalance} address={publicKey} />
           )}
           {!connected && <ConnectButton />}
-          <div
+          {/* <div
             className="cursor-pointer flex lg:hidden bg-transparent border border-customborder rounded-md p-1"
             onClick={() => setOpenMobileMenu(true)}
           >
             <BiMenu size={22} color="white" />
-          </div>
+          </div> */}
         </div>
-        <MobileMenu
+        {/* <MobileMenu
           openMobileMenu={openMobileMenu}
           close={() => setOpenMobileMenu(false)}
-        />
+        /> */}
       </div>
     </header>
   );
@@ -295,7 +295,7 @@ const MobileMenu: FC<{ openMobileMenu: boolean; close: () => void }> = ({
 
   return (
     <div
-      className={`fixed top-0 bottom-0 left-0 right-0 bg-gray-900 z-[9999] flex items-center justify-center lg:hidden
+      className={`fixed top-0 bottom-0 left-0 right-0 bg-gray-900 z-[9999] flex items-center justify-center lg:hidden 
     ${!openMobileMenu && "hidden"}`}
     >
       <div className="absolute top-4 right-3" onClick={close}>

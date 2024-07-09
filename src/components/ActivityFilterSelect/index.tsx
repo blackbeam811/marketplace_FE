@@ -1,31 +1,26 @@
 "use client";
 import { useOnClickOutside } from "@/hooks/useOnClickOutside";
+import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 import { CgClose } from "react-icons/cg";
 
-export default function ActivityFilterSelect() {
+export default function ActivityFilterSelect(props: {
+  selectedTags: string[];
+  setSelectedTags: () => void;
+  addTag: (tag: string) => void;
+  removeTag: (tag: string) => void;
+}) {
   const elem = useRef(null);
   const [open, setOpen] = useState(false);
-  const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [searchKeyword, setSearchKeyword] = useState<string>("");
   useOnClickOutside(elem, () => setOpen(false));
 
-  const options = ["Sale", "Offer", "List", "Delist", "Pool Update"];
-
-  const addTag = (tag: string) => {
-    if (!selectedTags.includes(tag)) {
-      setSelectedTags([...selectedTags, tag]);
-    }
-  };
-
-  const removeTag = (tag: string) => {
-    setSelectedTags(selectedTags.filter((t) => t !== tag));
-  };
+  const options = ["Sale", "List", "Delist"];
 
   const filteredOptions = options.filter(
     (option) =>
       option.toLowerCase().includes(searchKeyword.toLowerCase()) &&
-      !selectedTags.includes(option)
+      !props.selectedTags.includes(option)
   );
 
   return (
@@ -39,13 +34,13 @@ export default function ActivityFilterSelect() {
       >
         <span
           className={`text-[12px] text-gray-500 ${
-            selectedTags.length !== 0 && "hidden"
+            props.selectedTags.length !== 0 && "hidden"
           }`}
         >
           Filter By Type
         </span>
         <div className="flex flex-wrap space-x-2">
-          {selectedTags.map((tag) => (
+          {props.selectedTags.map((tag) => (
             <div
               key={tag}
               className="bg-green-800 text-white rounded-md px-1 text-[12px] flex items-center space-x-2"
@@ -53,7 +48,7 @@ export default function ActivityFilterSelect() {
               {tag}
               <button
                 onClick={() => {
-                  removeTag(tag);
+                  props.removeTag(tag);
                 }}
                 className="ml-2 text-yellow-500"
               >
@@ -65,10 +60,10 @@ export default function ActivityFilterSelect() {
       </div>
       <button
         onClick={() => {
-          setSelectedTags([]);
+          props.setSelectedTags();
           setOpen(false);
         }}
-        className="ml-auto text-white px-3 py-1 text-sm absolute z-40 top-[7px] right-0"
+        className="ml-auto text-white px-3 py-1 text-sm absolute top-[7px] right-0"
       >
         <CgClose />
       </button>
@@ -84,7 +79,7 @@ export default function ActivityFilterSelect() {
             <li
               key={option}
               className="p-2 hover:bg-green-900 cursor-pointer text-sm"
-              onClick={() => addTag(option)}
+              onClick={() => props.addTag(option)}
             >
               {option}
             </li>

@@ -7,7 +7,7 @@ import { FaDiscord } from "react-icons/fa";
 export default function MyItemDetail() {
   const { publicKey } = useWallet();
   return (
-    <div className="flex items-start justify-center gap-3 md:flex-row flex-col">
+    <div className="md:flex hidden items-start justify-center gap-3 md:flex-row flex-col">
       <div className="flex items-center justify-center gap-2">
         <div className="w-[68px] h-[68px] relative">
           <Image

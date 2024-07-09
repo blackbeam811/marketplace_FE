@@ -1,9 +1,10 @@
 /* eslint-disable @next/next/no-img-element */
 
 "use client";
-import { useContext, useEffect, useMemo, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { NextPage } from "next";
-import Image from "next/image";
+import { useParams, useRouter } from "next/navigation";
+import { useAnchorWallet } from "@solana/wallet-adapter-react";
 
 import { TfiAnnouncement } from "react-icons/tfi";
 import { MdOutlineSecurity } from "react-icons/md";
@@ -12,28 +13,39 @@ import { BiLineChart } from "react-icons/bi";
 import { MdOutlineLocalOffer } from "react-icons/md";
 
 import MainPageLayout from "@/components/Layout";
-import { ArrowIcon } from "@/components/SvgIcons";
+import { ArrowIcon, SolanaIcon } from "@/components/SvgIcons";
+import { NormalSpinner } from "@/components/Spinners";
+import { errorAlert, successAlert } from "@/components/ToastGroup";
+import ActivityTable from "@/components/ActivityTable";
+import OfferTable from "@/components/OfferTable";
+
 import { NFTDataContext } from "@/contexts/NFTDataContext";
-import { useParams } from "next/navigation";
-import { OwnNFTDataType } from "@/types/types";
-import {
-  DiscordSpinner,
-  FoldingCubeSpinner,
-  NormalSpinner,
-} from "@/components/Spinners";
-import { useAnchorWallet } from "@solana/wallet-adapter-react";
 import { LoadingContext } from "@/contexts/LoadingContext";
+import { ActivityDataType, OfferDataType, OwnNFTDataType } from "@/types/types";
+
 import {
+  acceptOfferPNft,
+  cancelOffer,
   listPNftForSale,
+  makeOffer,
   pNftDelist,
   purchasePNft,
   setPrice,
 } from "@/utils/contractScript";
-import { delistNft, listNft, purchaseNFT, updatePrice } from "@/utils/api";
-import { ActivityContext } from "@/contexts/ActivityContext";
-import { errorAlert, successAlert } from "@/components/ToastGroup";
+import {
+  acceptOfferPNftApi,
+  cancelOfferApi,
+  delistNftApi,
+  getAllActivitiesByMintAddrApi,
+  getAllOffersByMintAddrApi,
+  listNftApi,
+  makeOfferApi,
+  purchaseNFT,
+  updatePriceApi,
+} from "@/utils/api";
 
 const ItemDetails: NextPage = () => {
+  const route = useRouter();
   const router = useParams();
   const { mintAddr } = router;
   const wallet = useAnchorWallet();
@@ -44,11 +56,12 @@ const ItemDetails: NextPage = () => {
   const [openDetailTag, setOpenDetailTag] = useState(false);
   const [openActivityTag, setOpenActivityTag] = useState(false);
   const [itemDetail, setItemDetail] = useState<OwnNFTDataType>();
+  const [offerData, setOfferData] = useState<OfferDataType[]>([]);
+  const [activityData, setActivityData] = useState<ActivityDataType[]>([]);
   const [updatedPrice, setUpdatedPrice] = useState(0);
 
   const {
     ownNFTs,
-    ownListedNFTs,
     listedAllNFTs,
     getAllListedNFTsBySeller,
     getAllListedNFTs,
@@ -56,145 +69,275 @@ const ItemDetails: NextPage = () => {
   } = useContext(NFTDataContext);
   const { openFunctionLoading, closeFunctionLoading } =
     useContext(LoadingContext);
-  const { activityData, getAllActivityData } = useContext(ActivityContext);
 
   useEffect(() => {
-    console.log("ownNFTs ==>", ownNFTs);
-    console.log("listedAllNFTs ==>", listedAllNFTs);
-    console.log("mintAddr ==>", mintAddr);
     if (ownNFTs.length === 0) {
       const item = listedAllNFTs.filter((items) => items.mintAddr === mintAddr);
-      console.log("1");
-      console.log("item ===>", item);
       setItemDetail(item[0]);
     } else {
       if (ownNFTs.some((items) => items.mintAddr === mintAddr)) {
         const item = ownNFTs.filter((items) => items.mintAddr === mintAddr);
         setItemDetail(item[0]);
-        console.log("2");
       } else {
         const item = listedAllNFTs.filter(
           (items) => items.mintAddr === mintAddr
         );
         setItemDetail(item[0]);
-        console.log("3");
       }
     }
   }, [ownNFTs, mintAddr, listedAllNFTs]);
 
-  // NFT List Function
-  const handlelistMyNFTFunc = async () => {
-    if (wallet && itemDetail !== undefined) {
-      if (updatedPrice === 0) {
-        errorAlert("Please enter the price.");
-      } else {
+  const getOfferByMintAddr = async () => {
+    try {
+      const data = await getAllOffersByMintAddrApi(mintAddr.toString());
+
+      if (data.length === 0) {
+        setOfferData([]);
+        return;
+      }
+
+      const filteredData = data.map(
+        ({
+          mintAddr,
+          offerPrice,
+          tokenId,
+          imgUrl,
+          seller,
+          buyer,
+          active,
+        }: OfferDataType) => ({
+          mintAddr,
+          offerPrice,
+          tokenId,
+          imgUrl,
+          seller,
+          buyer,
+          active,
+        })
+      );
+
+      setOfferData(filteredData);
+    } catch (error) {
+      console.error("Error fetching data: ", error);
+    }
+  };
+
+  const getActivityByMintAddr = async () => {
+    try {
+      const data = await getAllActivitiesByMintAddrApi(mintAddr.toString());
+      setActivityData(data);
+      // You can now use the fetched data (e.g., set it in a state)
+    } catch (error) {
+      console.error("Error fetching data: ", error);
+    }
+  };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      if (mintAddr) {
         try {
-          openFunctionLoading();
-          itemDetail.solPrice = updatedPrice;
-          const tx = await listPNftForSale(wallet, [itemDetail]);
-          if (tx) {
-            const result = await listNft(tx.transactions, tx.listData);
-            if (result.type === "success") {
-              await getOwnNFTs();
-              await getAllListedNFTsBySeller();
-              await getAllActivityData();
-              await getAllListedNFTs();
-              closeFunctionLoading();
-              successAlert("Success");
-            } else {
-              itemDetail.solPrice = 0;
-              closeFunctionLoading();
-              errorAlert("Something went wrong.");
-            }
-          } else {
-            itemDetail.solPrice = 0;
-            closeFunctionLoading();
-            errorAlert("Something went wrong.");
-          }
-        } catch (e) {
-          itemDetail.solPrice = 0;
-          console.log("err =>", e);
-          closeFunctionLoading();
-          errorAlert("Something went wrong.");
+          await getOfferByMintAddr();
+          await getActivityByMintAddr();
+        } catch (error) {
+          console.error("Error fetching data: ", error);
         }
       }
+    };
+
+    fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mintAddr]);
+
+  // NFT List Function
+  const handleListMyNFTFunc = async () => {
+    if (!wallet || itemDetail === undefined) {
+      return;
+    }
+    const currentPrice = itemDetail.solPrice;
+
+    if (updatedPrice === 0) {
+      errorAlert("Please enter the price.");
+      return;
+    }
+
+    try {
+      openFunctionLoading();
+
+      // Update the itemDetail price
+      itemDetail.solPrice = updatedPrice;
+
+      // List the NFT for sale
+      const tx = await listPNftForSale(wallet, [itemDetail]);
+
+      if (tx) {
+        const result = await listNftApi(tx.transactions, tx.listData);
+
+        if (result.type === "success") {
+          // Refresh data after successful listing
+          await Promise.all([
+            getOwnNFTs(),
+            getAllListedNFTsBySeller(),
+            getActivityByMintAddr(),
+            getAllListedNFTs(),
+          ]);
+
+          successAlert("Success");
+        } else {
+          itemDetail.solPrice = currentPrice;
+          errorAlert("Something went wrong.");
+        }
+      } else {
+        itemDetail.solPrice = currentPrice;
+        errorAlert("Something went wrong.");
+      }
+    } catch (e) {
+      itemDetail.solPrice = currentPrice;
+      console.error("Error:", e);
+      errorAlert("Something went wrong.");
+    } finally {
+      closeFunctionLoading();
     }
   };
 
   // NFT Delist Function
   const handleDelistMyNFTFunc = async () => {
-    if (wallet && itemDetail !== undefined) {
-      try {
-        openFunctionLoading();
-        const tx = await pNftDelist(wallet, [itemDetail]);
-        if (tx) {
-          const result = await delistNft(
-            tx.transactions,
-            tx.delistData,
-            tx.mintAddrArray
-          );
-          if (result.type === "success") {
-            await getOwnNFTs();
-            await getAllListedNFTsBySeller();
-            await getAllActivityData();
-            await getAllListedNFTs();
-            closeFunctionLoading();
-            successAlert("Success");
-          } else {
-            closeFunctionLoading();
-            errorAlert("Something went wrong.");
-          }
+    if (!wallet || itemDetail === undefined) {
+      return;
+    }
+
+    try {
+      openFunctionLoading();
+
+      // Delist the NFT
+      const tx = await pNftDelist(wallet, [itemDetail]);
+
+      if (tx) {
+        const result = await delistNftApi(
+          tx.transactions,
+          tx.delistData,
+          tx.mintAddrArray
+        );
+
+        if (result.type === "success") {
+          // Refresh data after successful delist
+          await Promise.all([
+            getOwnNFTs(),
+            getAllListedNFTsBySeller(),
+            getActivityByMintAddr(),
+            getAllListedNFTs(),
+          ]);
+
+          successAlert("Success");
         } else {
-          closeFunctionLoading();
           errorAlert("Something went wrong.");
         }
-      } catch (e) {
-        console.log("err =>", e);
+      } else {
         errorAlert("Something went wrong.");
-        closeFunctionLoading();
       }
+    } catch (e) {
+      console.error("Error:", e);
+      errorAlert("Something went wrong.");
+    } finally {
+      closeFunctionLoading();
     }
   };
 
   // Listed NFT Price Update Function
   const handleUpdatePriceFunc = async () => {
-    if (wallet && itemDetail !== undefined) {
-      if (updatedPrice === 0) errorAlert("Please enter the value.");
-      try {
-        openFunctionLoading();
-        itemDetail.solPrice = updatedPrice;
-        const tx = await setPrice(wallet, itemDetail);
-        if (tx) {
-          const result = await updatePrice(
-            tx.transactions,
-            tx.updatedPriceItems,
-            tx.updatedPriceItems.mintAddr
-          );
-          if (result.type === "success") {
-            await getOwnNFTs();
-            await getAllListedNFTsBySeller();
-            await getAllActivityData();
-            await getAllListedNFTs();
-            closeFunctionLoading();
-            successAlert("Success");
-          } else {
-            closeFunctionLoading();
-            errorAlert("Something went wrong.");
-          }
+    if (!wallet || itemDetail === undefined) {
+      return;
+    }
+
+    const currentPrice = itemDetail.solPrice;
+
+    if (updatedPrice === 0) {
+      errorAlert("Please enter the value.");
+      return;
+    }
+
+    try {
+      openFunctionLoading();
+
+      // Update the itemDetail price
+      itemDetail.solPrice = updatedPrice;
+
+      // Set the new price
+      const tx = await setPrice(wallet, itemDetail);
+
+      if (tx) {
+        const result = await updatePriceApi(
+          tx.transactions,
+          tx.updatedPriceItems,
+          tx.updatedPriceItems.mintAddr
+        );
+
+        if (result.type === "success") {
+          // Refresh data after successful price update
+          await Promise.all([
+            getOwnNFTs(),
+            getAllListedNFTsBySeller(),
+            getActivityByMintAddr(),
+            getAllListedNFTs(),
+          ]);
+
+          successAlert("Success");
         } else {
-          closeFunctionLoading();
+          itemDetail.solPrice = currentPrice;
           errorAlert("Something went wrong.");
         }
-      } catch (e) {
-        console.log("err =>", e);
+      } else {
+        itemDetail.solPrice = currentPrice;
         errorAlert("Something went wrong.");
-        closeFunctionLoading();
       }
+    } catch (e) {
+      itemDetail.solPrice = currentPrice;
+      console.error("Error:", e);
+      errorAlert("Something went wrong.");
+    } finally {
+      closeFunctionLoading();
     }
   };
 
-  // Make Offer Function
-  const handleMakeOffer = async () => {};
+  const handleMakeOffer = async () => {
+    console.log("offer starting");
+    if (wallet && itemDetail !== undefined) {
+      if (updatedPrice <= itemDetail.solPrice / 2) {
+        errorAlert("Offer price must be bigger than the listed price.");
+      } else {
+        const currentPrice = itemDetail.solPrice;
+        try {
+          openFunctionLoading();
+          itemDetail.solPrice = updatedPrice;
+          const tx = await makeOffer(wallet, [itemDetail]);
+          if (tx) {
+            const result = await makeOfferApi(tx.transaction, tx.offerData);
+            if (result.type === "success") {
+              await getOwnNFTs();
+              await getAllListedNFTs();
+              await getAllListedNFTsBySeller();
+              await getActivityByMintAddr();
+              await getOfferByMintAddr();
+              closeFunctionLoading();
+              successAlert("Success");
+            } else {
+              itemDetail.solPrice = currentPrice;
+              closeFunctionLoading();
+              errorAlert("Something went wrong.");
+            }
+          } else {
+            itemDetail.solPrice = currentPrice;
+            closeFunctionLoading();
+            errorAlert("Something went wrong.");
+          }
+        } catch (e) {
+          console.log("err =>", e);
+          itemDetail.solPrice = currentPrice;
+          errorAlert("Something went wrong.");
+          closeFunctionLoading();
+        }
+      }
+    }
+  };
 
   // Buy NFT Function
   const handleBuyNFTFunc = async () => {
@@ -211,10 +354,11 @@ const ItemDetails: NextPage = () => {
           if (result.type === "success") {
             await getOwnNFTs();
             await getAllListedNFTsBySeller();
-            await getAllActivityData();
+            await getActivityByMintAddr();
             await getAllListedNFTs();
             closeFunctionLoading();
             successAlert("Success");
+            route.push("/me");
           } else {
             closeFunctionLoading();
             errorAlert("Something went wrong.");
@@ -227,6 +371,82 @@ const ItemDetails: NextPage = () => {
         console.log("err =>", e);
         errorAlert("Something went wrong.");
         closeFunctionLoading();
+      }
+    }
+  };
+
+  const handleCancelOffer = async (index: number) => {
+    console.log("index =>", index);
+    if (wallet && offerData[index] !== undefined) {
+      try {
+        openFunctionLoading();
+        const tx = await cancelOffer(wallet, offerData[index]);
+        if (tx) {
+          const result = await cancelOfferApi(
+            tx.mintAddr,
+            tx.offerData,
+            tx.transaction
+          );
+          if (result.type === "success") {
+            closeFunctionLoading();
+            successAlert("Success");
+            await getOfferByMintAddr();
+          } else {
+            closeFunctionLoading();
+            errorAlert("Something went wrong.");
+          }
+        } else {
+          closeFunctionLoading();
+          errorAlert("Something went wrong.");
+        }
+      } catch (e) {
+        console.log("err =>", e);
+        closeFunctionLoading();
+        errorAlert("Something went wrong.");
+      }
+    }
+  };
+
+  const handleAcceptHighOffer = async () => {
+    if (wallet && offerData.length !== 0) {
+      const highestOfferData = offerData.reduce((max, data) => {
+        // Only consider entries with a valid offerPrice (non-null and non-zero)
+        if (
+          data.offerPrice != null &&
+          data.offerPrice > (max.offerPrice || 0) &&
+          data.active == 1
+        ) {
+          return data;
+        } else {
+          return data;
+        }
+      }); // Initial max with an offerPrice of 0
+
+      try {
+        openFunctionLoading();
+        const tx = await acceptOfferPNft(wallet, highestOfferData);
+        if (tx) {
+          const result = await acceptOfferPNftApi(
+            tx.mintAddr,
+            tx.offerData,
+            tx.transaction
+          );
+          if (result.type === "success") {
+            closeFunctionLoading();
+            successAlert("Success");
+            route.push("/me");
+          } else {
+            closeFunctionLoading();
+            errorAlert("Something went wrong.");
+          }
+        } else {
+          closeFunctionLoading();
+          errorAlert("Something went wrong.");
+        }
+      } catch (e) {
+        console.log("err =>", e);
+        closeFunctionLoading();
+        errorAlert("Something went wrong.");
       }
     }
   };
@@ -261,10 +481,10 @@ const ItemDetails: NextPage = () => {
                 {itemDetail && itemDetail.collectionName}
               </h1>
               <p className="text-yellow-500 texl-md">
-                {itemDetail && itemDetail.collectionName} #73
+                {itemDetail && itemDetail.collectionName} #{itemDetail?.tokenId}
               </p>
             </div>
-            <div className="w-full flex items-start justify-start gap-2 rounded-md bg-darkgreen border border-customborder flex-col p-3">
+            <div className="w-full flex items-start justify-start gap-1 rounded-md bg-darkgreen border border-customborder flex-col p-3">
               {/* <div className="w-full flex items-center justify-between">
                 <p className="md:text-md text-sm text-gray-300">List Price</p>
                 <span className="md:text-md text-sm text-white">5.614 Sol</span>
@@ -295,7 +515,7 @@ const ItemDetails: NextPage = () => {
               </p>
               <div className="w-full flex items-center justify-between gap-2">
                 <input
-                  className="w-full p-2 flex items-center placeholder:text-gray-500 outline-none text-white justify-between rounded-md border border-customborder bg-transparent"
+                  className="w-full p-[6px] flex items-center placeholder:text-gray-500 outline-none text-white justify-between rounded-md border border-customborder bg-transparent"
                   placeholder="Input the price"
                   type="number"
                   onChange={(e) => {
@@ -303,7 +523,7 @@ const ItemDetails: NextPage = () => {
                   }}
                 />
                 <div
-                  className={`w-full rounded-md py-2 text-center bg-yellow-600 duration-200 hover:bg-yellow-700 text-white cursor-pointer flex items-center gap-2 justify-center ${
+                  className={`w-full rounded-md py-[6px] text-center bg-red-600 duration-200 hover:bg-red-700 text-white cursor-pointer flex items-center gap-2 justify-center ${
                     itemDetail?.solPrice === 0 && "hidden"
                   }`}
                   onClick={
@@ -318,26 +538,40 @@ const ItemDetails: NextPage = () => {
                 </div>
               </div>
 
-              <div
-                className={`w-full rounded-md py-2 text-center bg-yellow-600 duration-200 hover:bg-yellow-700 text-white cursor-pointer
+              <div className="w-full flex items-center justify-center gap-2">
+                <div
+                  className={`w-full rounded-md py-[6px] text-center bg-yellow-600 duration-200 hover:bg-yellow-700 text-white cursor-pointer
                   ${
                     wallet?.publicKey.toBase58() !== itemDetail?.seller &&
                     "hidden"
                   }`}
-                onClick={
-                  itemDetail?.solPrice === 0
-                    ? handlelistMyNFTFunc
-                    : handleDelistMyNFTFunc
-                }
-              >
-                {itemDetail?.solPrice === 0 &&
-                wallet?.publicKey.toBase58() === itemDetail.seller
-                  ? "List Now"
-                  : "Delist now"}
+                  onClick={
+                    itemDetail?.solPrice === 0
+                      ? handleListMyNFTFunc
+                      : handleDelistMyNFTFunc
+                  }
+                >
+                  {itemDetail?.solPrice === 0 &&
+                  wallet?.publicKey.toBase58() === itemDetail.seller
+                    ? "List Now"
+                    : "Delist now"}
+                </div>
+                <div
+                  className={`w-full rounded-md py-[6px] text-center bg-yellow-600 duration-200 hover:bg-yellow-700 text-white cursor-pointer
+                  ${
+                    (offerData.filter((data) => data.active !== 0).length ===
+                      0 ||
+                      wallet?.publicKey.toBase58() !== itemDetail?.seller) &&
+                    "hidden"
+                  }`}
+                  onClick={handleAcceptHighOffer}
+                >
+                  {`Accept High Offer`}
+                </div>
               </div>
 
               <div
-                className={`w-full rounded-md py-2 text-center bg-yellow-600 duration-200 hover:bg-yellow-700 text-white cursor-pointer
+                className={`w-full rounded-md py-[6px] text-center bg-yellow-600 duration-200 hover:bg-yellow-700 text-white cursor-pointer
                   ${
                     wallet?.publicKey.toBase58() === itemDetail?.seller &&
                     "hidden"
@@ -400,7 +634,7 @@ const ItemDetails: NextPage = () => {
                     key={index}
                   >
                     <p className="text-gray-400 text-sm">{detail.trait_type}</p>
-                    <span className="text-white text-lg">{detail.value}</span>
+                    <span className="text-white text-sm">{detail.value}</span>
                   </div>
                 ))}
             </div>
@@ -422,39 +656,58 @@ const ItemDetails: NextPage = () => {
               </span>
             </div>
             <div
-              className={`w-full p-3 flex items-center justify-between flex-col gap-1 rounded-md border border-customborder cursor-pointer text-gray-400 ${
+              className={`w-full p-3 flex items-center justify-between flex-col gap-1 rounded-md border border-customborder text-gray-400 ${
                 !openDetailTag && "hidden"
               }`}
             >
               {" "}
               <div className="w-full flex items-center justify-between">
                 <span>Mint Address</span>
-                <span className="text-white">
-                  {itemDetail &&
-                    itemDetail.mintAddr.slice(0, 4) +
-                      " ... " +
-                      itemDetail.mintAddr.slice(-4)}
-                </span>
+                <a
+                  href={`https://explorer.solana.com/address/${itemDetail?.mintAddr}?cluster=devnet`}
+                  target="_blank"
+                  rel="referrer"
+                >
+                  <span className="text-white flex items-center justify-center text-sm gap-1 duration-200 hover:text-gray-300">
+                    <SolanaIcon />
+                    {itemDetail &&
+                      itemDetail.mintAddr.slice(0, 4) +
+                        " ... " +
+                        itemDetail.mintAddr.slice(-4)}
+                  </span>
+                </a>
               </div>
               <div className="w-full flex items-center justify-between">
                 <span>OnChain Collection</span>
-                <span className="text-white">
-                  {" "}
-                  {itemDetail &&
-                    itemDetail.collectionAddr.slice(0, 4) +
-                      " ... " +
-                      itemDetail.collectionAddr.slice(-4)}
-                </span>
+                <a
+                  href={`https://explorer.solana.com/address/${itemDetail?.collectionAddr}?cluster=devnet`}
+                  target="_blank"
+                  rel="referrer"
+                >
+                  <span className="text-white flex items-center justify-center text-sm gap-1 duration-200 hover:text-gray-300">
+                    <SolanaIcon />{" "}
+                    {itemDetail &&
+                      itemDetail.collectionAddr.slice(0, 4) +
+                        " ... " +
+                        itemDetail.collectionAddr.slice(-4)}
+                  </span>
+                </a>
               </div>
               <div className="w-full flex items-center justify-between">
                 <span>Owner</span>
-                <span className="text-white">
-                  {" "}
-                  {itemDetail &&
-                    itemDetail.seller.slice(0, 4) +
-                      " ... " +
-                      itemDetail.seller.slice(-4)}
-                </span>
+                <a
+                  href={`https://explorer.solana.com/address/${itemDetail?.seller}?cluster=devnet`}
+                  target="_blank"
+                  rel="referrer"
+                >
+                  <span className="text-white flex items-center justify-center text-sm gap-1 duration-200 hover:text-gray-300">
+                    <SolanaIcon />{" "}
+                    {itemDetail &&
+                      itemDetail.seller.slice(0, 4) +
+                        " ... " +
+                        itemDetail.seller.slice(-4)}
+                  </span>
+                </a>
               </div>
             </div>
           </div>
@@ -477,7 +730,10 @@ const ItemDetails: NextPage = () => {
             </span>
           </div>
           <div className={`w-full ${!openOfferTable && "hidden"}`}>
-            {/* <ActivityTable /> */}
+            <OfferTable
+              data={offerData}
+              handleCancelOffer={(index: number) => handleCancelOffer(index)}
+            />
           </div>
         </div>
         <div className="w-full flex items-center justify-center gap-2 flex-col md:px-10 px-3 mt-3">
@@ -498,7 +754,7 @@ const ItemDetails: NextPage = () => {
             </span>
           </div>
           <div className={`w-full ${!openActivityTag && "hidden"}`}>
-            {/* <ActivityTable /> */}
+            <ActivityTable data={activityData} />
           </div>
         </div>
       </div>

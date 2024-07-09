@@ -1,12 +1,7 @@
 "use client";
 import { Suspense, useContext, useEffect, useMemo, useState } from "react";
 import { NextPage } from "next";
-import {
-  useParams,
-  usePathname,
-  useRouter,
-  useSearchParams,
-} from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 import { useWallet } from "@solana/wallet-adapter-react";
 
 import MainPageLayout from "@/components/Layout";
@@ -16,11 +11,6 @@ import CollectionDetail from "@/components/CollectionDetail";
 import CollectionItemSkeleton from "@/components/CollectionItemSkeleton";
 import CollectionFilterSidebar from "@/components/CollectionFilterSidebar";
 
-import { NFTDataContext } from "@/contexts/NFTDataContext";
-
-import { collectionItems } from "@/data/collectionItems";
-import { CollectionDataType, collectionDataType } from "@/types/types";
-import ActivityTable from "@/components/ActivityTable";
 import ItemMultiSelectbar from "@/components/ItemMultiSelectBar";
 import CollectionFilterbar from "@/components/CollectionFilterbar";
 import MobileItemMultiSelectBar from "@/components/ItemMultiSelectBar/MobileItemMultiSelectBar";
@@ -29,7 +19,11 @@ import MobileCollectionDetail from "@/components/CollectionDetail/MobileCollecti
 import OfferFilterSelect from "@/components/OfferFilterSelect";
 import ActivityFilterSelect from "@/components/ActivityFilterSelect";
 import MobileCollectionFilterSidebar from "@/components/CollectionFilterSidebar/MobileCollectionFilterSidebar";
+
 import { CollectionContext } from "@/contexts/CollectionContext";
+import { NFTDataContext } from "@/contexts/NFTDataContext";
+
+import { CollectionDataType, OwnNFTDataType } from "@/types/types";
 
 const Market: NextPage = () => {
   const { publicKey, connected } = useWallet();
@@ -37,11 +31,14 @@ const Market: NextPage = () => {
   const searchParam = useSearchParams();
   const search = searchParam.get("activeTab") || "items";
   const { collectionAddr } = params;
-  const { ownNFTs, getOwnNFTsState } = useContext(NFTDataContext);
+  const { ownNFTs, getOwnNFTsState, getAllListedNFTs, listedAllNFTs } =
+    useContext(NFTDataContext);
   const { collectionData } = useContext(CollectionContext);
   const [filterOpen, setFilterOpen] = useState(false);
+  const [filterListedNFTData, setFilterListedNFTData] = useState<
+    OwnNFTDataType[]
+  >([]);
 
-  const memoizedOwnNFTs = useMemo(() => ownNFTs, [ownNFTs]);
   const [filterCollectionData, setFilterCollectionData] =
     useState<CollectionDataType>();
 
@@ -53,13 +50,23 @@ const Market: NextPage = () => {
       console.log("collection ====> ", collection);
       setFilterCollectionData(collection[0]);
     }
-  }, [collectionAddr, collectionData]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [collectionAddr, listedAllNFTs]);
+
+  useEffect(() => {
+    if (collectionAddr !== "" && listedAllNFTs.length !== 0) {
+      const filterData = listedAllNFTs.filter(
+        (item) => item.collectionAddr === collectionAddr
+      );
+      setFilterListedNFTData(filterData);
+    }
+  }, [collectionAddr, listedAllNFTs]);
 
   return (
     <MainPageLayout>
       <div
-        className={`w-full flex items-start justify-start flex-row${
-          !connected && "hidden"
+        className={`w-full flex items-start justify-start flex-row ${
+          !connected && " hidden"
         }`}
       >
         <CollectionFilterSidebar
@@ -98,25 +105,25 @@ const Market: NextPage = () => {
             <OfferFilterSelect />
           </div>
           <div className={`${search !== "activity" && "hidden"} px-2`}>
-            <ActivityFilterSelect />
+            {/* <ActivityFilterSelect /> */}
           </div>
           <CollectionItemSkeleton />
-          <div className="w-full flex items-center justify-center flex-col relative">
+          <div className="w-full max-h-[70vh] overflow-y-auto pb-10">
             <div
-              className={`w-full md:max-h-[60vh] max-h-[62vh] overflow-y-auto px-2 pb-12 ${
+              className={`relative ${
                 search === "items" || search === null ? "block" : "hidden"
               }`}
             >
-              {/* <div className={`relative `}>
+              <div className={`relative `}>
                 <div
                   className={`w-full grid grid-cols-2 md:grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-5 ${
                     getOwnNFTsState && "hidden"
                   }`}
                 >
-                  {collectionItems?.map((item, index) => (
+                  {filterListedNFTData?.map((item, index) => (
                     <NFTCard
                       imgUrl={item.imgUrl}
-                      collectionName={""}
+                      collectionName={item.collectionName}
                       tokenId={item.tokenId}
                       key={index}
                       mintAddr={item.mintAddr}
@@ -125,42 +132,56 @@ const Market: NextPage = () => {
                     />
                   ))}
                 </div>
-              </div> */}
+              </div>
+            </div>
+            <div
+              className={`w-full flex items-center justify-center px-2 ${
+                search === "offers" ? "block" : "hidden"
+              }`}
+            >
+              {/* <ActivityTable /> */}
+            </div>
+            <div
+              className={`w-full flex items-center justify-center px-2 ${
+                search === "activity" ? "block" : "hidden"
+              }`}
+            >
+              {/* <ActivityTable /> */}
+            </div>
+            <div
+              className={`${
+                connected && filterListedNFTData.length === 0
+                  ? "flex"
+                  : "hidden"
+              } items-center justify-center min-h-[40vh] w-full`}
+            >
+              <p className="text-gray-400 text-center">
+                Nothing to show
+                <br />
+                Items you own will appear here in your Portfolio
+              </p>
             </div>
           </div>
-          <div
-            className={`w-full flex items-center justify-center px-2 ${
-              search === "offers" ? "block" : "hidden"
-            }`}
-          >
-            {/* <ActivityTable /> */}
-          </div>
-          <div
-            className={`w-full flex items-center justify-center px-2 ${
-              search === "activity" ? "block" : "hidden"
-            }`}
-          >
-            {/* <ActivityTable /> */}
-          </div>
-          {/* <div
-            className={`${
-              connected && !getOwnNFTsState && memoizedOwnNFTs.length === 0
-                ? "flex"
-                : "hidden"
-            } items-center justify-center min-h-[70vh] w-full`}
-          >
-            <p className="text-gray-400 text-center">
-              Nothing to show
-              <br />
-              Items you own will appear here in your Portfolio
-            </p>
-          </div> */}
         </div>
+
         <MobileItemMultiSelectBar />
         <Suspense>
           <MobileTabsTip />
         </Suspense>
       </div>
+      {/* <div
+        className={`${
+          connected && !getOwnNFTsState && filterListedNFTData.length === 0
+            ? "flex"
+            : "hidden"
+        } items-center justify-center min-h-[40vh] w-full`}
+      >
+        <p className="text-gray-400 text-center">
+          Nothing to show
+          <br />
+          Items you own will appear here in your Portfolio
+        </p>
+      </div> */}
       <div
         className={`${
           !publicKey ? "flex" : "hidden"

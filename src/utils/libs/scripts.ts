@@ -1725,12 +1725,12 @@ export const createAcceptOfferPNftTx = async (
   const mintMetadata = await getMetadata(mint);
   console.log("Metadata=", mintMetadata.toBase58());
 
-  // let {
-  //   metadata: { Metadata },
-  // } = programs;
-  // let metadataAccount = await Metadata.getPDA(mint);
-  // const metadata = await Metadata.load(connection, metadataAccount);
-  // let creators = metadata.data.data.creators;
+  let {
+    metadata: { Metadata },
+  } = programs;
+  let metadataAccount = await Metadata.getPDA(mint);
+  const metadata = await Metadata.load(connection, metadataAccount);
+  let creators = metadata.data.data.creators;
 
   if (ret.instructions.length > 0) ret.instructions.map((ix) => tx.add(ix));
 
@@ -1752,13 +1752,13 @@ export const createAcceptOfferPNftTx = async (
       isSigner: false,
     });
   });
-  // creators?.map((creator: { address: anchor.web3.PublicKeyInitData }) => {
-  //   remainingAccounts.push({
-  //     pubkey: new PublicKey(creator.address),
-  //     isWritable: true,
-  //     isSigner: false,
-  //   });
-  // });
+  creators?.map((creator: { address: anchor.web3.PublicKeyInitData }) => {
+    remainingAccounts.push({
+      pubkey: new PublicKey(creator.address),
+      isWritable: true,
+      isSigner: false,
+    });
+  });
 
   console.log(
     "==> Accept Offer  Mint:",

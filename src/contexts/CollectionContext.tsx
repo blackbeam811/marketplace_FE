@@ -1,9 +1,10 @@
 "use client";
 
 import { CollectionContextType, CollectionDataType } from "@/types/types";
-import { getAllCollections } from "@/utils/api";
+import { getAllCollectionsApi } from "@/utils/api";
 import { createContext, ReactNode, useEffect, useState } from "react";
 
+// Creating a context with default values
 export const CollectionContext = createContext<CollectionContextType>({
   collectionDataState: false,
   collectionData: [],
@@ -15,42 +16,36 @@ interface CollectionProviderProps {
 }
 
 export function CollectionProvider({ children }: CollectionProviderProps) {
+  // State to hold collection data
   const [collectionData, setCollectionData] = useState<CollectionDataType[]>(
     []
   );
+  // State to indicate if collection data is being fetched
   const [collectionDataState, setCollectionDataState] =
     useState<boolean>(false);
 
+  // Function to fetch all collection data
   const getAllCollectionData = async (): Promise<void> => {
-    const result = await getAllCollections();
-    console.log("collection getting  ===> ", result);
+    try {
+      setCollectionDataState(true); // Set loading state
+      const result = await getAllCollectionsApi();
 
-    const data: CollectionDataType[] = [];
-    await Promise.all(
-      result.map(async (item: CollectionDataType) => {
-        data.push(item);
-      })
-    );
-
-    console.log("data ===>", data);
-    setCollectionData(data);
-    setCollectionDataState(false);
+      // Set the fetched data to state
+      setCollectionData(result);
+    } catch (error) {
+      console.error("Error fetching collection data:", error);
+    } finally {
+      setCollectionDataState(false); // Reset loading state
+    }
   };
 
+  // Fetch data immediately when component mounts
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        await getAllCollectionData();
-      } catch (error) {
-        console.error("Error fetching collection data:", error);
-      }
-    };
-
-    fetchData(); // Fetch data immediately when component mounts
-
+    getAllCollectionData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Context value to be provided to children components
   const CollectionContextValue: CollectionContextType = {
     collectionDataState,
     collectionData,

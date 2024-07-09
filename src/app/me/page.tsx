@@ -13,20 +13,22 @@ import CollectionItemSkeleton from "@/components/CollectionItemSkeleton";
 import NFTCard from "@/components/NFTCard";
 import CollectionFilterSelect from "@/components/CollectionFilterSelect";
 import MyItemDetail from "@/components/MyItemDetail";
-import { NFTDataContext } from "@/contexts/NFTDataContext";
-import ActivityTable from "@/components/ActivityTable";
 import ActivityFilterSelect from "@/components/ActivityFilterSelect";
 import OfferFilterSelect from "@/components/OfferFilterSelect";
+import MobileItemMultiSelectBar from "@/components/ItemMultiSelectBar/MobileItemMultiSelectBar";
+import MobileTabsTip from "@/components/TabsTip/MobileTabsTip";
+import ItemMultiSelectbar from "@/components/ItemMultiSelectBar";
+
+import { NFTDataContext } from "@/contexts/NFTDataContext";
 
 import {
   collectionFilterOptions,
   myItemFilterOptions,
 } from "@/data/selectTabData";
-import MobileItemMultiSelectBar from "@/components/ItemMultiSelectBar/MobileItemMultiSelectBar";
-import MobileTabsTip from "@/components/TabsTip/MobileTabsTip";
-import ItemMultiSelectbar from "@/components/ItemMultiSelectBar";
-import { OwnNFTDataType } from "@/types/types";
-import { ActivityContext } from "@/contexts/ActivityContext";
+import { ActivityDataType, OfferDataType, OwnNFTDataType } from "@/types/types";
+import MobileMyItemDetail from "@/components/MyItemDetail/MobileMyItemDetail";
+import { getAllActivitiesByMakerApi } from "@/utils/api";
+import ActivityTable from "@/components/ActivityTable";
 
 const MyItem: NextPage = () => {
   const param = useSearchParams();
@@ -39,6 +41,78 @@ const MyItem: NextPage = () => {
   const { ownNFTs, getOwnNFTsState, ownListedNFTs } =
     useContext(NFTDataContext);
   const [showNFTs, setShowNFTs] = useState<OwnNFTDataType[]>([]);
+  const [nameSearch, setNameSearch] = useState("");
+  const [offerData, setOfferData] = useState<OfferDataType[]>([]);
+  const [activityData, setActivityData] = useState<ActivityDataType[]>([]);
+  const [filteredActivityData, setFilteredActivityData] = useState<
+    ActivityDataType[]
+  >([]);
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [searchKeyword, setSearchKeyword] = useState<string>("");
+
+  const options = ["Sale", "List", "Delist"];
+
+  // const getOfferByMintAddr = async () => {
+  //   try {
+  //     const data = await getAllOffersByMakerApi(publicKey);
+
+  //     if (data.length === 0) {
+  //       setOfferData([]);
+  //       return;
+  //     }
+
+  //     const filteredData = data.map(
+  //       ({
+  //         mintAddr,
+  //         offerPrice,
+  //         tokenId,
+  //         imgUrl,
+  //         seller,
+  //         buyer,
+  //         active,
+  //       }: OfferDataType) => ({
+  //         mintAddr,
+  //         offerPrice,
+  //         tokenId,
+  //         imgUrl,
+  //         seller,
+  //         buyer,
+  //         active,
+  //       })
+  //     );
+
+  //     setOfferData(filteredData);
+  //   } catch (error) {
+  //     console.error("Error fetching data: ", error);
+  //   }
+  // };
+
+  const getActivityByMintAddr = async () => {
+    try {
+      const data = await getAllActivitiesByMakerApi(publicKey?.toBase58()!);
+      console.log("activityData => ", data);
+      setActivityData(data);
+      // You can now use the fetched data (e.g., set it in a state)
+    } catch (error) {
+      console.error("Error fetching data: ", error);
+    }
+  };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      if (publicKey) {
+        try {
+          // await getOfferByMintAddr();
+          await getActivityByMintAddr();
+        } catch (error) {
+          console.error("Error fetching data: ", error);
+        }
+      }
+    };
+
+    fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [publicKey]);
 
   useEffect(() => {
     const updateShowNFTs = () => {
@@ -52,15 +126,51 @@ const MyItem: NextPage = () => {
     updateShowNFTs();
   }, [showQuery, ownNFTs, ownListedNFTs]);
 
+  useEffect(() => {
+    const filterNFTs = (nfts: any) =>
+      nameSearch === ""
+        ? nfts
+        : nfts.filter(
+            (item: { collectionName: string; tokenId: string }) =>
+              item.collectionName.includes(nameSearch) ||
+              item.tokenId.includes(nameSearch)
+          );
+
+    const nftsToShow = showQuery[0] === "listed" ? ownListedNFTs : ownNFTs;
+    setShowNFTs(filterNFTs(nftsToShow));
+  }, [nameSearch, showQuery, ownListedNFTs, ownNFTs]);
+
+  // Filter the Activity Table
+  const addTag = (tag: string) => {
+    if (!selectedTags.includes(tag)) {
+      setSelectedTags([...selectedTags, tag]);
+    }
+  };
+  const removeTag = (tag: string) => {
+    setSelectedTags(selectedTags.filter((t) => t !== tag));
+  };
+  useEffect(() => {
+    const filtered = activityData.filter((item) => {
+      if (selectedTags.length === 0) return true;
+      if (selectedTags.includes("List") && item.txType === 0) return true;
+      if (selectedTags.includes("Delist") && item.txType === 1) return true;
+      if (selectedTags.includes("Sale") && item.txType === 2) return true;
+      return false;
+    });
+
+    setFilteredActivityData(filtered);
+  }, [selectedTags, activityData]);
+
   return (
     <MainPageLayout>
       <div
         className={`w-full flex items-start justify-start flex-row ${
-          !connected && "hidden"
+          !connected && " hidden"
         }`}
       >
         <div className="w-full flex items-start justify-start mt-5 gap-4 flex-col px-2">
           <MyItemDetail />
+          <MobileMyItemDetail collectionData={undefined} />
           <TabsTip />
           <div className="w-full flex items-center justify-start flex-col md:flex-row gap-3">
             <div
@@ -76,6 +186,7 @@ const MyItem: NextPage = () => {
                 <input
                   placeholder="Search items"
                   className="outline-none bg-transparent w-full text-white py-1 px-1 font-thin placeholder:text-gray-600"
+                  onChange={(e) => setNameSearch(e.target.value)}
                 />
               </div>
             </div>
@@ -98,7 +209,12 @@ const MyItem: NextPage = () => {
               <OfferFilterSelect />
             </div>
             <div className={`${search !== "activity" && "hidden"}`}>
-              <ActivityFilterSelect />
+              <ActivityFilterSelect
+                selectedTags={selectedTags}
+                addTag={(tag) => addTag(tag)}
+                removeTag={(tag) => removeTag(tag)}
+                setSelectedTags={() => setSelectedTags([])}
+              />
             </div>
           </div>
           <div
@@ -108,7 +224,7 @@ const MyItem: NextPage = () => {
           >
             <ItemMultiSelectbar />
           </div>
-          <div className="w-full max-h-[70vh] overflow-y-auto pb-10">
+          <div className="w-full md:max-h-[70vh] max-h-[50vh] overflow-y-auto pb-10">
             <div
               className={`relative ${
                 search === "items" || search === null ? "block" : "hidden"
@@ -145,10 +261,10 @@ const MyItem: NextPage = () => {
                 search === "activity" ? "block" : "hidden"
               }`}
             >
-              {/* <ActivityTable /> */}
+              <ActivityTable data={filteredActivityData} />
             </div>
           </div>
-          <div
+          {/* <div
             className={`${
               connected && !getOwnNFTsState && showNFTs.length === 0
                 ? "flex"
@@ -160,7 +276,7 @@ const MyItem: NextPage = () => {
               <br />
               Items you own will appear here in your Portfolio
             </p>
-          </div>
+          </div> */}
         </div>
         <MobileItemMultiSelectBar />
         <MobileTabsTip />

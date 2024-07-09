@@ -2,7 +2,6 @@
 /* eslint-disable @next/next/no-img-element */
 import { useContext, useEffect, useMemo, useState } from "react";
 import type { NextPage } from "next";
-import Image from "next/image";
 import { useWallet } from "@solana/wallet-adapter-react";
 import "@solana/wallet-adapter-react-ui/styles.css";
 

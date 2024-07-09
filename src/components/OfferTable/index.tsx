@@ -1,14 +1,21 @@
+"use client";
 import Image from "next/image";
-import { activityTableData } from "@/data/activityTableData";
-import { activityTableTH } from "@/data/tableTHData";
+import { offerTableTH } from "@/data/tableTHData";
+import { OfferDataType } from "@/types/types";
+import { useAnchorWallet } from "@solana/wallet-adapter-react";
 
-export default function OfferTable() {
+export default function OfferTable(props: {
+  data: OfferDataType[];
+  handleCancelOffer: (index: number) => void;
+}) {
+  const wallet = useAnchorWallet();
+
   return (
-    <div className="w-full overflow-x-auto border border-customborder rounded-md mb-10">
+    <div className="w-full overflow-x-auto border border-customborder rounded-md mb-10 min-h-[22vh]">
       <table className="min-w-[1024px] lg:w-full bg-transparent">
-        <thead>
+        <thead className="border-b border-customborder">
           <tr>
-            {activityTableTH.map((item, index) => (
+            {offerTableTH.map((item, index) => (
               <th
                 className="text-left py-3 px-4 uppercase text-gray-300 font-bold text-sm"
                 key={index}
@@ -20,43 +27,51 @@ export default function OfferTable() {
           </tr>
         </thead>
         <tbody>
-          {activityTableData.map((row, index) => (
+          {props.data.map((row, index) => (
             <tr
               key={index}
-              className={`${index % 2 === 0 ? "bg-gray-800" : "bg-gray-900"}`}
+              className={`${
+                index % 2 === 0 ? "bg-darkgreen" : "bg-[#0f4223b9]"
+              }`}
             >
               <td className="py-2 px-4 text-white font-light text-md">
                 {index + 1}
               </td>
-              <td className="relative py-1 px-4 text-white font-light text-md flex items-center justify-start gap-3">
-                <div className="relative w-[30px] h-[30px]">
-                  <Image
-                    fill
-                    src={row.imgUrl}
-                    alt="Collection Image"
-                    className="object-cover"
-                  />
-                </div>
-                {row.name}
-              </td>
-              <td className="py-2 px-4 text-[#8DEEC4] uppercase">
-                {row.type === 0 ? "list" : row.type === 1 ? "Unlist" : "Sold"}
-              </td>
-              <td className="py-2 px-4 text-[#DD7A98]">{row.total} SOL</td>
+
+              <td className="py-2 px-4 text-[#DD7A98]">{row.offerPrice} SOL</td>
               <td className="py-2 px-4 text-white font-light">
-                {row.seller.slice(0, 4) + "...." + row.seller.slice(-4)}
-              </td>
-              <td className="py-2 px-4 text-white font-light">
-                {" "}
                 {row.buyer.slice(0, 4) + "...." + row.buyer.slice(-4)}
               </td>
               <td className="py-2 px-4 text-white font-light">
-                {row.time.toLocaleString()}
+                <button
+                  className={`px-2 py-[1px] bg-red-500 duration-300 hover:bg-red-600 rounded-md ${
+                    row.buyer !== wallet?.publicKey.toBase58() && "hidden"
+                  }`}
+                  onClick={() => props.handleCancelOffer(index)}
+                >
+                  Cancel
+                </button>
+                <span
+                  className={`text-red-400 ${
+                    (row.active !== 0 ||
+                      row.buyer === wallet?.publicKey.toBase58()) &&
+                    "hidden"
+                  }`}
+                >
+                  Expired
+                </span>
               </td>
             </tr>
           ))}
         </tbody>
       </table>
+      <div
+        className={`${
+          props.data?.length !== 0 && "hidden"
+        } w-full flex items-center justify-center my-5`}
+      >
+        <span className="text-[#ffffff]">Nothing to show 😒</span>
+      </div>
     </div>
   );
 }
