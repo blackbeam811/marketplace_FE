@@ -1,43 +1,61 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
+import Link from "next/link";
 import { FC, Suspense, useContext, useEffect, useMemo, useState } from "react";
-import { useWalletModal } from "@solana/wallet-adapter-react-ui";
-import { PublicKey } from "@solana/web3.js";
-import { useAnchorWallet, useWallet } from "@solana/wallet-adapter-react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useAnchorWallet } from "@solana/wallet-adapter-react";
 import Modal from "react-responsive-modal";
-import { ArrowIcon, CloseIcon } from "@/components/SvgIcons";
-import { NFTDataContext } from "@/contexts/NFTDataContext";
-import { ModalContext } from "@/contexts/ModalContext";
-import Image from "next/image";
-import { TfiAnnouncement } from "react-icons/tfi";
-import { MdOutlineLocalOffer, MdOutlineSecurity } from "react-icons/md";
-import { BiDetail, BiLineChart } from "react-icons/bi";
-import ActivityTable from "../ActivityTable";
-import { ModalTabMenu } from "@/data/tabMenuData";
+
+import { BiDetail } from "react-icons/bi";
 import { CgClose } from "react-icons/cg";
+import { MdOutlineSecurity } from "react-icons/md";
 import { GoLinkExternal } from "react-icons/go";
 
-import { collectionItems } from "@/data/collectionItems";
-import { ActivityDataType, NFTCardType, OwnNFTDataType } from "@/types/types";
-import Link from "next/link";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { listPNftForSale, pNftDelist, setPrice } from "@/utils/contractScript";
+import { ModalTabMenu } from "@/data/tabMenuData";
+
 import { errorAlert, successAlert } from "../ToastGroup";
-import { delistNft, listNft, updatePrice } from "@/utils/api";
-import { CollectionContext } from "@/contexts/CollectionContext";
-import { NormalSpinner } from "../Spinners";
+
+import ActivityTable from "../ActivityTable";
+
+import { ModalContext } from "@/contexts/ModalContext";
 import { LoadingContext } from "@/contexts/LoadingContext";
-import { ActivityContext } from "@/contexts/ActivityContext";
+import { NFTDataContext } from "@/contexts/NFTDataContext";
+
+import { ActivityDataType, OfferDataType, OwnNFTDataType } from "@/types/types";
+import {
+  acceptOfferPNft,
+  cancelOffer,
+  listPNftForSale,
+  makeOffer,
+  pNftDelist,
+  purchasePNft,
+  setPrice,
+} from "@/utils/contractScript";
+
+import {
+  acceptOfferPNftApi,
+  cancelOfferApi,
+  delistNftApi,
+  getAllActivitiesByMintAddrApi,
+  getAllOffersByMintAddrApi,
+  listNftApi,
+  makeOfferApi,
+  purchaseNFT,
+  updatePriceApi,
+} from "@/utils/api";
+import OfferTable from "../OfferTable";
+import { SolanaIcon } from "../SvgIcons";
 
 const NFTDetailModal = () => {
   const wallet = useAnchorWallet();
-  const { connected, publicKey } = useWallet();
+  const route = useRouter();
   const param = useSearchParams();
   const pathName = usePathname();
   const currentRouter = pathName.split("/")[1];
   const {
     ownNFTs,
     ownListedNFTs,
+    listedAllNFTs,
     getAllListedNFTs,
     getOwnNFTs,
     getAllListedNFTsBySeller,
@@ -46,16 +64,15 @@ const NFTDetailModal = () => {
     useContext(LoadingContext);
   const { closeNFTDetailModal, nftDetailModalShow, selectedNFTDetail } =
     useContext(ModalContext);
-  const { activityData, getAllActivityData } = useContext(ActivityContext);
 
   const [updatedPrice, setUpdatedPrice] = useState(0);
   const [showState, setShowState] = useState(0);
   const [selectedNFT, setSelectedNFT] = useState<OwnNFTDataType | undefined>(
     undefined
   );
-  const [activityDataByMintAddr, setActivityDataByMintAddr] = useState<
-    ActivityDataType[] | undefined
-  >([]);
+  const [offerData, setOfferData] = useState<OfferDataType[]>([]);
+  const [activityData, setActivityData] = useState<ActivityDataType[]>([]);
+
   const showQuery = useMemo(
     () => param.getAll("item") || ["unlisted"],
     [param]
@@ -65,125 +82,261 @@ const NFTDetailModal = () => {
     [selectedNFTDetail]
   );
 
-  useEffect(() => {
-    const data =
-      showQuery[0] === "listed"
-        ? ownListedNFTs
-        : ownNFTs.filter((item) => item.mintAddr === memoSelectedNFTDetail[0]);
-    setSelectedNFT(data[0]!);
-  }, [ownNFTs, memoSelectedNFTDetail, showQuery, ownListedNFTs]);
+  const getOfferByMintAddr = async () => {
+    try {
+      const data = await getAllOffersByMintAddrApi(memoSelectedNFTDetail[0]);
+
+      if (data.length === 0) {
+        setOfferData([]);
+        return;
+      }
+
+      const filteredData = data.map(
+        ({
+          mintAddr,
+          offerPrice,
+          tokenId,
+          imgUrl,
+          seller,
+          buyer,
+          active,
+        }: OfferDataType) => ({
+          mintAddr,
+          offerPrice,
+          tokenId,
+          imgUrl,
+          seller,
+          buyer,
+          active,
+        })
+      );
+
+      setOfferData(filteredData);
+    } catch (error) {
+      console.error("Error fetching data: ", error);
+    }
+  };
+
+  const getActivityByMintAddr = async () => {
+    try {
+      const data = await getAllActivitiesByMintAddrApi(
+        memoSelectedNFTDetail[0]
+      );
+      setActivityData(data);
+      // You can now use the fetched data (e.g., set it in a state)
+    } catch (error) {
+      console.error("Error fetching data: ", error);
+    }
+  };
 
   useEffect(() => {
-    if (activityData.length === 0) return;
-    const filterData = activityData.filter(
-      (act) => act.mintAddr === memoSelectedNFTDetail[0]
-    );
-    setActivityDataByMintAddr(filterData);
-  }, [activityData, memoSelectedNFTDetail]);
-
-  const listedState = currentRouter === "me" && showQuery[0] === "listed";
-
-  // NFT List Function
-  const handlelistMyNFTFunc = async () => {
-    if (wallet && selectedNFT !== undefined) {
-      if (updatedPrice === 0) {
-        errorAlert("Please enter the price.");
-      } else {
+    const fetchData = async () => {
+      if (memoSelectedNFTDetail[0]) {
         try {
-          openFunctionLoading();
-          selectedNFT.solPrice = updatedPrice;
-          const tx = await listPNftForSale(wallet, [selectedNFT]);
-          if (tx) {
-            const result = await listNft(tx.transactions, tx.listData);
-            if (result.type === "success") {
-              await getOwnNFTs();
-              await getAllListedNFTs();
-              await getAllListedNFTsBySeller();
-              await getAllActivityData();
-              closeFunctionLoading();
-              closeNFTDetailModal();
-              successAlert("Success");
-            } else {
-              selectedNFT.solPrice = 0;
-              closeFunctionLoading();
-              errorAlert("Something went wrong.");
-            }
-          } else {
-            selectedNFT.solPrice = 0;
-            closeFunctionLoading();
-            errorAlert("Something went wrong.");
-          }
-        } catch (e) {
-          selectedNFT.solPrice = 0;
-          console.log("err =>", e);
-          closeFunctionLoading();
-          errorAlert("Something went wrong.");
+          await getOfferByMintAddr();
+          await getActivityByMintAddr();
+        } catch (error) {
+          console.error("Error fetching data: ", error);
         }
       }
+    };
+
+    fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [memoSelectedNFTDetail]);
+
+  useEffect(() => {
+    let data;
+
+    if (currentRouter === "me") {
+      data =
+        showQuery[0] === "listed"
+          ? ownListedNFTs
+          : ownNFTs.filter(
+              (item) => item.mintAddr === memoSelectedNFTDetail[0]
+            );
+    } else {
+      data = listedAllNFTs.filter(
+        (item) => item.mintAddr === memoSelectedNFTDetail[0]
+      );
+    }
+
+    if (data.length > 0) {
+      setSelectedNFT(data[0]);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ownNFTs, memoSelectedNFTDetail, showQuery, ownListedNFTs, currentRouter]);
+
+  // NFT List Function
+  const handleListMyNFTFunc = async () => {
+    if (!wallet || selectedNFT === undefined) {
+      return;
+    }
+    const currentPrice = selectedNFT.solPrice;
+
+    if (updatedPrice === 0) {
+      errorAlert("Please enter the price.");
+      return;
+    }
+
+    try {
+      openFunctionLoading();
+
+      // Update the itemDetail price
+      selectedNFT.solPrice = updatedPrice;
+
+      // List the NFT for sale
+      const tx = await listPNftForSale(wallet, [selectedNFT]);
+
+      if (tx) {
+        const result = await listNftApi(tx.transactions, tx.listData);
+
+        if (result.type === "success") {
+          // Refresh data after successful listing
+          await Promise.all([
+            getOwnNFTs(),
+            getAllListedNFTsBySeller(),
+            getActivityByMintAddr(),
+            getAllListedNFTs(),
+          ]);
+
+          successAlert("Success");
+        } else {
+          selectedNFT.solPrice = currentPrice;
+          errorAlert("Something went wrong.");
+        }
+      } else {
+        selectedNFT.solPrice = currentPrice;
+        errorAlert("Something went wrong.");
+      }
+    } catch (e) {
+      selectedNFT.solPrice = currentPrice;
+      console.error("Error:", e);
+      errorAlert("Something went wrong.");
+    } finally {
+      closeFunctionLoading();
     }
   };
 
   // NFT Delist Function
   const handleDelistMyNFTFunc = async () => {
-    if (wallet && selectedNFT !== undefined) {
-      try {
-        openFunctionLoading();
-        const tx = await pNftDelist(wallet, [selectedNFT]);
-        if (tx) {
-          const result = await delistNft(
-            tx.transactions,
-            tx.delistData,
-            tx.mintAddrArray
-          );
-          if (result.type === "success") {
-            await getOwnNFTs();
-            await getAllListedNFTs();
-            await getAllListedNFTsBySeller();
-            await getAllActivityData();
-            closeFunctionLoading();
-            closeNFTDetailModal();
-            successAlert("Success");
-          } else {
-            closeFunctionLoading();
-            errorAlert("Something went wrong.");
-          }
+    if (!wallet || selectedNFT === undefined) {
+      return;
+    }
+
+    try {
+      openFunctionLoading();
+
+      // Delist the NFT
+      const tx = await pNftDelist(wallet, [selectedNFT]);
+
+      if (tx) {
+        const result = await delistNftApi(
+          tx.transactions,
+          tx.delistData,
+          tx.mintAddrArray
+        );
+
+        if (result.type === "success") {
+          // Refresh data after successful delist
+          await Promise.all([
+            getOwnNFTs(),
+            getAllListedNFTsBySeller(),
+            getActivityByMintAddr(),
+            getAllListedNFTs(),
+          ]);
+
+          successAlert("Success");
         } else {
-          closeFunctionLoading();
           errorAlert("Something went wrong.");
         }
-      } catch (e) {
-        console.log("err =>", e);
+      } else {
         errorAlert("Something went wrong.");
-        closeFunctionLoading();
       }
+    } catch (e) {
+      console.error("Error:", e);
+      errorAlert("Something went wrong.");
+    } finally {
+      closeFunctionLoading();
     }
   };
 
   // Listed NFT Price Update Function
   const handleUpdatePriceFunc = async () => {
+    if (!wallet || selectedNFT === undefined) {
+      return;
+    }
+
+    const currentPrice = selectedNFT.solPrice;
+
+    if (updatedPrice === 0) {
+      errorAlert("Please enter the value.");
+      return;
+    }
+
+    try {
+      openFunctionLoading();
+
+      // Update the itemDetail price
+      selectedNFT.solPrice = updatedPrice;
+
+      // Set the new price
+      const tx = await setPrice(wallet, selectedNFT);
+
+      if (tx) {
+        const result = await updatePriceApi(
+          tx.transactions,
+          tx.updatedPriceItems,
+          tx.updatedPriceItems.mintAddr
+        );
+
+        if (result.type === "success") {
+          // Refresh data after successful price update
+          await Promise.all([
+            getOwnNFTs(),
+            getAllListedNFTsBySeller(),
+            getActivityByMintAddr(),
+            getAllListedNFTs(),
+          ]);
+
+          successAlert("Success");
+        } else {
+          selectedNFT.solPrice = currentPrice;
+          errorAlert("Something went wrong.");
+        }
+      } else {
+        selectedNFT.solPrice = currentPrice;
+        errorAlert("Something went wrong.");
+      }
+    } catch (e) {
+      selectedNFT.solPrice = currentPrice;
+      console.error("Error:", e);
+      errorAlert("Something went wrong.");
+    } finally {
+      closeFunctionLoading();
+    }
+  };
+
+  const handleMakeOffer = async () => {
+    console.log("offer starting");
     if (wallet && selectedNFT !== undefined) {
-      if (updatedPrice === 0) {
-        errorAlert("Please enter the price.");
+      if (updatedPrice <= selectedNFT.solPrice / 2) {
+        errorAlert("Offer price must be bigger than the listed price.");
       } else {
         const currentPrice = selectedNFT.solPrice;
         try {
           openFunctionLoading();
           selectedNFT.solPrice = updatedPrice;
-          const tx = await setPrice(wallet, selectedNFT);
+          const tx = await makeOffer(wallet, [selectedNFT]);
           if (tx) {
-            const result = await updatePrice(
-              tx.transactions,
-              tx.updatedPriceItems,
-              tx.updatedPriceItems.mintAddr
-            );
+            const result = await makeOfferApi(tx.transaction, tx.offerData);
             if (result.type === "success") {
               await getOwnNFTs();
               await getAllListedNFTs();
               await getAllListedNFTsBySeller();
-              await getAllActivityData();
-
+              await getActivityByMintAddr();
+              await getOfferByMintAddr();
               closeFunctionLoading();
-              closeNFTDetailModal();
               successAlert("Success");
             } else {
               selectedNFT.solPrice = currentPrice;
@@ -204,11 +357,124 @@ const NFTDetailModal = () => {
       }
     }
   };
+
+  // Buy NFT Function
+  const handleBuyNFTFunc = async () => {
+    if (wallet && selectedNFT !== undefined) {
+      try {
+        openFunctionLoading();
+        const tx = await purchasePNft(wallet, [selectedNFT]);
+        if (tx) {
+          const result = await purchaseNFT(
+            tx.transactions,
+            tx.purchaseData,
+            tx.mintAddrArray
+          );
+          if (result.type === "success") {
+            await getOwnNFTs();
+            await getAllListedNFTsBySeller();
+            await getActivityByMintAddr();
+            await getAllListedNFTs();
+            closeFunctionLoading();
+            successAlert("Success");
+            route.push("/me");
+          } else {
+            closeFunctionLoading();
+            errorAlert("Something went wrong.");
+          }
+        } else {
+          closeFunctionLoading();
+          errorAlert("Something went wrong.");
+        }
+      } catch (e) {
+        console.log("err =>", e);
+        errorAlert("Something went wrong.");
+        closeFunctionLoading();
+      }
+    }
+  };
+
+  const handleCancelOffer = async (index: number) => {
+    console.log("index =>", index);
+    if (wallet && offerData[index] !== undefined) {
+      try {
+        openFunctionLoading();
+        const tx = await cancelOffer(wallet, offerData[index]);
+        if (tx) {
+          const result = await cancelOfferApi(
+            tx.mintAddr,
+            tx.offerData,
+            tx.transaction
+          );
+          if (result.type === "success") {
+            closeFunctionLoading();
+            successAlert("Success");
+            await getOfferByMintAddr();
+          } else {
+            closeFunctionLoading();
+            errorAlert("Something went wrong.");
+          }
+        } else {
+          closeFunctionLoading();
+          errorAlert("Something went wrong.");
+        }
+      } catch (e) {
+        console.log("err =>", e);
+        closeFunctionLoading();
+        errorAlert("Something went wrong.");
+      }
+    }
+  };
+
+  const handleAcceptHighOffer = async () => {
+    if (wallet && offerData.length !== 0) {
+      const highestOfferData = offerData.reduce((max, data) => {
+        // Only consider entries with a valid offerPrice (non-null and non-zero)
+        if (
+          data.offerPrice != null &&
+          data.offerPrice > (max.offerPrice || 0) &&
+          data.active == 1
+        ) {
+          return data;
+        } else {
+          return data;
+        }
+      }); // Initial max with an offerPrice of 0
+
+      try {
+        openFunctionLoading();
+        const tx = await acceptOfferPNft(wallet, highestOfferData);
+        if (tx) {
+          const result = await acceptOfferPNftApi(
+            tx.mintAddr,
+            tx.offerData,
+            tx.transaction
+          );
+          if (result.type === "success") {
+            closeFunctionLoading();
+            successAlert("Success");
+            route.push("/me");
+          } else {
+            closeFunctionLoading();
+            errorAlert("Something went wrong.");
+          }
+        } else {
+          closeFunctionLoading();
+          errorAlert("Something went wrong.");
+        }
+      } catch (e) {
+        console.log("err =>", e);
+        closeFunctionLoading();
+        errorAlert("Something went wrong.");
+      }
+    }
+  };
+
   return (
     <Suspense>
       <Modal open={nftDetailModalShow} onClose={closeNFTDetailModal} center>
         <div
-          className={`xl:w-[1200px] lg:w-[950px] md:w-[680px] w-[290px] sm:w-[500px] relative`}
+          className={`xl:min-w-[1200px] lg:min-w-[950px] md:min-w-[680px] w-full sm:min-w-[500px] relative`}
         >
           <div className="absolute top-0 right-0 cursor-pointer flex items-center justify-center gap-3">
             <div
@@ -225,7 +491,9 @@ const NFTDetailModal = () => {
           </div>
 
           <div className="top-10 z-[9999] w-[290px] py-2">
-            <h1 className="text-2xl text-white py-1">Mugs# 14</h1>
+            <h1 className="text-2xl text-white py-1">
+              {selectedNFT?.collectionName} #{selectedNFT?.tokenId}
+            </h1>
             <div className="border border-customborder rounded-md flex w-full">
               {ModalTabMenu.map((item, index) => (
                 <div
@@ -255,10 +523,16 @@ const NFTDetailModal = () => {
               </div>
               <div className="w-full flex flex-col justify-start items-start gap-2">
                 <div className="flex flex-col gap-1">
-                  <h1 className="text-white text-2xl">Validat3rs #73</h1>
-                  <p className="text-yellow-500 texl-md">Validat3rs #73</p>
+                  <h1 className="text-white text-2xl">
+                    {" "}
+                    {selectedNFT?.collectionName}
+                  </h1>
+                  <p className="text-yellow-500 texl-md">
+                    {" "}
+                    {selectedNFT?.collectionName} #{selectedNFT?.tokenId}
+                  </p>
                 </div>
-                <div className="w-full flex items-start justify-start gap-2 rounded-md bg-transparant border border-customborder flex-col p-3">
+                <div className="w-full flex items-start justify-start gap-1 rounded-md bg-transparant border border-customborder flex-col p-3">
                   {/* <div className="w-full flex items-center justify-between">
                   <p className="text-sm text-gray-300">List Price</p>
                   <span className="text-md text-white">5.614 Sol</span>
@@ -276,7 +550,7 @@ const NFTDetailModal = () => {
                   <span className="text-2xl text-white">5.614 Sol</span>
                 </div> */}
                   <p
-                    className={`text-left text-white text-lg ${
+                    className={`text-left text-white text-xl ${
                       selectedNFT?.solPrice === 0 && "hidden"
                     }`}
                   >
@@ -285,7 +559,7 @@ const NFTDetailModal = () => {
                   </p>
                   <div className="w-full flex items-center justify-between gap-2">
                     <input
-                      className="w-full p-2 flex items-center placeholder:text-gray-500 outline-none text-white justify-between rounded-md border border-customborder bg-transparent"
+                      className="w-full p-[6px] flex items-center placeholder:text-gray-500 outline-none text-white justify-between rounded-md border border-customborder bg-transparent"
                       placeholder="Input the price"
                       type="number"
                       onChange={(e) => {
@@ -293,27 +567,66 @@ const NFTDetailModal = () => {
                       }}
                     />
                     <div
-                      className={`w-full rounded-md py-2 text-center bg-yellow-600 duration-200 hover:bg-yellow-700 text-white cursor-pointer flex items-center gap-2 justify-center ${
-                        (!listedState || selectedNFT?.solPrice === 0) &&
-                        "hidden"
+                      className={`w-full rounded-md py-[6px] text-center bg-red-600 duration-200 hover:bg-red-700 text-white cursor-pointer flex items-center gap-2 justify-center ${
+                        selectedNFT?.solPrice === 0 && "hidden"
                       }`}
-                      onClick={handleUpdatePriceFunc}
+                      onClick={
+                        wallet?.publicKey.toBase58() === selectedNFT?.seller
+                          ? handleUpdatePriceFunc
+                          : handleMakeOffer
+                      }
                     >
-                      Update Price
+                      {wallet?.publicKey.toBase58() === selectedNFT?.seller
+                        ? "Update Price"
+                        : "Make Offer"}
+                    </div>
+                  </div>
+
+                  <div className="w-full flex items-center justify-center gap-2">
+                    <div
+                      className={`w-full rounded-md py-[6px] text-center bg-yellow-600 duration-200 hover:bg-yellow-700 text-white cursor-pointer
+                  ${
+                    wallet?.publicKey.toBase58() !== selectedNFT?.seller &&
+                    "hidden"
+                  }`}
+                      onClick={
+                        selectedNFT?.solPrice === 0
+                          ? handleListMyNFTFunc
+                          : handleDelistMyNFTFunc
+                      }
+                    >
+                      {selectedNFT?.solPrice === 0 &&
+                      wallet?.publicKey.toBase58() === selectedNFT.seller
+                        ? "List Now"
+                        : "Delist now"}
+                    </div>
+                    <div
+                      className={`w-full rounded-md py-[6px] text-center bg-yellow-600 duration-200 hover:bg-yellow-700 text-white cursor-pointer
+                  ${
+                    (offerData.filter((data) => data.active !== 0).length ===
+                      0 ||
+                      wallet?.publicKey.toBase58() !== selectedNFT?.seller) &&
+                    "hidden"
+                  }`}
+                      onClick={handleAcceptHighOffer}
+                    >
+                      {`Accept High Offer`}
                     </div>
                   </div>
 
                   <div
-                    className="w-full rounded-md py-2 text-center bg-yellow-600 duration-200 hover:bg-yellow-700 text-white cursor-pointer"
-                    onClick={
-                      !listedState ? handlelistMyNFTFunc : handleDelistMyNFTFunc
-                    }
+                    className={`w-full rounded-md py-[6px] text-center bg-yellow-600 duration-200 hover:bg-yellow-700 text-white cursor-pointer
+                  ${
+                    wallet?.publicKey.toBase58() === selectedNFT?.seller &&
+                    "hidden"
+                  }`}
+                    onClick={handleBuyNFTFunc}
                   >
-                    {!listedState ? "List Now" : "Delist now"}
+                    {"Buy now"}
                   </div>
                 </div>
 
-                <div className="w-full p-3 flex items-center justify-between rounded-md border-b border-customborder cursor-pointer">
+                <div className="w-full p-3 flex items-center justify-between rounded-md border-b border-customborder">
                   <span className="text-white font-bold text-md flex items-center justify-center gap-2">
                     <MdOutlineSecurity color="#EAB308" size={18} />
                     Attributes
@@ -338,43 +651,62 @@ const NFTDetailModal = () => {
                     ))}
                 </div>
 
-                <div className="w-full p-3 flex items-center justify-between rounded-md border-b border-customborder cursor-pointer">
+                <div className="w-full p-3 flex items-center justify-between rounded-md border-b border-customborder">
                   <span className="text-white font-bold text-md flex items-center justify-center gap-2">
                     <BiDetail color="#EAB308" size={19} />
                     Detail
                   </span>
                 </div>
                 <div
-                  className={`w-full py-3 flex items-center justify-between flex-col gap-1 rounded-md cursor-pointer text-gray-400`}
+                  className={`w-full py-3 flex items-center justify-between flex-col gap-1 rounded-md text-gray-400`}
                 >
                   <div className="w-full flex items-center justify-between">
                     <span>Mint Address</span>
-                    <span className="text-white">
-                      {selectedNFT &&
-                        selectedNFT.mintAddr.slice(0, 4) +
-                          " ... " +
-                          selectedNFT.mintAddr.slice(-4)}
-                    </span>
+                    <a
+                      href={`https://explorer.solana.com/address/${selectedNFT?.mintAddr}?cluster=devnet`}
+                      target="_blank"
+                      rel="referrer"
+                    >
+                      <span className="text-white flex items-center justify-center text-sm gap-1 duration-200 hover:text-gray-300">
+                        <SolanaIcon />
+                        {selectedNFT &&
+                          selectedNFT.mintAddr.slice(0, 4) +
+                            " ... " +
+                            selectedNFT.mintAddr.slice(-4)}
+                      </span>
+                    </a>
                   </div>
                   <div className="w-full flex items-center justify-between">
                     <span>OnChain Collection</span>
-                    <span className="text-white">
-                      {" "}
-                      {selectedNFT &&
-                        selectedNFT.collectionAddr.slice(0, 4) +
-                          " ... " +
-                          selectedNFT.collectionAddr.slice(-4)}
-                    </span>
+                    <a
+                      href={`https://explorer.solana.com/address/${selectedNFT?.collectionAddr}?cluster=devnet`}
+                      target="_blank"
+                      rel="referrer"
+                    >
+                      <span className="text-white flex items-center justify-center text-sm gap-1 duration-200 hover:text-gray-300">
+                        <SolanaIcon />{" "}
+                        {selectedNFT &&
+                          selectedNFT.collectionAddr.slice(0, 4) +
+                            " ... " +
+                            selectedNFT.collectionAddr.slice(-4)}
+                      </span>
+                    </a>
                   </div>
                   <div className="w-full flex items-center justify-between">
                     <span>Owner</span>
-                    <span className="text-white">
-                      {" "}
-                      {selectedNFT &&
-                        selectedNFT.seller.slice(0, 4) +
-                          " ... " +
-                          selectedNFT.seller.slice(-4)}
-                    </span>
+                    <a
+                      href={`https://explorer.solana.com/address/${selectedNFT?.seller}?cluster=devnet`}
+                      target="_blank"
+                      rel="referrer"
+                    >
+                      <span className="text-white flex items-center justify-center text-sm gap-1 duration-200 hover:text-gray-300">
+                        <SolanaIcon />{" "}
+                        {selectedNFT &&
+                          selectedNFT.seller.slice(0, 4) +
+                            " ... " +
+                            selectedNFT.seller.slice(-4)}
+                      </span>
+                    </a>
                   </div>
                 </div>
               </div>
@@ -384,14 +716,17 @@ const NFTDetailModal = () => {
                 showState !== 1 && "hidden"
               }`}
             >
-              <ActivityTable data={activityDataByMintAddr} />
+              <ActivityTable data={activityData} />
             </div>
             <div
               className={`w-full flex items-start justify-start gap-2 flex-col ${
                 showState !== 2 && "hidden"
               }`}
             >
-              {/* <ActivityTable /> */}
+              <OfferTable
+                data={offerData}
+                handleCancelOffer={(index: number) => handleCancelOffer(index)}
+              />
             </div>
           </div>
         </div>

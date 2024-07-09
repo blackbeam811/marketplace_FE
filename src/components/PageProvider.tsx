@@ -18,27 +18,27 @@ export default function PageProvider({ children }: { children: ReactNode }) {
   return (
     <SolanaWalletProvider>
       <CollectionProvider>
-        <ActivityProvider>
-          <NFTDataProvider>
-            <ModalProvider>
-              <LoadingProvider>
-                {/* <MobileSearchCollectionBar /> */}
-                <Header />
-                {children}
-                <Footer />
-                <NFTDetailModal />
-                <SearchCollectionModal />
-                <ToastContainer
-                  pauseOnFocusLoss={false}
-                  theme="colored"
-                  stacked
-                />
-                <FuncSpinner />
-                <Progressbar />
-              </LoadingProvider>
-            </ModalProvider>
-          </NFTDataProvider>
-        </ActivityProvider>
+        {/* <ActivityProvider> */}
+        <NFTDataProvider>
+          <ModalProvider>
+            <LoadingProvider>
+              {/* <MobileSearchCollectionBar /> */}
+              <Header />
+              {children}
+              <Footer />
+              <NFTDetailModal />
+              <SearchCollectionModal />
+              <ToastContainer
+                pauseOnFocusLoss={false}
+                theme="colored"
+                stacked
+              />
+              <FuncSpinner />
+              <Progressbar />
+            </LoadingProvider>
+          </ModalProvider>
+        </NFTDataProvider>
+        {/* </ActivityProvider> */}
       </CollectionProvider>
     </SolanaWalletProvider>
   );

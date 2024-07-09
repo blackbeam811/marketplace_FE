@@ -13,10 +13,9 @@ import {
   useState,
 } from "react";
 import { CollectionContext } from "./CollectionContext";
-import { getAllListed, getAllListedDataBySeller } from "@/utils/api";
+import { getAllListedApi, getAllListedDataBySellerApi } from "@/utils/api";
 
 export const NFTDataContext = createContext<NFTDataContextType>({
-  walletAddr: "",
   solPrice: 0,
   ownNFTs: [],
   ownListedNFTs: [],
@@ -32,34 +31,34 @@ interface NFTDataProviderProps {
 }
 
 export function NFTDataProvider({ children }: NFTDataProviderProps) {
-  const { publicKey } = useWallet();
   const connection = new web3.Connection(SOLANA_RPC);
+  const { publicKey } = useWallet();
+  const { collectionData } = useContext(CollectionContext);
   const [solPrice, setSolPrice] = useState(0);
   const [getOwnNFTsState, setGetOwnNFTsState] = useState(false);
   const [ownNFTs, setOwnNFTs] = useState<OwnNFTDataType[]>([]);
   const [ownListedNFTs, setOwnListedNFTs] = useState<OwnNFTDataType[]>([]);
   const [listedAllNFTs, setListedAllNFTs] = useState<OwnNFTDataType[]>([]);
-  const { collectionData } = useContext(CollectionContext);
 
-  const fetchSolPrice = async () => {
-    try {
-      const response = await fetch(
-        "https://api.coingecko.com/api/v3/simple/price?ids=solana&vs_currencies=usd",
-        {
-          method: "GET",
-          headers: {
-            accept: "application/json",
-            "x-cg-demo-api-key": COINGECKOAPIKEY,
-          },
-        }
-      );
-      if (!response.ok) throw new Error("Failed to fetch Solana price");
-      const data = await response.json();
-      setSolPrice(data.solana.usd);
-    } catch (error) {
-      console.error("Error fetching Solana price:", error);
-    }
-  };
+  // const fetchSolPrice = async () => {
+  //   try {
+  //     const response = await fetch(
+  //       "https://api.coingecko.com/api/v3/simple/price?ids=solana&vs_currencies=usd",
+  //       {
+  //         method: "GET",
+  //         headers: {
+  //           accept: "application/json",
+  //           "x-cg-demo-api-key": COINGECKOAPIKEY,
+  //         },
+  //       }
+  //     );
+  //     if (!response.ok) throw new Error("Failed to fetch Solana price");
+  //     const data = await response.json();
+  //     setSolPrice(data.solana.usd);
+  //   } catch (error) {
+  //     console.error("Error fetching Solana price:", error);
+  //   }
+  // };
 
   const fetchNFTMetadata = async (uri: string): Promise<any> => {
     const response = await fetch(uri);
@@ -72,45 +71,48 @@ export function NFTDataProvider({ children }: NFTDataProviderProps) {
     metadata: any,
     listed: boolean
   ): OwnNFTDataType => {
-    const attribute = metadata.attributes.map((attr: any) => ({
+    const { name, image, description, attributes } = metadata;
+    const {
+      mintAddr,
+      metaDataUrl,
+      collectionAddr,
+      seller,
+      solPrice,
+      data,
+      mint,
+    } = acc;
+
+    const attribute = attributes.map((attr: any) => ({
       trait_type: attr.trait_type,
       value: attr.value,
     }));
 
-    return listed
-      ? {
-          collectionName: metadata.name.split("#")[0].toString(),
-          tokenId: metadata.name.split("#")[1].toString(),
-          mintAddr: acc.mintAddr,
-          imgUrl: metadata.image,
-          description: metadata.description,
-          metaDataUrl: acc.metaDataUrl,
-          collectionAddr: acc.collectionAddr,
-          seller: acc.seller,
-          solPrice: acc.solPrice,
-          attribute,
-          listed,
-        }
-      : {
-          collectionName: acc.data.name.split("#")[0].toString(),
-          tokenId: acc.data.name.split("#")[1].toString(),
-          mintAddr: acc.mint,
-          imgUrl: metadata.image,
-          description: metadata.description,
-          metaDataUrl: acc.data.uri,
-          collectionAddr: acc.data.creators[0].address,
-          seller: publicKey?.toBase58()!,
-          solPrice: 0,
-          attribute,
-          listed,
-        };
+    const [collectionName, tokenId] = listed
+      ? name.split("#")
+      : data.name.split("#");
+
+    return {
+      collectionName: collectionName.toString(),
+      tokenId: tokenId.toString(),
+      mintAddr: listed ? mintAddr : mint,
+      imgUrl: image,
+      description,
+      metaDataUrl: listed ? metaDataUrl : data.uri,
+      collectionAddr: listed ? collectionAddr : data.creators?.[0]?.address,
+      seller: listed ? seller : publicKey?.toBase58()!,
+      solPrice: listed ? solPrice : 0,
+      attribute,
+      listed,
+    };
   };
 
   const getOwnNFTs = async (): Promise<void> => {
     if (!publicKey) return;
     try {
       setGetOwnNFTsState(true);
-      const listedData = await getAllListedDataBySeller(publicKey.toBase58());
+      const listedData = await getAllListedDataBySellerApi(
+        publicKey.toBase58()
+      );
       const nftList = await getParsedNftAccountsByOwner({
         publicAddress: publicKey.toBase58(),
         connection,
@@ -150,7 +152,7 @@ export function NFTDataProvider({ children }: NFTDataProviderProps) {
     if (!publicKey) return;
     try {
       let listedData = [];
-      listedData = await getAllListedDataBySeller(publicKey.toBase58());
+      listedData = await getAllListedDataBySellerApi(publicKey.toBase58());
       const data: OwnNFTDataType[] = await Promise.all(
         listedData.length !== 0
           ? listedData.map(async (acc: any) => {
@@ -174,8 +176,7 @@ export function NFTDataProvider({ children }: NFTDataProviderProps) {
   const getAllListedNFTs = async (): Promise<void> => {
     try {
       let listedData = [];
-      listedData = await getAllListed();
-      console.log("========= >listedData", listedData);
+      listedData = await getAllListedApi();
       const data: OwnNFTDataType[] = await Promise.all(
         listedData.length !== 0
           ? listedData.map(async (acc: any) => {
@@ -189,19 +190,17 @@ export function NFTDataProvider({ children }: NFTDataProviderProps) {
             })
           : [] // Return an empty array if listedData is empty
       );
-      console.log("All listed NFTs ==> ", data);
-
       setListedAllNFTs(data.filter((nft) => nft && nft.tokenId)); // Filter out null values
     } catch (error) {
       console.error("Error fetching listed NFTs:", error);
     }
   };
 
-  useEffect(() => {
-    fetchSolPrice();
-    const interval = setInterval(fetchSolPrice, 60000); // Call every 60 seconds
-    return () => clearInterval(interval);
-  }, []);
+  // useEffect(() => {
+  //   fetchSolPrice();
+  //   const interval = setInterval(fetchSolPrice, 120000); // Call every 60 seconds
+  //   return () => clearInterval(interval);
+  // }, []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -213,11 +212,12 @@ export function NFTDataProvider({ children }: NFTDataProviderProps) {
     };
 
     fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
     const fetchData = async () => {
-      if (publicKey) {
+      if (publicKey && collectionData) {
         try {
           await getOwnNFTs();
           await getAllListedNFTsBySeller();
@@ -228,10 +228,10 @@ export function NFTDataProvider({ children }: NFTDataProviderProps) {
     };
 
     fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [publicKey, collectionData]);
 
   const NFTDataContextValue: NFTDataContextType = {
-    walletAddr: publicKey?.toBase58(),
     solPrice,
     getOwnNFTsState,
     ownNFTs,

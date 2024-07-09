@@ -77,6 +77,16 @@ export type OwnNFTDataType = {
   attribute: NFTAttribute[];
 };
 
+export type OfferDataType = {
+  tokenId: string;
+  imgUrl: string;
+  mintAddr: string;
+  offerPrice: number;
+  seller: string;
+  buyer: string;
+  active: number;
+};
+
 export type CollectionDataType = {
   imgUrl: string;
   collectionName: string;
@@ -104,7 +114,6 @@ export type ActivityDataType = {
 };
 
 export interface NFTDataContextType {
-  walletAddr: string | undefined;
   solPrice: number;
   getOwnNFTsState: boolean;
   ownNFTs: OwnNFTDataType[];

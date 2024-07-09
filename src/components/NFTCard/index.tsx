@@ -1,6 +1,5 @@
 /* eslint-disable @next/next/no-img-element */
 import { FC, useContext, useState } from "react";
-import Link from "next/link";
 import { NFTCardType } from "@/types/types";
 import { CgCheck } from "react-icons/cg";
 import { BiPlus } from "react-icons/bi";
@@ -20,7 +19,7 @@ const NFTCard: FC<NFTCardType> = ({
   return (
     <>
       <div
-        className={`flex items-start justify-start flex-col gap-2 bg-[#0f4223b9] min-h-[250px] rounded-md pb-2 border ${
+        className={`flex items-start justify-start flex-col gap-2 bg-[#0f4223b9] md:min-h-[250px] min-h-[230px] rounded-md pb-2 border ${
           seleted ? "border-yellow-500" : "border-customborder"
         }`}
       >
@@ -47,7 +46,7 @@ const NFTCard: FC<NFTCardType> = ({
         </div>
         <div className="w-full flex items-center justify-between pr-2 flex-col">
           <div className="w-full flex items-center justify-between">
-            <p className="text-gray-300 text-left px-2 text-md uppercase">
+            <p className="text-gray-300 text-left px-2 text-sm uppercase">
               {state}
             </p>
             <p
@@ -59,7 +58,7 @@ const NFTCard: FC<NFTCardType> = ({
             </p>
           </div>
           <div className="w-full flex items-center justify-between">
-            <p className="text-white text-left px-2 text-lg">
+            <p className="text-white text-left px-2 text-md">
               {collectionName} #{tokenId}
             </p>
             <span

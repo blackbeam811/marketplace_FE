@@ -1,6 +1,6 @@
+import axios from "axios";
 import { MUGS_ENDPOINT } from "@/config";
 import { CollectionDataType } from "@/types/types";
-import axios from "axios";
 
 export async function redeemAPI(
   signedTransaction: Uint8Array,
@@ -26,7 +26,8 @@ export async function redeemAPI(
   }
 }
 
-export async function listNft(transactions: any, listData: any) {
+// List nfts and save the listed nft data to the database.
+export async function listNftApi(transactions: any, listData: any) {
   try {
     const response = await axios.post(`${MUGS_ENDPOINT}/nft/create`, {
       transactions: transactions,
@@ -38,7 +39,8 @@ export async function listNft(transactions: any, listData: any) {
   }
 }
 
-export async function delistNft(
+// Delist nfts and save the delisted nft data to the database.
+export async function delistNftApi(
   transactions: any,
   delistData: any,
   mintAddrArray: any
@@ -51,11 +53,12 @@ export async function delistNft(
     });
     return response?.data;
   } catch (err) {
-    console.log("List NFTs err = ", err);
+    console.log("Delist NFTs err = ", err);
   }
 }
 
-export async function updatePrice(
+// Update the listed nft price and save the updated price to the database.
+export async function updatePriceApi(
   transactions: any,
   updateData: any,
   mintAddr: any
@@ -72,6 +75,7 @@ export async function updatePrice(
   }
 }
 
+// Purchase the listed nfts and save the purchased nft data to the database
 export async function purchaseNFT(
   transactions: any,
   purchaseData: any,
@@ -89,7 +93,56 @@ export async function purchaseNFT(
   }
 }
 
-// Add collection data to databse by marketplace owner
+// Make the offer for the listed nft and save the offer data to the database
+export async function makeOfferApi(transactions: any, offerData: any) {
+  try {
+    const response = await axios.post(`${MUGS_ENDPOINT}/offer/create`, {
+      transaction: transactions,
+      offerData: offerData,
+    });
+    return response?.data;
+  } catch (err) {
+    console.log("Make offer err = ", err);
+  }
+}
+
+// Cancel the made offer and save the offer data to the database
+export async function cancelOfferApi(
+  mintAddr: string,
+  offerData: any,
+  transactions: any
+) {
+  try {
+    const response = await axios.post(`${MUGS_ENDPOINT}/offer/canceloffer`, {
+      mintAddr: mintAddr,
+      offerData: offerData,
+      transaction: transactions,
+    });
+    return response?.data;
+  } catch (err) {
+    console.log("Cancel offer err = ", err);
+  }
+}
+
+// Accept the offer and save the purchased data to the database
+export async function acceptOfferPNftApi(
+  mintAddr: string,
+  offerData: any,
+  transactions: any
+) {
+  try {
+    const response = await axios.post(`${MUGS_ENDPOINT}/offer/acceptOffer`, {
+      mintAddr: mintAddr,
+      offerData: offerData,
+      transaction: transactions,
+    });
+    return response?.data;
+  } catch (err) {
+    console.log("Accept offer err = ", err);
+  }
+}
+
+// Add the new collection to the database by owner
 export async function createCollection(data: CollectionDataType) {
   try {
     const response = await axios.post(`${MUGS_ENDPOINT}/collection/create`, {
@@ -102,7 +155,7 @@ export async function createCollection(data: CollectionDataType) {
 }
 
 // Get all collection data from the database
-export async function getAllCollections() {
+export async function getAllCollectionsApi() {
   try {
     const response = await axios.get(`${MUGS_ENDPOINT}/collection/`);
     return response?.data;
@@ -111,8 +164,8 @@ export async function getAllCollections() {
   }
 }
 
-// Get all listed data by seller from the database
-export async function getAllListed() {
+// Get all listed nfts data from the database
+export async function getAllListedApi() {
   try {
     const response = await axios.get(`${MUGS_ENDPOINT}/nft/`);
 
@@ -122,8 +175,8 @@ export async function getAllListed() {
   }
 }
 
-// Get all listed data by seller from the database
-export async function getAllListedDataBySeller(seller: string) {
+// Get all listed nfts data by seller from the database
+export async function getAllListedDataBySellerApi(seller: string) {
   try {
     const response = await axios.get(
       `${MUGS_ENDPOINT}/nft/findAllBySeller/${seller}`
@@ -132,12 +185,12 @@ export async function getAllListedDataBySeller(seller: string) {
 
     return response?.data;
   } catch (err) {
-    console.log("Getting all listed data err = ", err);
+    console.log("Getting all listed data by seller err = ", err);
   }
 }
 
-// Get all activity data by seller
-export async function getAllActivities(seller: string) {
+// Get all activity data by seller from the database
+export async function getAllActivitiesApi(seller: string) {
   try {
     const response = await axios.get(
       `${MUGS_ENDPOINT}/activity/findAllBySeller/${seller}`
@@ -145,6 +198,71 @@ export async function getAllActivities(seller: string) {
 
     return response?.data;
   } catch (err) {
-    console.log("Getting all listed data err = ", err);
+    console.log("Getting all activity data err = ", err);
+  }
+}
+
+// Get all activity data by seller from the database
+export async function getAllActivitiesByMakerApi(maker: string) {
+  try {
+    const response = await axios.get(
+      `${MUGS_ENDPOINT}/activity/findAllByMaker/${maker}`
+    );
+
+    return response?.data;
+  } catch (err) {
+    console.log("Getting all activity data err = ", err);
+  }
+}
+
+// Get all activity data by mintaddr from the database
+export async function getAllActivitiesByMintAddrApi(seller: string) {
+  try {
+    const response = await axios.get(
+      `${MUGS_ENDPOINT}/activity/findAllByMintAddr/${seller}`
+    );
+
+    return response?.data;
+  } catch (err) {
+    console.log("Getting all activity data by mintaddr err = ", err);
+  }
+}
+
+// Get all offers by mintaddr from the database
+export async function getAllOffersByMintAddrApi(mintAddr: string) {
+  try {
+    const response = await axios.get(
+      `${MUGS_ENDPOINT}/offer/findAllByMintAddr/${mintAddr}`
+    );
+
+    return response?.data;
+  } catch (err) {
+    console.log("Getting all offers data by mintaddr err = ", err);
+  }
+}
+
+// Get all offers by maker from the database
+export async function getAllOffersByMakerApi(maker: string) {
+  try {
+    const response = await axios.get(
+      `${MUGS_ENDPOINT}/offer/findAllByMaker/${maker}`
+    );
+
+    return response?.data;
+  } catch (err) {
+    console.log("Getting all offers data by mintaddr err = ", err);
+  }
+}
+
+// Get highest offer by mintaddr from the database
+export async function getHighOfferByMintAddr(mintAddr: string) {
+  try {
+    const response = await axios.get(
+      `${MUGS_ENDPOINT}/offer/findHighOffer/${mintAddr}`
+    );
+
+    return response?.data;
+  } catch (err) {
+    console.log("Getting highest offer data err = ", err);
   }
 }

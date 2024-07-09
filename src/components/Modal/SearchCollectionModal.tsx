@@ -1,13 +1,11 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
-import Image from "next/image";
-import { activityTableData } from "@/data/activityTableData";
+import Link from "next/link";
 import { useContext, useEffect, useRef, useState } from "react";
-import { ModalContext } from "@/contexts/ModalContext";
 import { useOnClickOutside } from "@/hooks/useOnClickOutside";
+import { ModalContext } from "@/contexts/ModalContext";
 import { CollectionContext } from "@/contexts/CollectionContext";
 import { PINATA_URL } from "@/config";
-import Link from "next/link";
 import { CollectionDataType } from "@/types/types";
 
 export default function SearchCollectionModal() {
@@ -71,12 +69,13 @@ export default function SearchCollectionModal() {
                     <img
                       src={PINATA_URL + row.imgUrl}
                       alt="Collection Image"
-                      className="object-cover"
+                      className="object-cover rounded-md"
                     />
                   </div>
                   <Link
                     href={`${"/market/" + row.collectionAddr}`}
                     onClick={closeSearchCollectionModal}
+                    className="text-sm"
                   >
                     {row.collectionName}
                   </Link>
@@ -85,7 +84,7 @@ export default function SearchCollectionModal() {
                 <td className="py-2 px-4 text-[#DD7A98]">
                   {row.currentPrice} SOL
                 </td>
-                <td className="py-2 px-4 text-white font-light">
+                <td className="py-2 px-4 text-white font-light text-sm">
                   {row.collectionAddr.slice(0, 6) +
                     "...." +
                     row.collectionAddr.slice(-6)}
