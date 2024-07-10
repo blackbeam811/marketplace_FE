@@ -82,7 +82,7 @@ export default function SearchCollectionModal() {
                 </td>
 
                 <td className="py-2 px-4 text-[#DD7A98]">
-                  {row.currentPrice} SOL
+                  {row.floorPrice} SOL
                 </td>
                 <td className="py-2 px-4 text-white font-light text-sm">
                   {row.collectionAddr.slice(0, 6) +
