@@ -1,5 +1,5 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
-import Image from "next/image";
 import { offerTableTH } from "@/data/tableTHData";
 import { OfferDataType } from "@/types/types";
 import { useAnchorWallet } from "@solana/wallet-adapter-react";
@@ -11,7 +11,7 @@ export default function OfferTable(props: {
   const wallet = useAnchorWallet();
 
   return (
-    <div className="w-full overflow-x-auto border border-customborder rounded-md mb-10 min-h-[22vh]">
+    <div className="w-full overflow-x-auto border border-customborder rounded-md mb-10 min-h-[10vh]">
       <table className="min-w-[1024px] lg:w-full bg-transparent">
         <thead className="border-b border-customborder">
           <tr>
@@ -37,6 +37,16 @@ export default function OfferTable(props: {
               <td className="py-2 px-4 text-white font-light text-md">
                 {index + 1}
               </td>
+              <td className="py-2 px-4 text-white font-light text-md flex gap-2 flex-row items-center justify-start">
+                <div className="relative w-[30px] h-[30px]">
+                  <img
+                    src={row.imgUrl}
+                    alt="Collection Image"
+                    className="object-cover w-full h-full"
+                  />
+                </div>
+                {row.tokenId}
+              </td>
 
               <td className="py-2 px-4 text-[#DD7A98]">{row.offerPrice} SOL</td>
               <td className="py-2 px-4 text-white font-light">
@@ -44,7 +54,7 @@ export default function OfferTable(props: {
               </td>
               <td className="py-2 px-4 text-white font-light">
                 <button
-                  className={`px-2 py-[1px] bg-red-500 duration-300 hover:bg-red-600 rounded-md ${
+                  className={`px-2 bg-red-500 duration-300 hover:bg-red-600 rounded-sm ${
                     row.buyer !== wallet?.publicKey.toBase58() && "hidden"
                   }`}
                   onClick={() => props.handleCancelOffer(index)}

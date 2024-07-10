@@ -10,6 +10,7 @@ import {
   SYSVAR_RENT_PUBKEY,
   SYSVAR_INSTRUCTIONS_PUBKEY,
 } from "@solana/web3.js";
+import { Metadata } from "@metaplex-foundation/mpl-token-metadata";
 import {
   MARKETPLACE_PROGRAM_ID,
   GLOBAL_AUTHORITY_SEED,
@@ -1141,114 +1142,6 @@ export const createSetPriceTx = async (
   return tx;
 };
 
-export const createPurchaseTx = async (
-  mint: PublicKey,
-  userAddress: PublicKey,
-  treasuryAddresses: PublicKey[],
-  program: anchor.Program,
-  connection: Connection
-) => {
-  let ret = await getATokenAccountsNeedCreate(
-    connection,
-    userAddress,
-    userAddress,
-    [mint]
-  );
-  let userNftTokenAccount = ret.destinationAccounts[0];
-  console.log("User NFT = ", mint.toBase58(), userNftTokenAccount.toBase58());
-
-  let tx = txWithComputeUnitsIxs();
-
-  const [globalAuthority, bump] = await PublicKey.findProgramAddress(
-    [Buffer.from(GLOBAL_AUTHORITY_SEED)],
-    MARKETPLACE_PROGRAM_ID
-  );
-
-  const [nftData, nft_bump] = await PublicKey.findProgramAddress(
-    [Buffer.from(SELL_DATA_SEED), mint.toBuffer()],
-    MARKETPLACE_PROGRAM_ID
-  );
-
-  const [auctionData, _] = await PublicKey.findProgramAddress(
-    [Buffer.from(AUCTION_DATA_SEED), mint.toBuffer()],
-    MARKETPLACE_PROGRAM_ID
-  );
-
-  const [buyerUserPool, buyer_bump] = await PublicKey.findProgramAddress(
-    [Buffer.from(USER_DATA_SEED), userAddress.toBuffer()],
-    MARKETPLACE_PROGRAM_ID
-  );
-
-  let { destinationAccounts } = await getATokenAccountsNeedCreate(
-    connection,
-    userAddress,
-    globalAuthority,
-    [mint]
-  );
-
-  console.log("Dest NFT Account = ", destinationAccounts[0].toBase58());
-
-  let sellInfo: SellData | null = await getNFTPoolState(mint, program);
-  let seller: any = sellInfo?.seller;
-
-  const [sellerUserPool, seller_bump] = await PublicKey.findProgramAddress(
-    [Buffer.from(USER_DATA_SEED), seller.toBuffer()],
-    MARKETPLACE_PROGRAM_ID
-  );
-
-  console.log("Seller = ", seller.toBase58());
-
-  const mintMetadata = await getMetadata(mint);
-  console.log("Metadata=", mintMetadata.toBase58());
-
-  let treasuryAccounts: PublicKey[] = treasuryAddresses;
-  console.log(
-    "=> Treasury Accounts:",
-    treasuryAccounts.map((address) => address.toBase58())
-  );
-
-  let remainingAccounts: {
-    pubkey: anchor.web3.PublicKey;
-    isWritable: boolean;
-    isSigner: boolean;
-  }[] = [];
-  treasuryAccounts.map((address) => {
-    remainingAccounts.push({
-      pubkey: address,
-      isWritable: true,
-      isSigner: false,
-    });
-  });
-
-  if (ret.instructions.length > 0) ret.instructions.map((ix) => tx.add(ix));
-  console.log("==> Purchasing", mint.toBase58());
-  tx.add(
-    program.instruction.purchase(bump, nft_bump, buyer_bump, seller_bump, {
-      accounts: {
-        buyer: userAddress,
-        globalAuthority,
-        buyerUserPool,
-        sellDataInfo: nftData,
-        userNftTokenAccount,
-        destNftTokenAccount: destinationAccounts[0],
-        nftMint: mint,
-        seller,
-        sellerUserPool,
-        mintMetadata,
-        tokenProgram: TOKEN_PROGRAM_ID,
-        systemProgram: SystemProgram.programId,
-        tokenMetadataProgram: METAPLEX,
-        auctionDataInfo: auctionData,
-      },
-      instructions: [],
-      signers: [],
-      remainingAccounts,
-    })
-  );
-
-  return tx;
-};
-
 export const createPurchasePNftTx = async (
   mint: PublicKey,
   userAddress: PublicKey,
@@ -1324,6 +1217,10 @@ export const createPurchasePNftTx = async (
   const metadata = await Metadata.load(connection, metadataAccount);
   let creators = metadata.data.data.creators;
   console.log("creators =>", creators);
+
+  // const metadata = await getMetadata(mint);
+  // console.log("Metadata=", metadata.toBase58());
+  // const meta = await Metadata.fromAccountAddress(connection, metadata);
 
   let treasuryAccounts: PublicKey[] = treasuryAddresses;
   console.log(
@@ -1729,6 +1626,7 @@ export const createAcceptOfferPNftTx = async (
     metadata: { Metadata },
   } = programs;
   let metadataAccount = await Metadata.getPDA(mint);
+
   const metadata = await Metadata.load(connection, metadataAccount);
   let creators = metadata.data.data.creators;
 

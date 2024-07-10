@@ -102,7 +102,7 @@ const Market: NextPage = () => {
             <ItemMultiSelectbar />
           </div>
           <div className={`${search !== "offers" && "hidden"} px-2`}>
-            <OfferFilterSelect />
+            {/* <OfferFilterSelect /> */}
           </div>
           <div className={`${search !== "activity" && "hidden"} px-2`}>
             {/* <ActivityFilterSelect /> */}
