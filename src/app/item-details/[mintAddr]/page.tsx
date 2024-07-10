@@ -506,7 +506,7 @@ const ItemDetails: NextPage = () => {
                 </span>
               </div> */}
               <p
-                className={`text-left text-white text-xl ${
+                className={`text-left text-white text-2xl ${
                   itemDetail?.solPrice === 0 && "hidden"
                 }`}
               >
@@ -515,7 +515,7 @@ const ItemDetails: NextPage = () => {
               </p>
               <div className="w-full flex items-center justify-between gap-2">
                 <input
-                  className="w-full p-[6px] flex items-center placeholder:text-gray-500 outline-none text-white justify-between rounded-md border border-customborder bg-transparent"
+                  className="w-full p-[6px] flex items-center placeholder:text-gray-500 placeholder:text-sm outline-none text-white justify-between rounded-md border border-customborder bg-transparent"
                   placeholder="Input the price"
                   type="number"
                   onChange={(e) => {

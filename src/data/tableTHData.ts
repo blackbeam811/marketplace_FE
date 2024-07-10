@@ -13,11 +13,11 @@ export const offerTableTH = ["", "Name", "price", "From", "Action"];
 export const collectionTableTH = [
   "",
   "Collection",
-  "Current Price",
-  "Previous Price",
-  "Volume",
-  "Change",
-  "Sales",
-  "Market Cap",
+  "Floor Price",
   "Total Volume",
+  "Top Offer",
+  "Volume",
+  "Sales",
+  "Listed",
+  "Owners",
 ];

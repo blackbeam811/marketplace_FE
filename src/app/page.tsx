@@ -7,7 +7,6 @@ import CollectionSlider from "@/components/CollectionSlider";
 import CollectionTable from "@/components/CollectionTable";
 import CollectionSliderSkeleton from "@/components/CollectionSlider/CollectionSliderSkeleton";
 import { CollectionContext } from "@/contexts/CollectionContext";
-
 const Home: NextPage = () => {
   const { collectionDataState } = useContext(CollectionContext);
 

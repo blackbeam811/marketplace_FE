@@ -181,7 +181,6 @@ export async function getAllListedDataBySellerApi(seller: string) {
     const response = await axios.get(
       `${MUGS_ENDPOINT}/nft/findAllBySeller/${seller}`
     );
-    console.log("getAllListedDataBySeller getting  ===> ", response.data);
 
     return response?.data;
   } catch (err) {
