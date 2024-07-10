@@ -48,26 +48,24 @@ export default function CollectionTable() {
                   {row.collectionName}
                 </Link>
               </td>
-              <td className="py-2 px-4 text-[#8DEEC4]">
-                {row.currentPrice} SOL
-              </td>
+              <td className="py-2 px-4 text-[#8DEEC4]">{row.floorPrice} SOL</td>
               <td className="py-2 px-4 text-[#DD7A98]">
-                {row.previousPrice} SOL
+                {row.totalVolume} SOL
               </td>
               <td className="py-2 px-4 text-white font-light">
-                {row.volume.toLocaleString()}
+                {row.topOffer.toLocaleString()}
               </td>
               <td className="py-2 px-4 text-white font-light">
-                {row.change.toLocaleString()}%
+                {row.volume.toLocaleString()}%
               </td>
               <td className="py-2 px-4 text-white font-light">
                 {row.sales.toLocaleString()}
               </td>
               <td className="py-2 px-4 text-white font-light">
-                {row.marketCap.toLocaleString()}
+                {row.listed.toLocaleString()}
               </td>
               <td className="py-2 px-4 text-white font-light">
-                {row.totalVolume.toLocaleString()}
+                {row.owners.toLocaleString()}
               </td>
             </tr>
           ))}

@@ -1,18 +1,5 @@
 import { web3 } from "@project-serum/anchor";
 
-export type collectionDataType = {
-  name: string;
-  imgUrl: string;
-  collectionAddr: string;
-  currentPrice: number;
-  previousPrice: number;
-  volume: number;
-  change: number;
-  sales: number;
-  marketCap: number;
-  totalVolume: number;
-};
-
 export type activityTableDataType = {
   imgUrl: string;
   name: string;
@@ -93,13 +80,13 @@ export type CollectionDataType = {
   collectionAddr: string;
   twitterLink: string;
   discordLink: string;
-  currentPrice: number;
-  previousPrice: number;
-  volume: number;
-  change: number;
-  sales: number;
-  marketCap: number;
+  floorPrice: number;
   totalVolume: number;
+  volume: number;
+  topOffer: number;
+  sales: number;
+  listed: number;
+  owners: number;
 };
 
 export type ActivityDataType = {

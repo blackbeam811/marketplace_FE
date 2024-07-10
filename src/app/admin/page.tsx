@@ -88,13 +88,13 @@ const Admin: NextPage = () => {
         collectionAddr: collectionAddr,
         twitterLink: twitterLink,
         discordLink: discordLink,
-        currentPrice: 0,
-        previousPrice: 0,
+        floorPrice: 0,
         volume: 0,
-        change: 0,
+        listed: 0,
         sales: 0,
-        marketCap: 0,
+        topOffer: 0,
         totalVolume: 0,
+        owners: 0,
       };
 
       try {
