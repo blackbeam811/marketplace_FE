@@ -102,6 +102,7 @@ export type ActivityDataType = {
 
 export interface NFTDataContextType {
   solPrice: number;
+  myBalance: number;
   getOwnNFTsState: boolean;
   ownNFTs: OwnNFTDataType[];
   ownListedNFTs: OwnNFTDataType[];

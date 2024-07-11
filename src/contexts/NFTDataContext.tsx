@@ -1,6 +1,6 @@
 "use client";
 
-import { COINGECKOAPIKEY, SOLANA_RPC } from "@/config";
+import { COINGECKOAPIKEY, SOL_DECIMAL, SOLANA_RPC } from "@/config";
 import { NFTDataContextType, OwnNFTDataType } from "@/types/types";
 import { getParsedNftAccountsByOwner } from "@nfteyez/sol-rayz";
 import { web3 } from "@project-serum/anchor";
@@ -11,12 +11,14 @@ import {
   ReactNode,
   useEffect,
   useState,
+  useCallback,
 } from "react";
 import { CollectionContext } from "./CollectionContext";
 import { getAllListedApi, getAllListedDataBySellerApi } from "@/utils/api";
 
 export const NFTDataContext = createContext<NFTDataContextType>({
   solPrice: 0,
+  myBalance: 0,
   ownNFTs: [],
   ownListedNFTs: [],
   listedAllNFTs: [],
@@ -35,10 +37,27 @@ export function NFTDataProvider({ children }: NFTDataProviderProps) {
   const { publicKey } = useWallet();
   const { collectionData } = useContext(CollectionContext);
   const [solPrice, setSolPrice] = useState(0);
+  const [myBalance, setMyBalance] = useState(0);
   const [getOwnNFTsState, setGetOwnNFTsState] = useState(false);
   const [ownNFTs, setOwnNFTs] = useState<OwnNFTDataType[]>([]);
   const [ownListedNFTs, setOwnListedNFTs] = useState<OwnNFTDataType[]>([]);
   const [listedAllNFTs, setListedAllNFTs] = useState<OwnNFTDataType[]>([]);
+
+  const getBalanceFunc = useCallback(async () => {
+    const solConnection = new web3.Connection(SOLANA_RPC);
+    if (publicKey) {
+      let balance = await solConnection.getBalance(publicKey);
+      console.log("balance => ", balance);
+      setMyBalance(balance / SOL_DECIMAL);
+    } else {
+      setMyBalance(0);
+    }
+  }, [publicKey]);
+
+  useEffect(() => {
+    getBalanceFunc();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [publicKey]);
 
   // const fetchSolPrice = async () => {
   //   try {
@@ -233,6 +252,7 @@ export function NFTDataProvider({ children }: NFTDataProviderProps) {
 
   const NFTDataContextValue: NFTDataContextType = {
     solPrice,
+    myBalance,
     getOwnNFTsState,
     ownNFTs,
     ownListedNFTs,

@@ -49,14 +49,12 @@ export default function CollectionTable() {
                 </Link>
               </td>
               <td className="py-2 px-4 text-[#8DEEC4]">{row.floorPrice} SOL</td>
-              <td className="py-2 px-4 text-[#DD7A98]">
-                {row.totalVolume} SOL
+              <td className="py-2 px-4 text-[#DD7A98]">{row.totalVolume}</td>
+              <td className="py-2 px-4 text-white font-light">
+                {row.topOffer.toLocaleString()} SOL
               </td>
               <td className="py-2 px-4 text-white font-light">
-                {row.topOffer.toLocaleString()}
-              </td>
-              <td className="py-2 px-4 text-white font-light">
-                {row.volume.toLocaleString()}%
+                {(row.totalVolume / row.listed).toFixed(2)}%
               </td>
               <td className="py-2 px-4 text-white font-light">
                 {row.sales.toLocaleString()}
@@ -80,7 +78,7 @@ export default function CollectionTable() {
       </div>
       <div
         className={`${
-          collectionData.length !== 0 && "hidden"
+          collectionData.length !== 0 && !collectionDataState && "hidden"
         } w-full flex items-center justify-center my-5`}
       >
         <span className="text-[#ffffff]">Nothing to show 😒</span>

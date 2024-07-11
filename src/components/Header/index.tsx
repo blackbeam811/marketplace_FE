@@ -31,33 +31,34 @@ import { ModalContext } from "@/contexts/ModalContext";
 import { useOnClickOutside } from "@/hooks/useOnClickOutside";
 import { BsDiscord, BsTwitterX } from "react-icons/bs";
 import { BalanceProps, HeaderProps } from "@/types/types";
+import { NFTDataContext } from "@/contexts/NFTDataContext";
 
 const Header: FC<HeaderProps> = () => {
   const inputRef = useRef<HTMLInputElement>(null);
   const router = usePathname();
   const { publicKey, connected } = useWallet();
   const { openSearchCollectionModal, setFilterWith } = useContext(ModalContext);
-  const [myBalance, setMyBalance] = useState<number>(0);
+  const { myBalance } = useContext(NFTDataContext);
   const [isFocused, setIsFocused] = useState(false);
   const [openMobileMenu, setOpenMobileMenu] = useState(false);
 
   useOnClickOutside(inputRef, () => setIsFocused(false));
 
-  const getBalanceFunc = useCallback(async () => {
-    const solConnection = new web3.Connection(SOLANA_RPC);
-    if (publicKey) {
-      let balance = await solConnection.getBalance(publicKey);
-      console.log("balance => ", balance);
-      setMyBalance(balance / SOL_DECIMAL);
-    } else {
-      setMyBalance(0);
-    }
-  }, [publicKey]);
+  // const getBalanceFunc = useCallback(async () => {
+  //   const solConnection = new web3.Connection(SOLANA_RPC);
+  //   if (publicKey) {
+  //     let balance = await solConnection.getBalance(publicKey);
+  //     console.log("balance => ", balance);
+  //     setMyBalance(balance / SOL_DECIMAL);
+  //   } else {
+  //     setMyBalance(0);
+  //   }
+  // }, [publicKey]);
 
-  useEffect(() => {
-    getBalanceFunc();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [publicKey]);
+  // useEffect(() => {
+  //   getBalanceFunc();
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [publicKey]);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
