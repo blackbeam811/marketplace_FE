@@ -516,7 +516,7 @@ const NFTDetailModal = () => {
     <Suspense>
       <Modal open={nftDetailModalShow} onClose={closeNFTDetailModal} center>
         <div
-          className={`xl:min-w-[1200px] lg:min-w-[950px] md:min-w-[680px] w-full sm:min-w-[500px] relative`}
+          className={`xl:min-w-[1200px] lg:min-w-[950px] md:min-w-[680px] w-full max-w-[320px] sm:min-w-[500px] relative`}
         >
           <div className="absolute top-0 right-0 cursor-pointer flex items-center justify-center gap-3">
             <div

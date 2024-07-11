@@ -25,7 +25,9 @@ export default function SearchCollectionModal() {
       filterWithSearchCollectionAddr === ""
         ? collectionData
         : collectionData.filter((item) =>
-            item.collectionName.includes(filterWithSearchCollectionAddr)
+            item.collectionName
+              .toLowerCase()
+              .includes(filterWithSearchCollectionAddr.toLowerCase())
           )
     );
   }, [collectionData, filterWithSearchCollectionAddr]);
@@ -85,9 +87,7 @@ export default function SearchCollectionModal() {
                   {row.floorPrice} SOL
                 </td>
                 <td className="py-2 px-4 text-white font-light text-sm">
-                  {row.collectionAddr.slice(0, 6) +
-                    "...." +
-                    row.collectionAddr.slice(-6)}
+                  {row.totalVolume}
                 </td>
               </tr>
             ))}
