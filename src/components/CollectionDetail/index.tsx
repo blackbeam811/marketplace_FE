@@ -5,15 +5,10 @@ import { FaDiscord } from "react-icons/fa";
 
 import { CollectionDetailProps } from "@/types/types";
 import { PINATA_URL } from "@/config";
-import { usePathname } from "next/navigation";
 
 export default function CollectionDetail({
   collectionData,
 }: CollectionDetailProps) {
-  console.log(
-    " collectionData?.imgUrl === undefined",
-    collectionData?.imgUrl === "undefined"
-  );
   return (
     <div className="md:flex items-start justify-center md:justify-start gap-3 md:flex-row flex-col w-full md:w-auto px-2 hidden">
       <div className="flex items-center justify-start gap-5 w-full">
@@ -66,19 +61,32 @@ export default function CollectionDetail({
       <div className="flex items-center md:justify-start justify-between md:gap-5 gap-4 md:ml-10 mt-3 w-full md:w-auto">
         <div className="flex items-start justify-center flex-col gap-2 w-[70px]">
           <p className="text-[12px] text-gray-200">Floor Price</p>
-          <span className="text-white text-sm md:text-lg"> 68.25 Sol</span>
+          <span className="text-white text-sm md:text-lg">
+            {" "}
+            {collectionData?.floorPrice} Sol
+          </span>
         </div>
         <div className="flex items-start justify-center flex-col gap-2 w-[70px]">
           <p className="text-[12px] text-gray-200">Top Offer</p>
-          <span className="text-white text-sm md:text-lg">68.25 Sol</span>
+          <span className="text-white text-sm md:text-lg">
+            {collectionData?.topOffer} Sol
+          </span>
         </div>
         <div className="flex items-start justify-center flex-col gap-2 w-[70px]">
           <p className="text-[12px] text-gray-200">24h Vol</p>
-          <span className="text-white text-sm md:text-lg">447.6</span>
+          <span className="text-white text-sm md:text-lg">
+            {(
+              collectionData &&
+              collectionData?.totalVolume / collectionData?.listed
+            )?.toFixed(2)}
+            %
+          </span>
         </div>
         <div className="flex items-start justify-center flex-col gap-2 w-[70px]">
           <p className="text-[12px] text-gray-200">24h Sales</p>
-          <span className="text-white text-sm md:text-lg">5</span>
+          <span className="text-white text-sm md:text-lg">
+            {collectionData?.sales}
+          </span>
         </div>
         <div className="flex items-start justify-center flex-col gap-2 w-[70px]">
           <p className="text-[12px] text-gray-200">Owners</p>

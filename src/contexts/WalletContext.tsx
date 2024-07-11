@@ -26,7 +26,7 @@ export default function Wallet(props: { children: any }) {
   const wallets = [new PhantomWalletAdapter(), new SolflareWalletAdapter()];
   return (
     <ConnectionProvider endpoint={SOLANA_RPC}>
-      <WalletProvider wallets={wallets} autoConnect={true}>
+      <WalletProvider wallets={wallets} autoConnect>
         <WalletModalProvider>{props.children}</WalletModalProvider>
       </WalletProvider>
     </ConnectionProvider>

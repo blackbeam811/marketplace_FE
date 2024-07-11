@@ -720,7 +720,10 @@ export const makeOffer = async (
   return { transaction: stx, offerData: offersData };
 };
 
-export const cancelOffer = async (payer: AnchorWallet, item: OfferDataType) => {
+export const cancelOffer = async (
+  payer: AnchorWallet,
+  item: OfferDataType[]
+) => {
   console.log("offerData ===> ", item);
   let cloneWindow = window;
   let provider = new anchor.AnchorProvider(
@@ -735,7 +738,7 @@ export const cancelOffer = async (payer: AnchorWallet, item: OfferDataType) => {
   );
 
   const tx = await createCancelOfferTx(
-    new PublicKey(item.mintAddr),
+    new PublicKey(item[0].mintAddr),
     payer.publicKey,
     program
   );
@@ -744,7 +747,7 @@ export const cancelOffer = async (payer: AnchorWallet, item: OfferDataType) => {
   tx.recentBlockhash = blockhash;
   let stx = (await payer.signTransaction(tx)).serialize();
 
-  return { mintAddr: item.mintAddr, offerData: item, transaction: stx };
+  return { mintAddr: item[0].mintAddr, offerData: item[0], transaction: stx };
 };
 
 export const acceptOfferPNft = async (

@@ -70,16 +70,18 @@ export default function CollectionTable() {
         </tbody>
       </table>
       <div
-        className={`w-full flex items-center justify-center my-5 ${
-          !collectionDataState && "hidden"
+        className={`w-full items-center justify-center my-5 ${
+          collectionDataState ? "flex" : "hidden"
         }`}
       >
         <NormalSpinner width={9} height={10} />
       </div>
       <div
         className={`${
-          collectionData.length !== 0 && !collectionDataState && "hidden"
-        } w-full flex items-center justify-center my-5`}
+          collectionData.length === 0 && !collectionDataState
+            ? "flex"
+            : "hidden"
+        } w-full items-center justify-center my-5`}
       >
         <span className="text-[#ffffff]">Nothing to show 😒</span>
       </div>

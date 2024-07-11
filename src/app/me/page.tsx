@@ -66,7 +66,6 @@ const MyItem: NextPage = () => {
   const getAllOffersByMaker = async () => {
     try {
       const data = await getAllOffersByMakerApi(publicKey?.toBase58()!);
-      console.log("offerData => ", data);
 
       if (data.length === 0) {
         setOfferData([]);
@@ -160,6 +159,7 @@ const MyItem: NextPage = () => {
   const removeTag = (tag: string) => {
     setSelectedTags(selectedTags.filter((t) => t !== tag));
   };
+
   useEffect(() => {
     const filtered = activityData.filter((item) => {
       if (selectedTags.length === 0) return true;
@@ -182,11 +182,14 @@ const MyItem: NextPage = () => {
     setFilterOfferData(filtered);
   }, [publicKey, offerShowType, offerData]);
 
-  const handleCancelOffer = async (index: number) => {
-    if (wallet && offerData[index] !== undefined) {
+  const handleCancelOffer = async (mintAddr: string) => {
+    if (wallet && mintAddr !== undefined) {
       try {
         openFunctionLoading();
-        const tx = await cancelOffer(wallet, offerData[index]);
+        const filterOfferData = offerData.filter(
+          (data) => data.mintAddr === mintAddr
+        );
+        const tx = await cancelOffer(wallet, filterOfferData);
         if (tx) {
           const result = await cancelOfferApi(
             tx.mintAddr,
@@ -326,7 +329,9 @@ const MyItem: NextPage = () => {
             >
               <OfferTable
                 data={filterOfferData}
-                handleCancelOffer={(index: number) => handleCancelOffer(index)}
+                handleCancelOffer={(mintAddr: string) =>
+                  handleCancelOffer(mintAddr)
+                }
               />
             </div>
             <div

@@ -47,7 +47,6 @@ export function NFTDataProvider({ children }: NFTDataProviderProps) {
     const solConnection = new web3.Connection(SOLANA_RPC);
     if (publicKey) {
       let balance = await solConnection.getBalance(publicKey);
-      console.log("balance => ", balance);
       setMyBalance(balance / SOL_DECIMAL);
     } else {
       setMyBalance(0);

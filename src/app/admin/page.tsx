@@ -71,7 +71,6 @@ const Admin: NextPage = () => {
   };
 
   const handleSaveCollectionData = async () => {
-    console.log("selectedCollectionImg", selectedCollectionImg);
     if (
       selectedCollectionImg === null ||
       collectionAddr === "" ||
