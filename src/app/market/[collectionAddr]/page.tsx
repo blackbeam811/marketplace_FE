@@ -23,8 +23,19 @@ import MobileCollectionFilterSidebar from "@/components/CollectionFilterSidebar/
 import { CollectionContext } from "@/contexts/CollectionContext";
 import { NFTDataContext } from "@/contexts/NFTDataContext";
 
-import { CollectionDataType, OwnNFTDataType } from "@/types/types";
+import {
+  ActivityDataType,
+  CollectionDataType,
+  OfferDataType,
+  OwnNFTDataType,
+} from "@/types/types";
 import { ModalContext } from "@/contexts/ModalContext";
+import {
+  getAllActivitiesByCollectionAddrApi,
+  getAllOffersByCollectionAddrApi,
+} from "@/utils/api";
+import ActivityTable from "@/components/ActivityTable";
+import OfferTable from "@/components/OfferTable";
 
 const Market: NextPage = () => {
   const { publicKey, connected } = useWallet();
@@ -43,6 +54,79 @@ const Market: NextPage = () => {
 
   const [filterCollectionData, setFilterCollectionData] =
     useState<CollectionDataType>();
+
+  const [offerData, setOfferData] = useState<OfferDataType[]>([]);
+  const [filterOfferData, setFilterOfferData] = useState<OfferDataType[]>([]);
+  const [offerShowType, setOfferShowType] = useState(0);
+  const [activityData, setActivityData] = useState<ActivityDataType[]>([]);
+  const [filteredActivityData, setFilteredActivityData] = useState<
+    ActivityDataType[]
+  >([]);
+
+  const getAllOffersByCollectionAddr = async () => {
+    try {
+      const data = await getAllOffersByCollectionAddrApi(
+        collectionAddr.toString()
+      );
+
+      if (data.length === 0) {
+        setOfferData([]);
+        return;
+      }
+
+      const filteredData = data.map(
+        ({
+          mintAddr,
+          offerPrice,
+          tokenId,
+          imgUrl,
+          seller,
+          buyer,
+          active,
+        }: OfferDataType) => ({
+          mintAddr,
+          offerPrice,
+          tokenId,
+          imgUrl,
+          seller,
+          buyer,
+          active,
+        })
+      );
+
+      setOfferData(filteredData);
+    } catch (error) {
+      console.error("Error fetching data: ", error);
+    }
+  };
+
+  const getActivityByCollectionAddr = async () => {
+    try {
+      const data = await getAllActivitiesByCollectionAddrApi(
+        collectionAddr.toString()
+      );
+      setActivityData(data);
+      // You can now use the fetched data (e.g., set it in a state)
+    } catch (error) {
+      console.error("Error fetching data: ", error);
+    }
+  };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      if (collectionAddr) {
+        try {
+          await getAllOffersByCollectionAddr();
+          await getActivityByCollectionAddr();
+        } catch (error) {
+          console.error("Error fetching data: ", error);
+        }
+      }
+    };
+
+    fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [collectionAddr]);
 
   useEffect(() => {
     if (collectionAddr) {
@@ -117,7 +201,7 @@ const Market: NextPage = () => {
             >
               <div className={`relative `}>
                 <div
-                  className={`w-full grid grid-cols-2 md:grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-5 ${
+                  className={`w-full grid grid-cols-2 md:grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-5 px-2 pb-5 ${
                     getOwnNFTsState && "hidden"
                   }`}
                 >
@@ -140,18 +224,22 @@ const Market: NextPage = () => {
                 search === "offers" ? "block" : "hidden"
               }`}
             >
-              {/* <ActivityTable /> */}
+              <OfferTable
+                data={offerData}
+                handleCancelOffer={(mintAddr: string) =>
+                  console.log("mintAddr => ", mintAddr)
+                }
+              />
             </div>
             <div
               className={`w-full flex items-center justify-center px-2 ${
                 search === "activity" ? "block" : "hidden"
               }`}
             >
-              {/* <ActivityTable /> */}
+              <ActivityTable data={activityData} />
             </div>
             <div
               className={`${
-                connected &&
                 !collectionDataState &&
                 !getOwnNFTsState &&
                 filterListedNFTData.length === 0
@@ -173,19 +261,6 @@ const Market: NextPage = () => {
           <MobileTabsTip />
         </Suspense>
       </div>
-      {/* <div
-        className={`${
-          connected && !getOwnNFTsState && filterListedNFTData.length === 0
-            ? "flex"
-            : "hidden"
-        } items-center justify-center min-h-[40vh] w-full`}
-      >
-        <p className="text-gray-400 text-center">
-          Nothing to show
-          <br />
-          Items you own will appear here in your Portfolio
-        </p>
-      </div> */}
       <div
         className={`${
           !publicKey ? "flex" : "hidden"

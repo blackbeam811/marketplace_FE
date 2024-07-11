@@ -31,7 +31,6 @@ export function ActivityProvider({ children }: ActivityProviderProps) {
       })
     );
 
-    console.log("Activity data ===>", data);
     setActivityData(data);
     setActivityDataState(false);
   };

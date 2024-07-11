@@ -6,7 +6,7 @@ import { useAnchorWallet } from "@solana/wallet-adapter-react";
 
 export default function OfferTable(props: {
   data: OfferDataType[];
-  handleCancelOffer: (index: number) => void;
+  handleCancelOffer: (mintAddr: string) => void;
 }) {
   const wallet = useAnchorWallet();
 
@@ -57,7 +57,7 @@ export default function OfferTable(props: {
                   className={`px-2 bg-red-500 duration-300 hover:bg-red-600 rounded-sm ${
                     row.buyer !== wallet?.publicKey.toBase58() && "hidden"
                   }`}
-                  onClick={() => props.handleCancelOffer(index)}
+                  onClick={() => props.handleCancelOffer(row.mintAddr)}
                 >
                   Cancel
                 </button>

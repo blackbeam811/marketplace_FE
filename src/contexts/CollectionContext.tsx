@@ -6,7 +6,7 @@ import { createContext, ReactNode, useEffect, useState } from "react";
 
 // Creating a context with default values
 export const CollectionContext = createContext<CollectionContextType>({
-  collectionDataState: false,
+  collectionDataState: true,
   collectionData: [],
   getAllCollectionData: async () => {},
 });
@@ -21,8 +21,7 @@ export function CollectionProvider({ children }: CollectionProviderProps) {
     []
   );
   // State to indicate if collection data is being fetched
-  const [collectionDataState, setCollectionDataState] =
-    useState<boolean>(false);
+  const [collectionDataState, setCollectionDataState] = useState<boolean>(true);
 
   // Function to fetch all collection data
   const getAllCollectionData = async (): Promise<void> => {

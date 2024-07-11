@@ -97,19 +97,32 @@ export default function MobileCollectionDetail({
         <div className="items-center justify-center grid grid-cols-3 md:gap-5 gap-4 md:ml-10 mt-3 w-full md:w-auto">
           <div className="flex items-start justify-center flex-col gap-2 w-[70px]">
             <p className="text-[12px] text-gray-200">Floor Price</p>
-            <span className="text-white text-sm md:text-lg">123 Sol</span>
+            <span className="text-white text-sm md:text-lg">
+              {collectionData?.floorPrice} Sol
+            </span>
           </div>
           <div className="flex items-start justify-center flex-col gap-2 w-[70px]">
             <p className="text-[12px] text-gray-200">Top Offer</p>
-            <span className="text-white text-sm md:text-lg">68.25 Sol</span>
+            <span className="text-white text-sm md:text-lg">
+              {collectionData?.topOffer} Sol
+            </span>
           </div>
           <div className="flex items-start justify-center flex-col gap-2 w-[70px]">
             <p className="text-[12px] text-gray-200">24h Vol</p>
-            <span className="text-white text-sm md:text-lg">447.6</span>
+            <span className="text-white text-sm md:text-lg">
+              {" "}
+              {(
+                collectionData &&
+                collectionData?.totalVolume / collectionData?.listed
+              )?.toFixed(2)}
+              %
+            </span>
           </div>
           <div className="flex items-start justify-center flex-col gap-2 w-[70px]">
             <p className="text-[12px] text-gray-200">24h Sales</p>
-            <span className="text-white text-sm md:text-lg">5</span>
+            <span className="text-white text-sm md:text-lg">
+              {collectionData?.sales}
+            </span>
           </div>
           <div className="flex items-start justify-center flex-col gap-2 w-[70px]">
             <p className="text-[12px] text-gray-200">Owners</p>

@@ -43,6 +43,7 @@ import {
   purchaseNFT,
   updatePriceApi,
 } from "@/utils/api";
+import { CollectionContext } from "@/contexts/CollectionContext";
 
 const ItemDetails: NextPage = () => {
   const route = useRouter();
@@ -70,6 +71,7 @@ const ItemDetails: NextPage = () => {
   } = useContext(NFTDataContext);
   const { openFunctionLoading, closeFunctionLoading } =
     useContext(LoadingContext);
+  const { getAllCollectionData } = useContext(CollectionContext);
 
   useEffect(() => {
     if (ownNFTs.length === 0) {
@@ -180,6 +182,7 @@ const ItemDetails: NextPage = () => {
             getAllListedNFTsBySeller(),
             getActivityByMintAddr(),
             getAllListedNFTs(),
+            getAllCollectionData(),
           ]);
 
           successAlert("Success");
@@ -226,8 +229,8 @@ const ItemDetails: NextPage = () => {
             getAllListedNFTsBySeller(),
             getActivityByMintAddr(),
             getAllListedNFTs(),
+            getAllCollectionData(),
           ]);
-
           successAlert("Success");
         } else {
           errorAlert("Something went wrong.");
@@ -279,6 +282,7 @@ const ItemDetails: NextPage = () => {
             getAllListedNFTsBySeller(),
             getActivityByMintAddr(),
             getAllListedNFTs(),
+            getAllCollectionData(),
           ]);
 
           successAlert("Success");
@@ -316,11 +320,13 @@ const ItemDetails: NextPage = () => {
             if (tx) {
               const result = await makeOfferApi(tx.transaction, tx.offerData);
               if (result.type === "success") {
-                await getOwnNFTs();
-                await getAllListedNFTs();
-                await getAllListedNFTsBySeller();
-                await getActivityByMintAddr();
-                await getOfferByMintAddr();
+                await Promise.all([
+                  getOwnNFTs(),
+                  getAllListedNFTsBySeller(),
+                  getActivityByMintAddr(),
+                  getAllListedNFTs(),
+                  getAllCollectionData(),
+                ]);
                 closeFunctionLoading();
                 successAlert("Success");
               } else {
@@ -357,10 +363,13 @@ const ItemDetails: NextPage = () => {
             tx.mintAddrArray
           );
           if (result.type === "success") {
-            await getOwnNFTs();
-            await getAllListedNFTsBySeller();
-            await getActivityByMintAddr();
-            await getAllListedNFTs();
+            await Promise.all([
+              getOwnNFTs(),
+              getAllListedNFTsBySeller(),
+              getActivityByMintAddr(),
+              getAllListedNFTs(),
+              getAllCollectionData(),
+            ]);
             closeFunctionLoading();
             successAlert("Success");
             route.push("/me");
@@ -380,12 +389,14 @@ const ItemDetails: NextPage = () => {
     }
   };
 
-  const handleCancelOffer = async (index: number) => {
-    console.log("index =>", index);
-    if (wallet && offerData[index] !== undefined) {
+  const handleCancelOffer = async (mintAddr: string) => {
+    if (wallet && mintAddr !== undefined) {
       try {
         openFunctionLoading();
-        const tx = await cancelOffer(wallet, offerData[index]);
+        const filterOfferData = offerData.filter(
+          (data) => data.mintAddr === mintAddr
+        );
+        const tx = await cancelOffer(wallet, filterOfferData);
         if (tx) {
           const result = await cancelOfferApi(
             tx.mintAddr,
@@ -395,7 +406,14 @@ const ItemDetails: NextPage = () => {
           if (result.type === "success") {
             closeFunctionLoading();
             successAlert("Success");
-            await getOfferByMintAddr();
+            await Promise.all([
+              getOwnNFTs(),
+              getAllListedNFTsBySeller(),
+              getActivityByMintAddr(),
+              getAllListedNFTs(),
+              getAllCollectionData(),
+              await getOfferByMintAddr(),
+            ]);
           } else {
             closeFunctionLoading();
             errorAlert("Something went wrong.");
@@ -437,6 +455,13 @@ const ItemDetails: NextPage = () => {
             tx.transaction
           );
           if (result.type === "success") {
+            await Promise.all([
+              getOwnNFTs(),
+              getAllListedNFTsBySeller(),
+              getActivityByMintAddr(),
+              getAllListedNFTs(),
+              getAllCollectionData(),
+            ]);
             closeFunctionLoading();
             successAlert("Success");
             route.push("/me");
@@ -520,7 +545,7 @@ const ItemDetails: NextPage = () => {
               </p>
               <div className="w-full flex items-center justify-between gap-2">
                 <input
-                  className="w-full p-[6px] flex items-center placeholder:text-gray-500 placeholder:text-sm outline-none text-white justify-between rounded-md border border-customborder bg-transparent"
+                  className="w-full p-[6px] flex items-center placeholder:text-gray-500 outline-none text-white justify-between rounded-md border border-customborder bg-transparent"
                   placeholder="Input the price"
                   type="number"
                   onChange={(e) => {
@@ -529,17 +554,51 @@ const ItemDetails: NextPage = () => {
                 />
                 <div
                   className={`w-full rounded-md py-[6px] text-center bg-red-600 duration-200 hover:bg-red-700 text-white cursor-pointer flex items-center gap-2 justify-center ${
-                    itemDetail?.solPrice === 0 && "hidden"
+                    (wallet?.publicKey.toBase58() !== itemDetail?.seller ||
+                      itemDetail?.solPrice === 0 ||
+                      offerData.filter((data) => data.active !== 0).length !==
+                        0) &&
+                    "hidden"
                   }`}
-                  onClick={
-                    wallet?.publicKey.toBase58() === itemDetail?.seller
-                      ? handleUpdatePriceFunc
-                      : handleMakeOffer
+                  onClick={handleUpdatePriceFunc}
+                >
+                  {"Update Price"}
+                </div>
+                <div
+                  className={`w-full rounded-md py-[6px] text-center bg-red-600 duration-200 hover:bg-red-700 text-white cursor-pointer flex items-center gap-2 justify-center ${
+                    (wallet?.publicKey.toBase58() === itemDetail?.seller ||
+                      itemDetail?.solPrice === 0) &&
+                    "hidden"
+                  }`}
+                  onClick={() =>
+                    offerData.filter(
+                      (data) =>
+                        data.buyer == wallet?.publicKey.toBase58() &&
+                        data.active === 1
+                    ).length !== 0
+                      ? handleCancelOffer(itemDetail?.mintAddr.toString()!)
+                      : handleMakeOffer()
                   }
                 >
-                  {wallet?.publicKey.toBase58() === itemDetail?.seller
-                    ? "Update Price"
+                  {offerData.filter(
+                    (data) =>
+                      data.buyer == wallet?.publicKey.toBase58() &&
+                      data.active === 1
+                  ).length !== 0
+                    ? "Cancel Offer"
                     : "Make Offer"}
+                </div>
+                <div
+                  className={`w-full rounded-md py-[6px] text-center bg-yellow-600 duration-200 hover:bg-yellow-700 text-white cursor-pointer
+                  ${
+                    (offerData.filter((data) => data.active !== 0).length ===
+                      0 ||
+                      wallet?.publicKey.toBase58() !== itemDetail?.seller) &&
+                    "hidden"
+                  }`}
+                  onClick={handleAcceptHighOffer}
+                >
+                  {`Accept High Offer`}
                 </div>
               </div>
 
@@ -560,18 +619,6 @@ const ItemDetails: NextPage = () => {
                   wallet?.publicKey.toBase58() === itemDetail.seller
                     ? "List Now"
                     : "Delist now"}
-                </div>
-                <div
-                  className={`w-full rounded-md py-[6px] text-center bg-yellow-600 duration-200 hover:bg-yellow-700 text-white cursor-pointer
-                  ${
-                    (offerData.filter((data) => data.active !== 0).length ===
-                      0 ||
-                      wallet?.publicKey.toBase58() !== itemDetail?.seller) &&
-                    "hidden"
-                  }`}
-                  onClick={handleAcceptHighOffer}
-                >
-                  {`Accept High Offer`}
                 </div>
               </div>
 
@@ -737,7 +784,9 @@ const ItemDetails: NextPage = () => {
           <div className={`w-full ${!openOfferTable && "hidden"}`}>
             <OfferTable
               data={offerData}
-              handleCancelOffer={(index: number) => handleCancelOffer(index)}
+              handleCancelOffer={(mintAddr: string) =>
+                handleCancelOffer(mintAddr)
+              }
             />
           </div>
         </div>

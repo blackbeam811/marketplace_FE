@@ -151,12 +151,6 @@ const NFTDetailModal = () => {
   }, [memoSelectedNFTDetail]);
 
   useEffect(() => {
-    console.log("memoSelectedNFTDetail[0] ===> ", memoSelectedNFTDetail[0]);
-    console.log(" showQuery[0] ", showQuery[0] === "listed");
-    console.log(
-      " showQuery[0] ",
-      ownListedNFTs.filter((item) => item.mintAddr === memoSelectedNFTDetail[0])
-    );
     let data;
 
     if (currentRouter === "me") {
@@ -173,8 +167,6 @@ const NFTDetailModal = () => {
         (item) => item.mintAddr === memoSelectedNFTDetail[0]
       );
     }
-
-    console.log("selectedDataforModal ====> ", data);
 
     if (data.length > 0) {
       setSelectedNFT(data[0]);
@@ -335,7 +327,6 @@ const NFTDetailModal = () => {
   };
 
   const handleMakeOffer = async () => {
-    console.log("offer starting");
     if (wallet && selectedNFT !== undefined) {
       if (updatedPrice <= selectedNFT.solPrice / 2) {
         errorAlert("Offer price must be bigger than the listed price.");
@@ -427,12 +418,14 @@ const NFTDetailModal = () => {
     }
   };
 
-  const handleCancelOffer = async (index: number) => {
-    console.log("index =>", index);
-    if (wallet && offerData[index] !== undefined) {
+  const handleCancelOffer = async (mintAddr: string) => {
+    if (wallet && mintAddr !== undefined) {
       try {
+        const filterOfferData = offerData.filter(
+          (data) => data.mintAddr === mintAddr
+        );
         openFunctionLoading();
-        const tx = await cancelOffer(wallet, offerData[index]);
+        const tx = await cancelOffer(wallet, filterOfferData);
         if (tx) {
           const result = await cancelOfferApi(
             tx.mintAddr,
@@ -446,11 +439,11 @@ const NFTDetailModal = () => {
               getActivityByMintAddr(),
               getAllListedNFTs(),
               getAllCollectionData(),
+              await getOfferByMintAddr(),
             ]);
             closeFunctionLoading();
             closeNFTDetailModal();
             successAlert("Success");
-            await getOfferByMintAddr();
           } else {
             closeFunctionLoading();
             errorAlert("Something went wrong.");
@@ -617,17 +610,51 @@ const NFTDetailModal = () => {
                     />
                     <div
                       className={`w-full rounded-md py-[6px] text-center bg-red-600 duration-200 hover:bg-red-700 text-white cursor-pointer flex items-center gap-2 justify-center ${
-                        selectedNFT?.solPrice === 0 && "hidden"
+                        (wallet?.publicKey.toBase58() !== selectedNFT?.seller ||
+                          selectedNFT?.solPrice === 0 ||
+                          offerData.filter((data) => data.active !== 0)
+                            .length !== 0) &&
+                        "hidden"
                       }`}
-                      onClick={
-                        wallet?.publicKey.toBase58() === selectedNFT?.seller
-                          ? handleUpdatePriceFunc
-                          : handleMakeOffer
+                      onClick={handleUpdatePriceFunc}
+                    >
+                      {"Update Price"}
+                    </div>
+                    <div
+                      className={`w-full rounded-md py-[6px] text-center bg-red-600 duration-200 hover:bg-red-700 text-white cursor-pointer flex items-center gap-2 justify-center ${
+                        (wallet?.publicKey.toBase58() === selectedNFT?.seller ||
+                          selectedNFT?.solPrice === 0) &&
+                        "hidden"
+                      }`}
+                      onClick={() =>
+                        offerData.filter(
+                          (data) =>
+                            data.buyer == wallet?.publicKey.toBase58() &&
+                            data.active === 1
+                        ).length !== 0
+                          ? handleCancelOffer(selectedNFT?.mintAddr.toString()!)
+                          : handleMakeOffer()
                       }
                     >
-                      {wallet?.publicKey.toBase58() === selectedNFT?.seller
-                        ? "Update Price"
+                      {offerData.filter(
+                        (data) =>
+                          data.buyer == wallet?.publicKey.toBase58() &&
+                          data.active === 1
+                      ).length !== 0
+                        ? "Cancel Offer"
                         : "Make Offer"}
+                    </div>
+                    <div
+                      className={`w-full rounded-md py-[6px] text-center bg-yellow-600 duration-200 hover:bg-yellow-700 text-white cursor-pointer
+                  ${
+                    (offerData.filter((data) => data.active !== 0).length ===
+                      0 ||
+                      wallet?.publicKey.toBase58() !== selectedNFT?.seller) &&
+                    "hidden"
+                  }`}
+                      onClick={handleAcceptHighOffer}
+                    >
+                      {`Accept High Offer`}
                     </div>
                   </div>
 
@@ -648,18 +675,6 @@ const NFTDetailModal = () => {
                       wallet?.publicKey.toBase58() === selectedNFT.seller
                         ? "List Now"
                         : "Delist now"}
-                    </div>
-                    <div
-                      className={`w-full rounded-md py-[6px] text-center bg-yellow-600 duration-200 hover:bg-yellow-700 text-white cursor-pointer
-                  ${
-                    (offerData.filter((data) => data.active !== 0).length ===
-                      0 ||
-                      wallet?.publicKey.toBase58() !== selectedNFT?.seller) &&
-                    "hidden"
-                  }`}
-                      onClick={handleAcceptHighOffer}
-                    >
-                      {`Accept High Offer`}
                     </div>
                   </div>
 
@@ -774,7 +789,9 @@ const NFTDetailModal = () => {
             >
               <OfferTable
                 data={offerData}
-                handleCancelOffer={(index: number) => handleCancelOffer(index)}
+                handleCancelOffer={(mintAddr: string) =>
+                  handleCancelOffer(mintAddr)
+                }
               />
             </div>
           </div>

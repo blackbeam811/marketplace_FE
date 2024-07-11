@@ -202,6 +202,21 @@ export async function getAllActivitiesApi(seller: string) {
 }
 
 // Get all activity data by seller from the database
+export async function getAllActivitiesByCollectionAddrApi(
+  collectionAddr: string
+) {
+  try {
+    const response = await axios.get(
+      `${MUGS_ENDPOINT}/activity/findByCollectionAddr/${collectionAddr}`
+    );
+
+    return response?.data;
+  } catch (err) {
+    console.log("Getting all activity data err = ", err);
+  }
+}
+
+// Get all activity data by seller from the database
 export async function getAllActivitiesByMakerApi(maker: string) {
   try {
     const response = await axios.get(
@@ -250,6 +265,21 @@ export async function getAllOffersByMakerApi(maker: string) {
     return response?.data;
   } catch (err) {
     console.log("Getting all offers data by mintaddr err = ", err);
+  }
+}
+
+// Get all offers by collectionAddr from the database
+export async function getAllOffersByCollectionAddrApi(collectionAddr: string) {
+  try {
+    const response = await axios.get(
+      `${MUGS_ENDPOINT}/offer/findAllByCollectionAddr/${collectionAddr}`
+    );
+
+    console.log("collection offer ===> ", response.data);
+
+    return response?.data;
+  } catch (err) {
+    console.log("Getting all offers data by collectionAddr err = ", err);
   }
 }
 
