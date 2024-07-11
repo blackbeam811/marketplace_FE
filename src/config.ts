@@ -1,6 +1,6 @@
 export const SOL_DECIMAL = 1_000_000_000;
 export const SOLANA_RPC =
-  "https://devnet.helius-rpc.com/?api-key=395ca45a-5a2f-4bdb-9ca8-224d7ccbf821";
+  "https://devnet.helius-rpc.com/?api-key=25ac5067-e9d1-474c-a71e-84e14a48b0bb";
 export const COLLECTION_ID = "6REEjxT9CoDdDKPUxvFJQ8nFgbgScedxNn9zorZGtBi9";
 export const COLLECTION_MINT = "CNWeeSxws4ULowBC3dLC7ekGnJi3KZLTBVhdWQ9aZs6z";
 export const CANDYMACHINE_ID = "3RV9RuSnZvVavkjDwxbGmv9HYKyjqSuYg776pfTXGMKK";

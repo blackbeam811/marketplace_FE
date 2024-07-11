@@ -32,6 +32,8 @@ body {
 .react-responsive-modal-modal {
   max-width: 1300px;
   max-height: 90vh;
+  padding-right: 0.2rem !important;
+  padding-left: 0.7rem !important;
 }
 
 /*Customize scroll style*/
