@@ -24,6 +24,7 @@ import { CollectionContext } from "@/contexts/CollectionContext";
 import { NFTDataContext } from "@/contexts/NFTDataContext";
 
 import { CollectionDataType, OwnNFTDataType } from "@/types/types";
+import { ModalContext } from "@/contexts/ModalContext";
 
 const Market: NextPage = () => {
   const { publicKey, connected } = useWallet();
@@ -33,7 +34,8 @@ const Market: NextPage = () => {
   const { collectionAddr } = params;
   const { ownNFTs, getOwnNFTsState, getAllListedNFTs, listedAllNFTs } =
     useContext(NFTDataContext);
-  const { collectionData } = useContext(CollectionContext);
+  const { closeNFTDetailModal } = useContext(ModalContext);
+  const { collectionData, collectionDataState } = useContext(CollectionContext);
   const [filterOpen, setFilterOpen] = useState(false);
   const [filterListedNFTData, setFilterListedNFTData] = useState<
     OwnNFTDataType[]
@@ -47,7 +49,6 @@ const Market: NextPage = () => {
       const collection = collectionData.filter(
         (item) => item.collectionAddr === collectionAddr
       );
-      console.log("collection ====> ", collection);
       setFilterCollectionData(collection[0]);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -150,7 +151,10 @@ const Market: NextPage = () => {
             </div>
             <div
               className={`${
-                connected && filterListedNFTData.length === 0
+                connected &&
+                !collectionDataState &&
+                !getOwnNFTsState &&
+                filterListedNFTData.length === 0
                   ? "flex"
                   : "hidden"
               } items-center justify-center min-h-[40vh] w-full`}

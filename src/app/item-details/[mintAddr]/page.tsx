@@ -61,6 +61,7 @@ const ItemDetails: NextPage = () => {
   const [updatedPrice, setUpdatedPrice] = useState(0);
 
   const {
+    myBalance,
     ownNFTs,
     listedAllNFTs,
     getAllListedNFTsBySeller,
@@ -304,36 +305,40 @@ const ItemDetails: NextPage = () => {
       if (updatedPrice <= itemDetail.solPrice / 2) {
         errorAlert("Offer price must be bigger than the listed price.");
       } else {
-        const currentPrice = itemDetail.solPrice;
-        try {
-          openFunctionLoading();
-          itemDetail.solPrice = updatedPrice;
-          const tx = await makeOffer(wallet, [itemDetail]);
-          if (tx) {
-            const result = await makeOfferApi(tx.transaction, tx.offerData);
-            if (result.type === "success") {
-              await getOwnNFTs();
-              await getAllListedNFTs();
-              await getAllListedNFTsBySeller();
-              await getActivityByMintAddr();
-              await getOfferByMintAddr();
-              closeFunctionLoading();
-              successAlert("Success");
+        if (myBalance < updatedPrice) {
+          errorAlert("You don't have enough sol.");
+        } else {
+          const currentPrice = itemDetail.solPrice;
+          try {
+            openFunctionLoading();
+            itemDetail.solPrice = updatedPrice;
+            const tx = await makeOffer(wallet, [itemDetail]);
+            if (tx) {
+              const result = await makeOfferApi(tx.transaction, tx.offerData);
+              if (result.type === "success") {
+                await getOwnNFTs();
+                await getAllListedNFTs();
+                await getAllListedNFTsBySeller();
+                await getActivityByMintAddr();
+                await getOfferByMintAddr();
+                closeFunctionLoading();
+                successAlert("Success");
+              } else {
+                itemDetail.solPrice = currentPrice;
+                closeFunctionLoading();
+                errorAlert("Something went wrong.");
+              }
             } else {
               itemDetail.solPrice = currentPrice;
               closeFunctionLoading();
               errorAlert("Something went wrong.");
             }
-          } else {
+          } catch (e) {
+            console.log("err =>", e);
             itemDetail.solPrice = currentPrice;
-            closeFunctionLoading();
             errorAlert("Something went wrong.");
+            closeFunctionLoading();
           }
-        } catch (e) {
-          console.log("err =>", e);
-          itemDetail.solPrice = currentPrice;
-          errorAlert("Something went wrong.");
-          closeFunctionLoading();
         }
       }
     }

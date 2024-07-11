@@ -10,13 +10,18 @@ import { usePathname } from "next/navigation";
 export default function CollectionDetail({
   collectionData,
 }: CollectionDetailProps) {
-  const params = usePathname();
-
-  console.log;
+  console.log(
+    " collectionData?.imgUrl === undefined",
+    collectionData?.imgUrl === "undefined"
+  );
   return (
     <div className="md:flex items-start justify-center md:justify-start gap-3 md:flex-row flex-col w-full md:w-auto px-2 hidden">
       <div className="flex items-center justify-start gap-5 w-full">
-        <div className="w-[75px] h-[75px] relative">
+        <div
+          className={`w-[75px] h-[75px] relative ${
+            collectionData?.imgUrl === "undefined" && "hidden"
+          }`}
+        >
           <img
             src={PINATA_URL + collectionData?.imgUrl}
             alt="Avatar"

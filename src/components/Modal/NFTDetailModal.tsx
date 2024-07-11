@@ -45,6 +45,7 @@ import {
 } from "@/utils/api";
 import OfferTable from "../OfferTable";
 import { SolanaIcon } from "../SvgIcons";
+import { CollectionContext } from "@/contexts/CollectionContext";
 
 const NFTDetailModal = () => {
   const wallet = useAnchorWallet();
@@ -53,6 +54,7 @@ const NFTDetailModal = () => {
   const pathName = usePathname();
   const currentRouter = pathName.split("/")[1];
   const {
+    myBalance,
     ownNFTs,
     ownListedNFTs,
     listedAllNFTs,
@@ -62,6 +64,9 @@ const NFTDetailModal = () => {
   } = useContext(NFTDataContext);
   const { openFunctionLoading, closeFunctionLoading } =
     useContext(LoadingContext);
+
+  const { getAllCollectionData } = useContext(CollectionContext);
+
   const { closeNFTDetailModal, nftDetailModalShow, selectedNFTDetail } =
     useContext(ModalContext);
 
@@ -146,12 +151,20 @@ const NFTDetailModal = () => {
   }, [memoSelectedNFTDetail]);
 
   useEffect(() => {
+    console.log("memoSelectedNFTDetail[0] ===> ", memoSelectedNFTDetail[0]);
+    console.log(" showQuery[0] ", showQuery[0] === "listed");
+    console.log(
+      " showQuery[0] ",
+      ownListedNFTs.filter((item) => item.mintAddr === memoSelectedNFTDetail[0])
+    );
     let data;
 
     if (currentRouter === "me") {
       data =
         showQuery[0] === "listed"
-          ? ownListedNFTs
+          ? ownListedNFTs.filter(
+              (item) => item.mintAddr === memoSelectedNFTDetail[0]
+            )
           : ownNFTs.filter(
               (item) => item.mintAddr === memoSelectedNFTDetail[0]
             );
@@ -160,6 +173,8 @@ const NFTDetailModal = () => {
         (item) => item.mintAddr === memoSelectedNFTDetail[0]
       );
     }
+
+    console.log("selectedDataforModal ====> ", data);
 
     if (data.length > 0) {
       setSelectedNFT(data[0]);
@@ -198,8 +213,9 @@ const NFTDetailModal = () => {
             getAllListedNFTsBySeller(),
             getActivityByMintAddr(),
             getAllListedNFTs(),
+            getAllCollectionData(),
           ]);
-
+          closeNFTDetailModal();
           successAlert("Success");
         } else {
           selectedNFT.solPrice = currentPrice;
@@ -244,8 +260,9 @@ const NFTDetailModal = () => {
             getAllListedNFTsBySeller(),
             getActivityByMintAddr(),
             getAllListedNFTs(),
+            getAllCollectionData(),
           ]);
-
+          closeNFTDetailModal();
           successAlert("Success");
         } else {
           errorAlert("Something went wrong.");
@@ -297,9 +314,9 @@ const NFTDetailModal = () => {
             getAllListedNFTsBySeller(),
             getActivityByMintAddr(),
             getAllListedNFTs(),
+            getAllCollectionData(),
           ]);
-
-          successAlert("Success");
+          closeNFTDetailModal(), successAlert("Success");
         } else {
           selectedNFT.solPrice = currentPrice;
           errorAlert("Something went wrong.");
@@ -323,36 +340,44 @@ const NFTDetailModal = () => {
       if (updatedPrice <= selectedNFT.solPrice / 2) {
         errorAlert("Offer price must be bigger than the listed price.");
       } else {
-        const currentPrice = selectedNFT.solPrice;
-        try {
-          openFunctionLoading();
-          selectedNFT.solPrice = updatedPrice;
-          const tx = await makeOffer(wallet, [selectedNFT]);
-          if (tx) {
-            const result = await makeOfferApi(tx.transaction, tx.offerData);
-            if (result.type === "success") {
-              await getOwnNFTs();
-              await getAllListedNFTs();
-              await getAllListedNFTsBySeller();
-              await getActivityByMintAddr();
-              await getOfferByMintAddr();
-              closeFunctionLoading();
-              successAlert("Success");
+        if (myBalance < updatedPrice) {
+          errorAlert("You don't have enough sol");
+        } else {
+          const currentPrice = selectedNFT.solPrice;
+          try {
+            openFunctionLoading();
+            selectedNFT.solPrice = updatedPrice;
+            const tx = await makeOffer(wallet, [selectedNFT]);
+            if (tx) {
+              const result = await makeOfferApi(tx.transaction, tx.offerData);
+              if (result.type === "success") {
+                await Promise.all([
+                  getOwnNFTs(),
+                  getAllListedNFTsBySeller(),
+                  getActivityByMintAddr(),
+                  getAllListedNFTs(),
+                  getAllCollectionData(),
+                ]);
+                closeFunctionLoading();
+                closeNFTDetailModal();
+                successAlert("Success");
+              } else {
+                selectedNFT.solPrice = currentPrice;
+                closeNFTDetailModal();
+                closeFunctionLoading();
+                errorAlert("Something went wrong.");
+              }
             } else {
               selectedNFT.solPrice = currentPrice;
               closeFunctionLoading();
               errorAlert("Something went wrong.");
             }
-          } else {
+          } catch (e) {
+            console.log("err =>", e);
             selectedNFT.solPrice = currentPrice;
-            closeFunctionLoading();
             errorAlert("Something went wrong.");
+            closeFunctionLoading();
           }
-        } catch (e) {
-          console.log("err =>", e);
-          selectedNFT.solPrice = currentPrice;
-          errorAlert("Something went wrong.");
-          closeFunctionLoading();
         }
       }
     }
@@ -361,35 +386,43 @@ const NFTDetailModal = () => {
   // Buy NFT Function
   const handleBuyNFTFunc = async () => {
     if (wallet && selectedNFT !== undefined) {
-      try {
-        openFunctionLoading();
-        const tx = await purchasePNft(wallet, [selectedNFT]);
-        if (tx) {
-          const result = await purchaseNFT(
-            tx.transactions,
-            tx.purchaseData,
-            tx.mintAddrArray
-          );
-          if (result.type === "success") {
-            await getOwnNFTs();
-            await getAllListedNFTsBySeller();
-            await getActivityByMintAddr();
-            await getAllListedNFTs();
-            closeFunctionLoading();
-            successAlert("Success");
-            route.push("/me");
+      if (myBalance < selectedNFT.solPrice) {
+        errorAlert("You don't have enough sol.");
+      } else {
+        try {
+          openFunctionLoading();
+          const tx = await purchasePNft(wallet, [selectedNFT]);
+          if (tx) {
+            const result = await purchaseNFT(
+              tx.transactions,
+              tx.purchaseData,
+              tx.mintAddrArray
+            );
+            if (result.type === "success") {
+              await Promise.all([
+                getOwnNFTs(),
+                getAllListedNFTsBySeller(),
+                getActivityByMintAddr(),
+                getAllListedNFTs(),
+                getAllCollectionData(),
+              ]);
+              closeFunctionLoading();
+              closeNFTDetailModal();
+              successAlert("Success");
+              route.push("/me");
+            } else {
+              closeFunctionLoading();
+              errorAlert("Something went wrong.");
+            }
           } else {
             closeFunctionLoading();
             errorAlert("Something went wrong.");
           }
-        } else {
-          closeFunctionLoading();
+        } catch (e) {
+          console.log("err =>", e);
           errorAlert("Something went wrong.");
+          closeFunctionLoading();
         }
-      } catch (e) {
-        console.log("err =>", e);
-        errorAlert("Something went wrong.");
-        closeFunctionLoading();
       }
     }
   };
@@ -407,7 +440,15 @@ const NFTDetailModal = () => {
             tx.transaction
           );
           if (result.type === "success") {
+            await Promise.all([
+              getOwnNFTs(),
+              getAllListedNFTsBySeller(),
+              getActivityByMintAddr(),
+              getAllListedNFTs(),
+              getAllCollectionData(),
+            ]);
             closeFunctionLoading();
+            closeNFTDetailModal();
             successAlert("Success");
             await getOfferByMintAddr();
           } else {
@@ -451,7 +492,15 @@ const NFTDetailModal = () => {
             tx.transaction
           );
           if (result.type === "success") {
+            await Promise.all([
+              getOwnNFTs(),
+              getAllListedNFTsBySeller(),
+              getActivityByMintAddr(),
+              getAllListedNFTs(),
+              getAllCollectionData(),
+            ]);
             closeFunctionLoading();
+            closeNFTDetailModal();
             successAlert("Success");
             route.push("/me");
           } else {
