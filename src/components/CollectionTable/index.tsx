@@ -146,9 +146,6 @@ export default function CollectionTable() {
               <td className="py-2 px-4 text-[#8DEEC4]">{row.floorPrice} SOL</td>
               <td className="py-2 px-4 text-[#DD7A98]">{row.totalVolume}</td>
               <td className="py-2 px-4 text-white font-light">
-                {row.topOffer.toLocaleString()} SOL
-              </td>
-              <td className="py-2 px-4 text-white font-light">
                 {(row.totalVolume / row.listed).toFixed(2)}%
               </td>
               <td className="py-2 px-4 text-white font-light">
@@ -156,6 +153,9 @@ export default function CollectionTable() {
               </td>
               <td className="py-2 px-4 text-white font-light">
                 {row.listed.toLocaleString()}
+              </td>
+              <td className="py-2 px-4 text-white font-light">
+                {row.topOffer.toLocaleString()} SOL
               </td>
               <td className="py-2 px-4 text-white font-light">
                 {row.owners.toLocaleString()}

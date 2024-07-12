@@ -60,7 +60,7 @@ const Market: NextPage = () => {
   const [offerData, setOfferData] = useState<OfferDataType[]>([]);
   const [activityData, setActivityData] = useState<ActivityDataType[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedFilter, setSelectedFilter] = useState("");
+  const [selectedFilter, setSelectedFilter] = useState("high2low");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -100,11 +100,12 @@ const Market: NextPage = () => {
       (item) => item.collectionAddr === collectionAddr
     );
     setFilterListedNFTData(filteredNFTs);
-    setFilterListedByParam(filteredNFTs);
+    // setFilterListedByParam(filteredNFTs);
   }, [collectionAddr, listedAllNFTs]);
 
   useEffect(() => {
     let filteredData = [...filterListedNFTData];
+    console.log("selectedFilter ===>", selectedFilter);
 
     filteredData = filteredData.filter(
       (item) =>
@@ -114,12 +115,16 @@ const Market: NextPage = () => {
 
     switch (selectedFilter) {
       case "high2low":
+        console.log("high2low");
+
         filteredData.sort((a, b) => b.solPrice - a.solPrice);
         break;
       case "low2high":
+        console.log("low2high");
         filteredData.sort((a, b) => a.solPrice - b.solPrice);
         break;
       case "recentlist":
+        console.log("recentlist");
         filteredData.sort(
           (a, b) =>
             new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
@@ -128,11 +133,12 @@ const Market: NextPage = () => {
       default:
         break;
     }
+    console.log("2filteredData ===>", filteredData);
 
     // Update state only once after filtering and sorting
     setFilterListedByParam(filteredData);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchTerm, selectedFilter]); // Dependencies for useEffect
+  }, [searchTerm, selectedFilter, filterListedNFTData]); // Dependencies for useEffect
 
   const handleSearch = (term: string) => {
     setSearchTerm(term);

@@ -62,7 +62,7 @@ export default function CollectionFilterSelect({
             key={index}
             onClick={() => {
               handleFilterSelect(index);
-              router.push(`?activeTab=items&${filterType}=${item}`);
+              router.push(`?activeTab=items&${filterType}=${item.param}`);
             }}
           >
             {item.title}
