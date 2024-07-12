@@ -35,6 +35,7 @@ import {
   getAllActivitiesByCollectionAddrApi,
   getAllOffersByCollectionAddrApi,
 } from "@/utils/api";
+import { NormalSpinner } from "@/components/Spinners";
 
 const Market: NextPage = () => {
   const { publicKey, connected } = useWallet();
@@ -42,12 +43,11 @@ const Market: NextPage = () => {
   const searchParam = useSearchParams();
   const search = searchParam.get("activeTab") || "items";
 
-  const { collectionData, collectionDataState } = useContext(CollectionContext);
-  const { ownNFTs, getOwnNFTsState, getAllListedNFTs, listedAllNFTs } =
-    useContext(NFTDataContext);
-  const { closeNFTDetailModal } = useContext(ModalContext);
+  const { collectionData } = useContext(CollectionContext);
+  const { listedAllNFTs, getOwnNFTsState } = useContext(NFTDataContext);
 
   const [filterOpen, setFilterOpen] = useState(false);
+  const [filterLoading, setFilterLoading] = useState(true);
   const [filterListedNFTData, setFilterListedNFTData] = useState<
     OwnNFTDataType[]
   >([]);
@@ -67,12 +67,10 @@ const Market: NextPage = () => {
       if (!collectionAddr) return;
 
       try {
-        const offers = await getAllOffersByCollectionAddrApi(
-          collectionAddr.toString()
-        );
-        const activities = await getAllActivitiesByCollectionAddrApi(
-          collectionAddr.toString()
-        );
+        const [offers, activities] = await Promise.all([
+          getAllOffersByCollectionAddrApi(collectionAddr.toString()),
+          getAllActivitiesByCollectionAddrApi(collectionAddr.toString()),
+        ]);
 
         setOfferData(offers);
         setActivityData(activities);
@@ -100,7 +98,7 @@ const Market: NextPage = () => {
       (item) => item.collectionAddr === collectionAddr
     );
     setFilterListedNFTData(filteredNFTs);
-    // setFilterListedByParam(filteredNFTs);
+    setFilterLoading(false);
   }, [collectionAddr, listedAllNFTs]);
 
   useEffect(() => {
@@ -115,16 +113,12 @@ const Market: NextPage = () => {
 
     switch (selectedFilter) {
       case "high2low":
-        console.log("high2low");
-
         filteredData.sort((a, b) => b.solPrice - a.solPrice);
         break;
       case "low2high":
-        console.log("low2high");
         filteredData.sort((a, b) => a.solPrice - b.solPrice);
         break;
       case "recentlist":
-        console.log("recentlist");
         filteredData.sort(
           (a, b) =>
             new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
@@ -133,12 +127,9 @@ const Market: NextPage = () => {
       default:
         break;
     }
-    console.log("2filteredData ===>", filteredData);
 
-    // Update state only once after filtering and sorting
     setFilterListedByParam(filteredData);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchTerm, selectedFilter, filterListedNFTData]); // Dependencies for useEffect
+  }, [searchTerm, selectedFilter, filterListedNFTData]);
 
   const handleSearch = (term: string) => {
     setSearchTerm(term);
@@ -164,11 +155,11 @@ const Market: NextPage = () => {
           onClosebar={() => setFilterOpen(false)}
         />
         <div className="w-full flex items-start justify-start mt-2 md:gap-4 gap-1 flex-col relative">
-          {collectionData && (
-            <CollectionDetail collectionData={filterCollectionData} />
-          )}
-          {collectionData && (
-            <MobileCollectionDetail collectionData={filterCollectionData} />
+          {filterCollectionData && (
+            <>
+              <CollectionDetail collectionData={filterCollectionData} />
+              <MobileCollectionDetail collectionData={filterCollectionData} />
+            </>
           )}
           <Suspense fallback={<div />}>
             <TabsTip />
@@ -186,13 +177,7 @@ const Market: NextPage = () => {
             />
             <ItemMultiSelectbar />
           </div>
-          <div className={`${search !== "offers" && "hidden"} px-2`}>
-            {/* <OfferFilterSelect /> */}
-          </div>
-          <div className={`${search !== "activity" && "hidden"} px-2`}>
-            {/* <ActivityFilterSelect /> */}
-          </div>
-          <CollectionItemSkeleton />
+          <CollectionItemSkeleton loadingState={filterLoading} />
           <div className="w-full max-h-[70vh] overflow-y-auto pb-10">
             <div
               className={`relative ${
@@ -201,10 +186,10 @@ const Market: NextPage = () => {
             >
               <div
                 className={`w-full grid grid-cols-2 md:grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-5 px-2 pb-5 ${
-                  getOwnNFTsState && "hidden"
+                  filterLoading && "hidden"
                 }`}
               >
-                {filterListedByParam?.map((item, index) => (
+                {filterListedByParam.map((item, index) => (
                   <NFTCard
                     imgUrl={item.imgUrl}
                     collectionName={item.collectionName}
@@ -237,20 +222,22 @@ const Market: NextPage = () => {
               <ActivityTable data={activityData} />
             </div>
             <div
+              className={`w-full flex items-center justify-center ${
+                !filterLoading && "hidden"
+              }`}
+            >
+              <NormalSpinner width={7} height={7} />
+            </div>
+            <div
               className={`${
-                !collectionDataState &&
-                !getOwnNFTsState &&
-                filterListedByParam.length === 0 &&
-                search === "items"
+                !filterLoading &&
+                search === "items" &&
+                filterListedByParam.length === 0
                   ? "flex"
                   : "hidden"
               } items-center justify-center min-h-[40vh] w-full`}
             >
-              <p className="text-gray-400 text-center">
-                Nothing to show
-                <br />
-                Items you own will appear here in your Portfolio
-              </p>
+              <p className="text-gray-400 text-center">Nothing to show 😞</p>
             </div>
           </div>
         </div>
@@ -265,7 +252,7 @@ const Market: NextPage = () => {
         } items-center justify-center min-h-[80vh] w-full`}
       >
         <p className="text-gray-400 text-center">
-          Connect wallet to see your profile page
+          Connect wallet to see the colection. 🤨
         </p>
       </div>
     </MainPageLayout>

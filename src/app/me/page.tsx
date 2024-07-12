@@ -11,7 +11,6 @@ import MainPageLayout from "@/components/Layout";
 import TabsTip from "@/components/TabsTip";
 import CollectionItemSkeleton from "@/components/CollectionItemSkeleton";
 import NFTCard from "@/components/NFTCard";
-import CollectionFilterSelect from "@/components/CollectionFilterSelect";
 import MyItemDetail from "@/components/MyItemDetail";
 import ActivityFilterSelect from "@/components/ActivityFilterSelect";
 import OfferFilterSelect from "@/components/OfferFilterSelect";
@@ -21,10 +20,7 @@ import ItemMultiSelectbar from "@/components/ItemMultiSelectBar";
 
 import { NFTDataContext } from "@/contexts/NFTDataContext";
 
-import {
-  collectionFilterOptions,
-  myItemFilterOptions,
-} from "@/data/selectTabData";
+import { myItemFilterOptions } from "@/data/selectTabData";
 import { ActivityDataType, OfferDataType, OwnNFTDataType } from "@/types/types";
 import MobileMyItemDetail from "@/components/MyItemDetail/MobileMyItemDetail";
 import {
@@ -51,6 +47,7 @@ const MyItem: NextPage = () => {
   const { ownNFTs, getOwnNFTsState, ownListedNFTs } =
     useContext(NFTDataContext);
   const [showNFTs, setShowNFTs] = useState<OwnNFTDataType[]>([]);
+  const [filterLoading, setFilterLoading] = useState(false);
   const [nameSearch, setNameSearch] = useState("");
   const [offerData, setOfferData] = useState<OfferDataType[]>([]);
   const [filterOfferData, setFilterOfferData] = useState<OfferDataType[]>([]);
@@ -149,6 +146,7 @@ const MyItem: NextPage = () => {
 
     const nftsToShow = showQuery[0] === "listed" ? ownListedNFTs : ownNFTs;
     setShowNFTs(filterNFTs(nftsToShow));
+    setFilterLoading(false);
   }, [nameSearch, showQuery, ownListedNFTs, ownNFTs]);
 
   // Filter the Activity Table
@@ -289,7 +287,7 @@ const MyItem: NextPage = () => {
                 search === "items" || search === null ? "block" : "hidden"
               }`}
             >
-              <CollectionItemSkeleton />
+              <CollectionItemSkeleton loadingState={filterLoading} />
               <div
                 className={`w-full grid grid-cols-2 md:grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-5 ${
                   getOwnNFTsState && "hidden"

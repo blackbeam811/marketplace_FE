@@ -7,6 +7,7 @@ import { CollectionContext } from "@/contexts/CollectionContext";
 import { PINATA_URL } from "@/config";
 import { NormalSpinner } from "../Spinners";
 import { CollectionDataType, CollectionTableTHType } from "@/types/types";
+import { useRouter } from "next/navigation";
 
 type SortConfig = {
   key: keyof CollectionDataType;
@@ -28,7 +29,7 @@ const headerToKeyMap: {
 
 export default function CollectionTable() {
   const { collectionData, collectionDataState } = useContext(CollectionContext);
-
+  const router = useRouter();
   const [sortConfig, setSortConfig] = useState<SortConfig | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [searchColumn, setSearchColumn] = useState<

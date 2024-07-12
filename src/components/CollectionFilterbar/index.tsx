@@ -46,7 +46,7 @@ export default function CollectionFilterbar({
           placeholder="Search items"
           value={searchTerm}
           onChange={handleSearchChange}
-          className="outline-none bg-transparent w-full text-white py-1 px-1 text-sm md:text-lg"
+          className="outline-none bg-transparent w-full text-white py-1 px-1 text-md"
         />
       </div>
       <CollectionFilterSelect
