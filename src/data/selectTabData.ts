@@ -1,7 +1,7 @@
 export const collectionFilterOptions = [
-  "Price: High to Low",
-  "Price: Low to High",
-  "Recently Listed",
+  { title: "Price: High to Low", param: "high2low" },
+  { title: "Price: Low to High", param: "low2how" },
+  { title: "Recently Listed", param: "recentlist" },
 ];
 
 export const myItemFilterOptions = ["unlisted", "listed"];

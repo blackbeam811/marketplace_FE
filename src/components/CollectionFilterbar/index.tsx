@@ -1,4 +1,5 @@
 "use client";
+import { SetStateAction, useState } from "react";
 import { BiSearch } from "react-icons/bi";
 import { FiFilter } from "react-icons/fi";
 import CollectionFilterSelect from "../CollectionFilterSelect";
@@ -9,9 +10,20 @@ import { useSearchParams } from "next/navigation";
 export default function CollectionFilterbar({
   setFilterOpen,
   filterOpen,
+  onSearch,
+  onSelectFilter,
 }: CollectionFilterbarProps) {
   const param = useSearchParams();
   const search = param.get("activeTab") || "items";
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const handleSearchChange = (e: {
+    target: { value: SetStateAction<string> };
+  }) => {
+    setSearchTerm(e.target.value);
+    onSearch(e.target.value);
+  };
+
   return (
     <div
       className={`w-full flex items-center justify-between gap-3 px-2 ${
@@ -32,12 +44,15 @@ export default function CollectionFilterbar({
         <BiSearch color="white" />
         <input
           placeholder="Search items"
+          value={searchTerm}
+          onChange={handleSearchChange}
           className="outline-none bg-transparent w-full text-white py-1 px-1 text-sm md:text-lg"
         />
       </div>
       <CollectionFilterSelect
         options={collectionFilterOptions}
-        filterType={""}
+        filterType=""
+        onSelectFilter={onSelectFilter}
       />
     </div>
   );

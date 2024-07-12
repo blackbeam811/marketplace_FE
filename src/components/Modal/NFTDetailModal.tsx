@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { FC, Suspense, useContext, useEffect, useMemo, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useAnchorWallet } from "@solana/wallet-adapter-react";
+import { AnchorWallet, useAnchorWallet } from "@solana/wallet-adapter-react";
 import Modal from "react-responsive-modal";
 
 import { BiDetail } from "react-icons/bi";
@@ -21,7 +21,12 @@ import { ModalContext } from "@/contexts/ModalContext";
 import { LoadingContext } from "@/contexts/LoadingContext";
 import { NFTDataContext } from "@/contexts/NFTDataContext";
 
-import { ActivityDataType, OfferDataType, OwnNFTDataType } from "@/types/types";
+import {
+  ActivityDataType,
+  ButtonProps,
+  OfferDataType,
+  OwnNFTDataType,
+} from "@/types/types";
 import {
   acceptOfferPNft,
   cancelOffer,
@@ -46,6 +51,7 @@ import {
 import OfferTable from "../OfferTable";
 import { SolanaIcon } from "../SvgIcons";
 import { CollectionContext } from "@/contexts/CollectionContext";
+import { OfferData } from "@/utils/libs/types";
 
 const NFTDetailModal = () => {
   const wallet = useAnchorWallet();
@@ -608,86 +614,37 @@ const NFTDetailModal = () => {
                         setUpdatedPrice(Number(e.target.value));
                       }}
                     />
-                    <div
-                      className={`w-full rounded-md py-[6px] text-center bg-red-600 duration-200 hover:bg-red-700 text-white cursor-pointer flex items-center gap-2 justify-center ${
-                        (wallet?.publicKey.toBase58() !== selectedNFT?.seller ||
-                          selectedNFT?.solPrice === 0 ||
-                          offerData.filter((data) => data.active !== 0)
-                            .length !== 0) &&
-                        "hidden"
-                      }`}
-                      onClick={handleUpdatePriceFunc}
-                    >
-                      {"Update Price"}
-                    </div>
-                    <div
-                      className={`w-full rounded-md py-[6px] text-center bg-red-600 duration-200 hover:bg-red-700 text-white cursor-pointer flex items-center gap-2 justify-center ${
-                        (wallet?.publicKey.toBase58() === selectedNFT?.seller ||
-                          selectedNFT?.solPrice === 0) &&
-                        "hidden"
-                      }`}
-                      onClick={() =>
-                        offerData.filter(
-                          (data) =>
-                            data.buyer == wallet?.publicKey.toBase58() &&
-                            data.active === 1
-                        ).length !== 0
-                          ? handleCancelOffer(selectedNFT?.mintAddr.toString()!)
-                          : handleMakeOffer()
-                      }
-                    >
-                      {offerData.filter(
-                        (data) =>
-                          data.buyer == wallet?.publicKey.toBase58() &&
-                          data.active === 1
-                      ).length !== 0
-                        ? "Cancel Offer"
-                        : "Make Offer"}
-                    </div>
-                    <div
-                      className={`w-full rounded-md py-[6px] text-center bg-yellow-600 duration-200 hover:bg-yellow-700 text-white cursor-pointer
-                  ${
-                    (offerData.filter((data) => data.active !== 0).length ===
-                      0 ||
-                      wallet?.publicKey.toBase58() !== selectedNFT?.seller) &&
-                    "hidden"
-                  }`}
-                      onClick={handleAcceptHighOffer}
-                    >
-                      {`Accept High Offer`}
-                    </div>
+                    <UpdatePriceButton
+                      wallet={wallet}
+                      selectedNFT={selectedNFT}
+                      offerData={offerData}
+                      handleUpdatePriceFunc={handleUpdatePriceFunc}
+                    />
+                    <MakeOrCancelOfferButton
+                      wallet={wallet}
+                      selectedNFT={selectedNFT}
+                      offerData={offerData}
+                      handleMakeOffer={handleMakeOffer}
+                      handleCancelOffer={handleCancelOffer}
+                    />
+                    <AcceptHighOfferButton
+                      wallet={wallet}
+                      selectedNFT={selectedNFT}
+                      offerData={offerData}
+                      handleAcceptHighOffer={handleAcceptHighOffer}
+                    />
                   </div>
-
-                  <div className="w-full flex items-center justify-center gap-2">
-                    <div
-                      className={`w-full rounded-md py-[6px] text-center bg-yellow-600 duration-200 hover:bg-yellow-700 text-white cursor-pointer
-                  ${
-                    wallet?.publicKey.toBase58() !== selectedNFT?.seller &&
-                    "hidden"
-                  }`}
-                      onClick={
-                        selectedNFT?.solPrice === 0
-                          ? handleListMyNFTFunc
-                          : handleDelistMyNFTFunc
-                      }
-                    >
-                      {selectedNFT?.solPrice === 0 &&
-                      wallet?.publicKey.toBase58() === selectedNFT.seller
-                        ? "List Now"
-                        : "Delist now"}
-                    </div>
-                  </div>
-
-                  <div
-                    className={`w-full rounded-md py-[6px] text-center bg-yellow-600 duration-200 hover:bg-yellow-700 text-white cursor-pointer
-                  ${
-                    wallet?.publicKey.toBase58() === selectedNFT?.seller &&
-                    "hidden"
-                  }`}
-                    onClick={handleBuyNFTFunc}
-                  >
-                    {"Buy now"}
-                  </div>
+                  <ListOrDelistButton
+                    wallet={wallet}
+                    selectedNFT={selectedNFT}
+                    handleListMyNFTFunc={handleListMyNFTFunc}
+                    handleDelistMyNFTFunc={handleDelistMyNFTFunc}
+                  />
+                  <BuyNowButton
+                    wallet={wallet}
+                    selectedNFT={selectedNFT}
+                    handleBuyNFTFunc={handleBuyNFTFunc}
+                  />
                 </div>
 
                 <div className="w-full p-3 flex items-center justify-between rounded-md border-b border-customborder">
@@ -798,6 +755,133 @@ const NFTDetailModal = () => {
         </div>
       </Modal>
     </Suspense>
+  );
+};
+
+const UpdatePriceButton: React.FC<ButtonProps> = ({
+  wallet,
+  selectedNFT,
+  offerData,
+  handleUpdatePriceFunc,
+}) => {
+  const isHidden =
+    wallet?.publicKey.toBase58() !== selectedNFT?.seller ||
+    selectedNFT?.solPrice === 0 ||
+    offerData?.filter((data) => Number(data.active) !== 0).length !== 0;
+
+  return (
+    <div
+      className={`w-full rounded-md py-[6px] text-center bg-red-600 duration-200 hover:bg-red-700 text-white cursor-pointer flex items-center gap-2 justify-center ${
+        isHidden && "hidden"
+      }`}
+      onClick={handleUpdatePriceFunc}
+    >
+      {"Update Price"}
+    </div>
+  );
+};
+
+const MakeOrCancelOfferButton: React.FC<ButtonProps> = ({
+  wallet,
+  selectedNFT,
+  offerData,
+  handleMakeOffer,
+  handleCancelOffer,
+}) => {
+  const isHidden =
+    wallet?.publicKey.toBase58() === selectedNFT?.seller ||
+    selectedNFT?.solPrice === 0;
+  const isActiveOffer =
+    offerData?.filter(
+      (data) =>
+        data.buyer == wallet?.publicKey.toBase58() && Number(data.active) === 1
+    ).length !== 0;
+
+  return (
+    <div
+      className={`w-full rounded-md py-[6px] text-center bg-red-600 duration-200 hover:bg-red-700 text-white cursor-pointer flex items-center gap-2 justify-center ${
+        isHidden && "hidden"
+      }`}
+      onClick={
+        isActiveOffer
+          ? () => {
+              if (selectedNFT?.mintAddr && handleCancelOffer) {
+                handleCancelOffer(selectedNFT.mintAddr.toString());
+              }
+            }
+          : handleMakeOffer
+      }
+    >
+      {isActiveOffer ? "Cancel Offer" : "Make Offer"}
+    </div>
+  );
+};
+
+const AcceptHighOfferButton: React.FC<ButtonProps> = ({
+  wallet,
+  selectedNFT,
+  offerData,
+  handleAcceptHighOffer,
+}) => {
+  const isHidden =
+    offerData?.filter((data) => Number(data.active) !== 0).length === 0 ||
+    wallet?.publicKey.toBase58() !== selectedNFT?.seller;
+
+  return (
+    <div
+      className={`w-full rounded-md py-[6px] text-center bg-yellow-600 duration-200 hover:bg-yellow-700 text-white cursor-pointer ${
+        isHidden && "hidden"
+      }`}
+      onClick={handleAcceptHighOffer}
+    >
+      {"Accept High Offer"}
+    </div>
+  );
+};
+
+const ListOrDelistButton: React.FC<ButtonProps> = ({
+  wallet,
+  selectedNFT,
+  handleListMyNFTFunc,
+  handleDelistMyNFTFunc,
+}) => {
+  const isHidden = wallet?.publicKey.toBase58() !== selectedNFT?.seller;
+
+  return (
+    <div
+      className={`w-full rounded-md py-[6px] text-center bg-yellow-600 duration-200 hover:bg-yellow-700 text-white cursor-pointer ${
+        isHidden && "hidden"
+      }`}
+      onClick={
+        selectedNFT?.solPrice === 0
+          ? handleListMyNFTFunc
+          : handleDelistMyNFTFunc
+      }
+    >
+      {selectedNFT?.solPrice === 0 &&
+      wallet?.publicKey.toBase58() === selectedNFT.seller
+        ? "List Now"
+        : "Delist now"}
+    </div>
+  );
+};
+
+const BuyNowButton: React.FC<ButtonProps> = ({
+  wallet,
+  selectedNFT,
+  handleBuyNFTFunc,
+}) => {
+  const isHidden = wallet?.publicKey.toBase58() === selectedNFT?.seller;
+
+  return (
+    <div
+      className={`w-full rounded-md py-[6px] text-center bg-yellow-600 duration-200 hover:bg-yellow-700 text-white cursor-pointer ${
+        isHidden && "hidden"
+      }`}
+      onClick={handleBuyNFTFunc}
+    >
+      {"Buy now"}
+    </div>
   );
 };
 

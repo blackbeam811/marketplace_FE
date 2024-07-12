@@ -61,6 +61,7 @@ export default function CollectionSlider(props: { loadingState: boolean }) {
                   fill
                   className="rounded-lg w-[40px] hover:scale-105 duration-300"
                   alt=""
+                  sizes=""
                 />
               </div>
             </div>

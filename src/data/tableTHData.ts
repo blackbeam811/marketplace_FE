@@ -1,5 +1,5 @@
 export const activityTableTH = [
-  "",
+  "id",
   "Name",
   "Type",
   "Total",

@@ -1,15 +1,14 @@
 "use client";
 import { useRef, useState } from "react";
 import { useOnClickOutside } from "@/hooks/useOnClickOutside";
-import { SelectPropsType } from "@/types/types";
+import { MyNFTFilterSelectPropsType, SelectPropsType } from "@/types/types";
 import { ArrowIcon } from "../SvgIcons";
 import { useRouter, useSearchParams } from "next/navigation";
 
-export default function CollectionFilterSelect({
+export default function MyNFTFilterSelect({
   options,
   filterType,
-  onSelectFilter,
-}: SelectPropsType) {
+}: MyNFTFilterSelectPropsType) {
   const elem = useRef(null);
   const router = useRouter();
   const param = useSearchParams();
@@ -18,13 +17,6 @@ export default function CollectionFilterSelect({
   useOnClickOutside(elem, () => setOpen(false));
   const search = param.get("activeTab") || "items";
   const showQuery = param.getAll("item"); // Ensure it's an array
-
-  const handleFilterSelect = (index: number) => {
-    setFilterOption(index);
-    setOpen(false);
-    onSelectFilter(options[index].param);
-    router.push(`?activeTab=items&${filterType}=${options[index].param}`);
-  };
 
   return (
     <div className="relative" ref={elem}>
@@ -37,7 +29,7 @@ export default function CollectionFilterSelect({
           ? showQuery[0] === "listed"
             ? "listed"
             : "unlisted"
-          : options[filterOption].title}
+          : options[filterOption]}
         <span className={`${open ? "-rotate-90" : "rotate-90"} duration-300`}>
           <ArrowIcon />
         </span>
@@ -53,19 +45,18 @@ export default function CollectionFilterSelect({
         {options.map((item, index) => (
           <p
             className={`text-white cursor-pointer text-sm uppercase ${
-              item.param !== options[filterOption].param && "hover:bg-green-500"
+              item !== options[filterOption] && "hover:bg-green-500"
             } w-full py-2 px-2 ${
-              item.param === options[filterOption].param
-                ? "bg-green-800"
-                : "bg-green-950"
+              item === options[filterOption] ? "bg-green-800" : "bg-green-950"
             }`}
             key={index}
             onClick={() => {
-              handleFilterSelect(index);
+              setFilterOption(index);
+              setOpen(false);
               router.push(`?activeTab=items&${filterType}=${item}`);
             }}
           >
-            {item.title}
+            {item}
           </p>
         ))}
       </div>

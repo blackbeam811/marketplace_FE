@@ -275,8 +275,6 @@ export async function getAllOffersByCollectionAddrApi(collectionAddr: string) {
       `${MUGS_ENDPOINT}/offer/findAllByCollectionAddr/${collectionAddr}`
     );
 
-    console.log("collection offer ===> ", response.data);
-
     return response?.data;
   } catch (err) {
     console.log("Getting all offers data by collectionAddr err = ", err);
