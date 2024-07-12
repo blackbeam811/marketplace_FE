@@ -781,6 +781,7 @@ export const acceptOfferPNft = async (
     tokenId: item.tokenId,
     imgUrl: item.imgUrl,
     mintAddr: item.mintAddr,
+    collectionAddr: item.collectionAddr,
     seller: item.seller,
     buyer: item.buyer,
     solPrice: item.offerPrice,
@@ -792,6 +793,9 @@ export const acceptOfferPNft = async (
   tx.recentBlockhash = blockhash;
   let stx = (await payer.signTransaction(tx)).serialize();
 
+  console.log("item.mintAddr => ", item.mintAddr);
+  console.log("offerData => ", offersData);
+  console.log("transaction => ", stx);
   return { mintAddr: item.mintAddr, offerData: offersData, transaction: stx };
 };
 

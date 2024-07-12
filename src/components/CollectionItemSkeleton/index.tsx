@@ -1,11 +1,10 @@
 "use client";
 
-import { NFTDataContext } from "@/contexts/NFTDataContext";
-import { useContext } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
-export default function CollectionItemSkeleton() {
-  const { getOwnNFTsState } = useContext(NFTDataContext);
+export default function CollectionItemSkeleton(props: {
+  loadingState: boolean;
+}) {
   const router = useRouter();
   const param = useSearchParams();
   const search = param.get("activeTab") || "items";
@@ -13,7 +12,7 @@ export default function CollectionItemSkeleton() {
   return (
     <div
       className={`items-start justify-start w-full grid grid-cols-2 md:grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-5 px-2 ${
-        (!getOwnNFTsState || search !== "items") && "hidden"
+        (!props.loadingState || search !== "items") && "hidden"
       }`}
     >
       {[...Array(5)].map((_, index) => (

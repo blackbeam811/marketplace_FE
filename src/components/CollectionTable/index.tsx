@@ -7,6 +7,7 @@ import { CollectionContext } from "@/contexts/CollectionContext";
 import { PINATA_URL } from "@/config";
 import { NormalSpinner } from "../Spinners";
 import { CollectionDataType, CollectionTableTHType } from "@/types/types";
+import { useRouter } from "next/navigation";
 
 type SortConfig = {
   key: keyof CollectionDataType;
@@ -28,7 +29,7 @@ const headerToKeyMap: {
 
 export default function CollectionTable() {
   const { collectionData, collectionDataState } = useContext(CollectionContext);
-
+  const router = useRouter();
   const [sortConfig, setSortConfig] = useState<SortConfig | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [searchColumn, setSearchColumn] = useState<
@@ -146,9 +147,6 @@ export default function CollectionTable() {
               <td className="py-2 px-4 text-[#8DEEC4]">{row.floorPrice} SOL</td>
               <td className="py-2 px-4 text-[#DD7A98]">{row.totalVolume}</td>
               <td className="py-2 px-4 text-white font-light">
-                {row.topOffer.toLocaleString()} SOL
-              </td>
-              <td className="py-2 px-4 text-white font-light">
                 {(row.totalVolume / row.listed).toFixed(2)}%
               </td>
               <td className="py-2 px-4 text-white font-light">
@@ -156,6 +154,9 @@ export default function CollectionTable() {
               </td>
               <td className="py-2 px-4 text-white font-light">
                 {row.listed.toLocaleString()}
+              </td>
+              <td className="py-2 px-4 text-white font-light">
+                {row.topOffer.toLocaleString()} SOL
               </td>
               <td className="py-2 px-4 text-white font-light">
                 {row.owners.toLocaleString()}

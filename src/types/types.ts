@@ -76,6 +76,7 @@ export type OfferDataType = {
   imgUrl: string;
   mintAddr: string;
   offerPrice: number;
+  collectionAddr: string;
   seller: string;
   buyer: string;
   active: number;

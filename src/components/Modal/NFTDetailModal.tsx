@@ -102,12 +102,14 @@ const NFTDetailModal = () => {
         return;
       }
 
+      console.log("data ===>", data);
       const filteredData = data.map(
         ({
           mintAddr,
           offerPrice,
           tokenId,
           imgUrl,
+          collectionAddr,
           seller,
           buyer,
           active,
@@ -116,6 +118,7 @@ const NFTDetailModal = () => {
           offerPrice,
           tokenId,
           imgUrl,
+          collectionAddr,
           seller,
           buyer,
           active,

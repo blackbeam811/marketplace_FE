@@ -5,6 +5,7 @@ import { FaDiscord } from "react-icons/fa";
 
 import { CollectionDetailProps } from "@/types/types";
 import { PINATA_URL } from "@/config";
+import Link from "next/link";
 
 export default function CollectionDetail({
   collectionData,
@@ -14,7 +15,7 @@ export default function CollectionDetail({
       <div className="flex items-center justify-start gap-5 w-full">
         <div
           className={`w-[75px] h-[75px] relative ${
-            collectionData?.imgUrl === "undefined" && "hidden"
+            collectionData?.imgUrl === undefined && "hidden"
           }`}
         >
           <img
@@ -23,9 +24,14 @@ export default function CollectionDetail({
             className="rounded-full w-full h-full"
           />
         </div>
+        <div
+          className={`w-[75px] h-[75px] rounded-full animate-pulse bg-green-900 ${
+            collectionData?.imgUrl !== undefined && "hidden"
+          }`}
+        />
         <div className="flex items-start justify-center flex-col">
-          <span className="text-white text-2xl">
-            {collectionData?.collectionName}
+          <span className="text-white text-2xl cursor-pointer duration-300 hover:text-gray-300">
+            <Link href={"/"}>{collectionData?.collectionName}</Link>
           </span>
           <div className="flex items-center justify-start gap-4">
             <span
