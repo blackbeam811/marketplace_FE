@@ -37,6 +37,7 @@ import OfferTable from "@/components/OfferTable";
 import { LoadingContext } from "@/contexts/LoadingContext";
 import { cancelOffer } from "@/utils/contractScript";
 import { errorAlert, successAlert } from "@/components/ToastGroup";
+import MyNFTFilterSelect from "@/components/MyNFTFilterSelect";
 
 const MyItem: NextPage = () => {
   const param = useSearchParams();
@@ -250,11 +251,11 @@ const MyItem: NextPage = () => {
                 (search === "activity" || search === "offers") && "hidden"
               } flex gap-2`}
             >
-              <CollectionFilterSelect
+              {/* <CollectionFilterSelect
                 options={collectionFilterOptions}
                 filterType={"price"}
-              />
-              <CollectionFilterSelect
+              /> */}
+              <MyNFTFilterSelect
                 options={myItemFilterOptions}
                 filterType={"item"}
               />

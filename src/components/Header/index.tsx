@@ -88,6 +88,7 @@ const Header: FC<HeaderProps> = () => {
                 fill
                 alt=""
                 className="object-cover"
+                sizes=""
               />
             </div>
 

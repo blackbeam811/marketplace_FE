@@ -23,7 +23,13 @@ export type ListNFTItemType = {
 };
 
 export type SelectPropsType = {
-  options: string[];
+  options: any[];
+  filterType: string;
+  onSelectFilter: (e: any) => void;
+};
+
+export type MyNFTFilterSelectPropsType = {
+  options: any[];
   filterType: string;
 };
 
@@ -62,6 +68,7 @@ export type OwnNFTDataType = {
   solPrice: number;
   listed: boolean;
   attribute: NFTAttribute[];
+  updatedAt: string | number | Date;
 };
 
 export type OfferDataType = {
@@ -90,6 +97,7 @@ export type CollectionDataType = {
 };
 
 export type ActivityDataType = {
+  updatedAt: string | number | Date;
   imgUrl: string;
   tokenId: string;
   mintAddr: string;
@@ -98,6 +106,25 @@ export type ActivityDataType = {
   seller: string;
   buyer: string;
   date: string;
+};
+
+export type ActivityTableTHType = {
+  name: string;
+  type: number;
+  Price: string;
+  seller: string;
+  buyer: string;
+  time: string;
+};
+export type CollectionTableTHType = {
+  collectionName: string;
+  floorPrice: number;
+  totalVolume: number;
+  volume: number;
+  sales: number;
+  topOffer: number;
+  listed: number;
+  owners: number;
 };
 
 export interface NFTDataContextType {
@@ -136,8 +163,23 @@ export interface RedeemModalProps {
 export interface CollectionFilterbarProps {
   setFilterOpen: (opened: boolean) => void;
   filterOpen: boolean;
+  onSearch: (e: any) => void;
+  onSelectFilter: (e: any) => void;
 }
 
 export interface CollectionDetailProps {
   collectionData: CollectionDataType | undefined;
+}
+
+export interface ButtonProps {
+  wallet: any;
+  selectedNFT: OwnNFTDataType | undefined;
+  offerData?: OfferDataType[];
+  handleUpdatePriceFunc?: () => void;
+  handleMakeOffer?: () => void;
+  handleCancelOffer?: (mintAddr: string) => Promise<void>;
+  handleAcceptHighOffer?: () => void;
+  handleListMyNFTFunc?: () => void;
+  handleDelistMyNFTFunc?: () => void;
+  handleBuyNFTFunc?: () => void;
 }

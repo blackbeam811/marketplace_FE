@@ -98,6 +98,7 @@ export function NFTDataProvider({ children }: NFTDataProviderProps) {
       solPrice,
       data,
       mint,
+      updatedAt,
     } = acc;
 
     const attribute = attributes.map((attr: any) => ({
@@ -119,6 +120,7 @@ export function NFTDataProvider({ children }: NFTDataProviderProps) {
       collectionAddr: listed ? collectionAddr : data.creators?.[0]?.address,
       seller: listed ? seller : publicKey?.toBase58()!,
       solPrice: listed ? solPrice : 0,
+      updatedAt: listed ? updatedAt : 0,
       attribute,
       listed,
     };
@@ -192,6 +194,8 @@ export function NFTDataProvider({ children }: NFTDataProviderProps) {
   };
 
   const getAllListedNFTs = async (): Promise<void> => {
+    console.log("herer");
+
     try {
       let listedData = [];
       listedData = await getAllListedApi();
@@ -235,7 +239,7 @@ export function NFTDataProvider({ children }: NFTDataProviderProps) {
 
   useEffect(() => {
     const fetchData = async () => {
-      if (publicKey && collectionData) {
+      if (publicKey && collectionData.length !== 0) {
         try {
           await getOwnNFTs();
           await getAllListedNFTsBySeller();
