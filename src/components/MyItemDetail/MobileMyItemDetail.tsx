@@ -10,10 +10,13 @@ import { BiArrowFromLeft } from "react-icons/bi";
 import { TiArrowSortedDown } from "react-icons/ti";
 import { useOnClickOutside } from "@/hooks/useOnClickOutside";
 import { PINATA_URL } from "@/config";
+import Image from "next/image";
+import { useWallet } from "@solana/wallet-adapter-react";
 
 export default function MobileMyItemDetail({
   collectionData,
 }: CollectionDetailProps) {
+  const { publicKey } = useWallet();
   const elem = useRef(null);
   const [showDetail, setShowDetail] = useState(false);
   useOnClickOutside(elem, () => setShowDetail(false));
@@ -35,9 +38,21 @@ export default function MobileMyItemDetail({
             className="rounded-full"
           />
         </div>
-        <span className="text-white text-2xl">
-          {collectionData?.collectionName}
-        </span>
+        <div className="flex items-center justify-center gap-2 bg-transparent px-3 rounded-full py-1 border border-customborder">
+          <div className="w-[18px] h-[18px] relative">
+            <Image
+              src="/svgs/solana-sol-logo.svg"
+              alt="Avatar"
+              fill
+              className=""
+            />
+          </div>
+          <span className="text-white text-sm mt-[1px]">
+            {publicKey?.toString().slice(0, 4) +
+              "...." +
+              publicKey?.toString().slice(-4)}
+          </span>
+        </div>
       </div>
       <span className={`duration-300 cursor-pointer`}>
         <TiArrowSortedDown color="white" />

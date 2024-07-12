@@ -10,7 +10,6 @@ import Link from "next/link";
 export default function CollectionDetail({
   collectionData,
 }: CollectionDetailProps) {
-  console.log("collectionData Img ===>", collectionData?.imgUrl === undefined);
   return (
     <div className="md:flex items-start justify-center md:justify-start gap-3 md:flex-row flex-col w-full md:w-auto px-2 hidden">
       <div className="flex items-center justify-start gap-5 w-full">

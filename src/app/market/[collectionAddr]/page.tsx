@@ -27,6 +27,7 @@ import { NFTDataContext } from "@/contexts/NFTDataContext";
 import {
   ActivityDataType,
   CollectionDataType,
+  NFTCardType,
   OfferDataType,
   OwnNFTDataType,
 } from "@/types/types";
@@ -57,6 +58,7 @@ const Market: NextPage = () => {
   const [filterCollectionData, setFilterCollectionData] = useState<
     CollectionDataType | undefined
   >(undefined);
+  const [selectedNFTs, setSelectedNFTs] = useState<OwnNFTDataType[]>([]);
   const [offerData, setOfferData] = useState<OfferDataType[]>([]);
   const [activityData, setActivityData] = useState<ActivityDataType[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -139,6 +141,18 @@ const Market: NextPage = () => {
     setSelectedFilter(filter);
   };
 
+  const toggleNFTSelection = (nft: OwnNFTDataType) => {
+    setSelectedNFTs((prevSelectedNFTs) => {
+      if (prevSelectedNFTs.find((item) => item.mintAddr === nft.mintAddr)) {
+        return prevSelectedNFTs.filter(
+          (item) => item.mintAddr !== nft.mintAddr
+        );
+      } else {
+        return [...prevSelectedNFTs, nft];
+      }
+    });
+  };
+
   return (
     <MainPageLayout>
       <div
@@ -146,14 +160,14 @@ const Market: NextPage = () => {
           !connected && "hidden"
         }`}
       >
-        <CollectionFilterSidebar
+        {/* <CollectionFilterSidebar
           filterOpen={filterOpen}
           onClosebar={() => setFilterOpen(false)}
         />
         <MobileCollectionFilterSidebar
           filterOpen={filterOpen}
           onClosebar={() => setFilterOpen(false)}
-        />
+        /> */}
         <div className="w-full flex items-start justify-start mt-2 md:gap-4 gap-1 flex-col relative">
           {filterCollectionData && (
             <>
@@ -175,7 +189,12 @@ const Market: NextPage = () => {
               onSearch={handleSearch}
               onSelectFilter={handleFilterSelect}
             />
-            <ItemMultiSelectbar />
+            <ItemMultiSelectbar
+              selectedNFTLists={selectedNFTs}
+              toggleSelection={(item: OwnNFTDataType) =>
+                toggleNFTSelection(item)
+              }
+            />
           </div>
           <CollectionItemSkeleton loadingState={filterLoading} />
           <div className="w-full max-h-[70vh] overflow-y-auto pb-10">
@@ -191,13 +210,19 @@ const Market: NextPage = () => {
               >
                 {filterListedByParam.map((item, index) => (
                   <NFTCard
+                    key={index}
                     imgUrl={item.imgUrl}
                     collectionName={item.collectionName}
                     tokenId={item.tokenId}
-                    key={index}
                     mintAddr={item.mintAddr}
                     solPrice={item.solPrice}
                     state={item.solPrice === 0 ? "unlisted" : "listed"}
+                    isSelected={
+                      !!selectedNFTs.find(
+                        (nft) => nft.mintAddr === item.mintAddr
+                      )
+                    }
+                    toggleSelection={() => toggleNFTSelection(item)}
                   />
                 ))}
               </div>
@@ -241,7 +266,10 @@ const Market: NextPage = () => {
             </div>
           </div>
         </div>
-        <MobileItemMultiSelectBar />
+        <MobileItemMultiSelectBar
+          selectedNFTLists={selectedNFTs}
+          toggleSelection={(item: OwnNFTDataType) => toggleNFTSelection(item)}
+        />
         <Suspense fallback={<div />}>
           <MobileTabsTip />
         </Suspense>
