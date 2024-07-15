@@ -8,6 +8,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 export default function MyNFTFilterSelect({
   options,
   filterType,
+  setSelectItem,
 }: MyNFTFilterSelectPropsType) {
   const elem = useRef(null);
   const router = useRouter();
@@ -54,6 +55,7 @@ export default function MyNFTFilterSelect({
               setFilterOption(index);
               setOpen(false);
               router.push(`?activeTab=items&${filterType}=${item}`);
+              setSelectItem();
             }}
           >
             {item}

@@ -29,6 +29,7 @@ export type SelectPropsType = {
 };
 
 export type MyNFTFilterSelectPropsType = {
+  setSelectItem: () => void;
   options: any[];
   filterType: string;
 };
