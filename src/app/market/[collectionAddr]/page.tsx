@@ -190,10 +190,12 @@ const Market: NextPage = () => {
               onSelectFilter={handleFilterSelect}
             />
             <ItemMultiSelectbar
+              setSelectedNFTs={() => setSelectedNFTs([])}
               selectedNFTLists={selectedNFTs}
               toggleSelection={(item: OwnNFTDataType) =>
                 toggleNFTSelection(item)
               }
+              functionState="buy"
             />
           </div>
           <CollectionItemSkeleton loadingState={filterLoading} />
@@ -269,6 +271,7 @@ const Market: NextPage = () => {
         <MobileItemMultiSelectBar
           selectedNFTLists={selectedNFTs}
           toggleSelection={(item: OwnNFTDataType) => toggleNFTSelection(item)}
+          functionState="buy"
         />
         <Suspense fallback={<div />}>
           <MobileTabsTip />

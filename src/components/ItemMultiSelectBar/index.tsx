@@ -10,12 +10,18 @@ import { useContext, useRef, useState } from "react";
 import { CgClose } from "react-icons/cg";
 import { SlBasket } from "react-icons/sl";
 import { errorAlert, successAlert } from "../ToastGroup";
-import { purchasePNft } from "@/utils/contractScript";
-import { purchaseNFT } from "@/utils/api";
+import {
+  listPNftForSale,
+  pNftDelist,
+  purchasePNft,
+} from "@/utils/contractScript";
+import { delistNftApi, listNftApi, purchaseNFT } from "@/utils/api";
 import { CollectionContext } from "@/contexts/CollectionContext";
 
 export default function ItemMultiSelectbar(props: {
+  functionState: string;
   selectedNFTLists: OwnNFTDataType[];
+  setSelectedNFTs: () => void;
   toggleSelection: (item: OwnNFTDataType) => void;
 }) {
   const elem = useRef(null);
@@ -31,10 +37,6 @@ export default function ItemMultiSelectbar(props: {
   const [openBasket, setOpenBasket] = useState(false);
   useOnClickOutside(elem, () => setOpenBasket(false));
 
-  const pathName = usePathname();
-  const currentRouter = pathName.split("/")[1];
-
-  const canListState = currentRouter === "me" ? true : false;
   const totalPrice = props.selectedNFTLists.reduce(
     (total, nft) => total + nft.solPrice,
     0
@@ -42,43 +44,138 @@ export default function ItemMultiSelectbar(props: {
 
   // Buy NFT Function
   const handleBuyNFTFunc = async () => {
-    if (wallet && props.selectedNFTLists !== undefined) {
-      if (myBalance < totalPrice) {
-        errorAlert("You don't have enough sol.");
-      } else {
-        try {
-          openFunctionLoading();
-          const tx = await purchasePNft(wallet, props.selectedNFTLists);
-          if (tx) {
-            const result = await purchaseNFT(
-              tx.transactions,
-              tx.purchaseData,
-              tx.mintAddrArray
-            );
-            if (result.type === "success") {
-              await Promise.all([
-                getOwnNFTs(),
-                getAllListedNFTsBySeller(),
-                getAllListedNFTs(),
-                getAllCollectionData(),
-              ]);
-              closeFunctionLoading();
-              successAlert("Success");
-              route.push("/me");
+    if (props.selectedNFTLists.length === 0) {
+      errorAlert("Please select the nfts");
+    } else {
+      if (wallet && props.selectedNFTLists !== undefined) {
+        if (myBalance < totalPrice) {
+          errorAlert("You don't have enough sol.");
+        } else {
+          try {
+            openFunctionLoading();
+            const tx = await purchasePNft(wallet, props.selectedNFTLists);
+            if (tx) {
+              const result = await purchaseNFT(
+                tx.transactions,
+                tx.purchaseData,
+                tx.mintAddrArray
+              );
+              if (result.type === "success") {
+                await Promise.all([
+                  getOwnNFTs(),
+                  getAllListedNFTsBySeller(),
+                  getAllListedNFTs(),
+                  getAllCollectionData(),
+                  props.setSelectedNFTs(),
+                ]);
+                closeFunctionLoading();
+                successAlert("Success");
+                route.push("/me");
+              } else {
+                closeFunctionLoading();
+                errorAlert("Something went wrong.");
+              }
             } else {
               closeFunctionLoading();
               errorAlert("Something went wrong.");
             }
-          } else {
-            closeFunctionLoading();
+          } catch (e) {
+            console.log("err =>", e);
             errorAlert("Something went wrong.");
+            closeFunctionLoading();
           }
-        } catch (e) {
-          console.log("err =>", e);
-          errorAlert("Something went wrong.");
-          closeFunctionLoading();
         }
       }
+    }
+  };
+
+  // NFT Delist Function
+  const handleDelistMyNFTFunc = async () => {
+    if (!wallet || props.selectedNFTLists === undefined) {
+      return;
+    }
+
+    try {
+      openFunctionLoading();
+
+      // Delist the NFT
+      const tx = await pNftDelist(wallet, props.selectedNFTLists);
+
+      if (tx) {
+        const result = await delistNftApi(
+          tx.transactions,
+          tx.delistData,
+          tx.mintAddrArray
+        );
+
+        if (result.type === "success") {
+          // Refresh data after successful delist
+          await Promise.all([
+            getOwnNFTs(),
+            getAllListedNFTsBySeller(),
+            getAllListedNFTs(),
+            getAllCollectionData(),
+            props.setSelectedNFTs(),
+          ]);
+          successAlert("Success");
+        } else {
+          errorAlert("Something went wrong.");
+        }
+      } else {
+        errorAlert("Something went wrong.");
+      }
+    } catch (e) {
+      console.error("Error:", e);
+      errorAlert("Something went wrong.");
+    } finally {
+      closeFunctionLoading();
+    }
+  };
+
+  const handleSetMultiPrice = async (index: number, price: number) => {
+    props.selectedNFTLists[index].solPrice = price;
+  };
+
+  // NFT List Function
+  const handleListMyNFTFunc = async () => {
+    if (!wallet || props.selectedNFTLists === undefined) {
+      return;
+    }
+    if (props.selectedNFTLists.some((data) => data.solPrice === 0)) {
+      errorAlert("Please enter the price.");
+      return;
+    }
+
+    try {
+      openFunctionLoading();
+
+      // Update the itemDetail price
+      // List the NFT for sale
+      const tx = await listPNftForSale(wallet, props.selectedNFTLists);
+
+      if (tx) {
+        const result = await listNftApi(tx.transactions, tx.listData);
+
+        if (result.type === "success") {
+          // Refresh data after successful listing
+          await Promise.all([
+            getOwnNFTs(),
+            getAllListedNFTsBySeller(),
+            getAllListedNFTs(),
+            getAllCollectionData(),
+          ]);
+          successAlert("Success");
+        } else {
+          errorAlert("Something went wrong.");
+        }
+      } else {
+        errorAlert("Something went wrong.");
+      }
+    } catch (e) {
+      console.error("Error:", e);
+      errorAlert("Something went wrong.");
+    } finally {
+      closeFunctionLoading();
     }
   };
 
@@ -102,10 +199,16 @@ export default function ItemMultiSelectbar(props: {
       </div>
       <div className="flex items-center justify-center gap-2 relative">
         <button
-          className="bg-yellow-600 rounded-md py-1 text-white px-10 cursor-pointer hover:bg-yellow-500 duration-300"
-          onClick={handleBuyNFTFunc}
+          className="bg-yellow-600 rounded-md py-1 text-white px-10 cursor-pointer hover:bg-yellow-500 duration-300 uppercase"
+          onClick={() =>
+            props.functionState === "buy"
+              ? handleBuyNFTFunc()
+              : props.functionState === "delist"
+              ? handleDelistMyNFTFunc()
+              : handleListMyNFTFunc()
+          }
         >
-          {canListState ? "List now" : "Buy now"}
+          {props.functionState}
         </button>
         <div
           className="p-2 rounded-md bg-white cursor-pointer relative"
@@ -160,7 +263,20 @@ export default function ItemMultiSelectbar(props: {
                     </div>
                     <span className="text-white text-md">{_.tokenId}</span>
                   </div>
-                  <div className="flex items-center justify-center gap-2">
+                  <input
+                    className={`outline-none bg-transparent border-customborder border rounded-md w-[90px] text-white py-2 px-1 ${
+                      props.functionState !== "list" && "hidden"
+                    }`}
+                    placeholder="0 sol"
+                    onChange={(e) =>
+                      handleSetMultiPrice(index, Number(e.target.value))
+                    }
+                  />
+                  <div
+                    className={`flex items-center justify-center gap-2 ${
+                      props.functionState === "list" && "hidden"
+                    }`}
+                  >
                     <img
                       src="/svgs/solana-sol-logo.svg"
                       className="w-[10px] h-[10px] object-cover"

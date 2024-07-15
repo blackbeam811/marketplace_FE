@@ -17,6 +17,7 @@ import { CollectionContext } from "@/contexts/CollectionContext";
 export default function MobileItemMultiSelectBar(props: {
   selectedNFTLists: OwnNFTDataType[];
   toggleSelection: (item: OwnNFTDataType) => void;
+  functionState: string;
 }) {
   const elem = useRef(null);
   const wallet = useAnchorWallet();

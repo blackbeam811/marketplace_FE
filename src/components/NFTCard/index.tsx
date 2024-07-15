@@ -51,7 +51,7 @@ const NFTCard: FC<NFTCardProps> = ({
           )}
         </div>
       </div>
-      <div className="w-full flex items-center justify-between pr-2 flex-col">
+      <div className="w-full flex items-center justify-between pr-2 flex-col bottom-0">
         <div className="w-full flex items-center justify-between">
           <p className="text-gray-300 text-left px-2 text-sm uppercase">
             {state}

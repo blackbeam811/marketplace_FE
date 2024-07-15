@@ -126,8 +126,11 @@ const MyItem: NextPage = () => {
   useEffect(() => {
     const updateShowNFTs = () => {
       if (showQuery[0] === "listed") {
+        console.log("=============================== my listed nfts");
         setShowNFTs(ownListedNFTs);
       } else {
+        console.log("=============================== my unlisted nfts");
+
         setShowNFTs(ownNFTs);
       }
     };
@@ -267,6 +270,7 @@ const MyItem: NextPage = () => {
                 filterType={"price"}
               /> */}
               <MyNFTFilterSelect
+                setSelectItem={() => setSelectedNFTs([])}
                 options={myItemFilterOptions}
                 filterType={"item"}
               />
@@ -293,9 +297,16 @@ const MyItem: NextPage = () => {
             } w-full`}
           >
             <ItemMultiSelectbar
+              setSelectedNFTs={() => setSelectedNFTs([])}
               selectedNFTLists={selectedNFTs}
               toggleSelection={(item: OwnNFTDataType) =>
                 toggleNFTSelection(item)
+              }
+              functionState={
+                showQuery.toString() === "" ||
+                showQuery.toString() === "unlisted"
+                  ? "list"
+                  : "delist"
               }
             />
           </div>
@@ -369,6 +380,12 @@ const MyItem: NextPage = () => {
         <MobileItemMultiSelectBar
           selectedNFTLists={selectedNFTs}
           toggleSelection={(item: OwnNFTDataType) => toggleNFTSelection(item)}
+          functionState={
+            showQuery.toString() === undefined ||
+            showQuery.toString() === "unlisted"
+              ? "list"
+              : "delist"
+          }
         />
         <MobileTabsTip />
       </div>
