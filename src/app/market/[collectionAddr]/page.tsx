@@ -27,11 +27,9 @@ import { NFTDataContext } from "@/contexts/NFTDataContext";
 import {
   ActivityDataType,
   CollectionDataType,
-  NFTCardType,
   OfferDataType,
   OwnNFTDataType,
 } from "@/types/types";
-import { ModalContext } from "@/contexts/ModalContext";
 import {
   getAllActivitiesByCollectionAddrApi,
   getAllOffersByCollectionAddrApi,
@@ -105,7 +103,6 @@ const Market: NextPage = () => {
 
   useEffect(() => {
     let filteredData = [...filterListedNFTData];
-    console.log("selectedFilter ===>", selectedFilter);
 
     filteredData = filteredData.filter(
       (item) =>
@@ -176,7 +173,7 @@ const Market: NextPage = () => {
             </>
           )}
           <Suspense fallback={<div />}>
-            <TabsTip />
+            <TabsTip setSelectedNFTs={() => setSelectedNFTs([])} />
           </Suspense>
           <div
             className={`${
@@ -269,12 +266,13 @@ const Market: NextPage = () => {
           </div>
         </div>
         <MobileItemMultiSelectBar
+          setSelectedNFTs={() => setSelectedNFTs([])}
           selectedNFTLists={selectedNFTs}
           toggleSelection={(item: OwnNFTDataType) => toggleNFTSelection(item)}
           functionState="buy"
         />
         <Suspense fallback={<div />}>
-          <MobileTabsTip />
+          <MobileTabsTip setSelectedNFTs={() => setSelectedNFTs([])} />
         </Suspense>
       </div>
       <div

@@ -4,7 +4,7 @@
 import { TabMenu } from "@/data/tabMenuData";
 import { useRouter, useSearchParams } from "next/navigation";
 
-export default function TabsTip() {
+export default function TabsTip(props: { setSelectedNFTs: () => void }) {
   const router = useRouter();
   const param = useSearchParams();
   const search = param.get("activeTab") || "items";
@@ -19,7 +19,10 @@ export default function TabsTip() {
               ? "border-b-2 text-white font-bold text-md"
               : "text-gray-400 text-sm"
           } border-yellow-600`}
-          onClick={() => router.push(item.link)}
+          onClick={() => {
+            router.push(item.link);
+            props.setSelectedNFTs();
+          }}
         >
           {item.title}
         </div>

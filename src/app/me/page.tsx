@@ -231,6 +231,8 @@ const MyItem: NextPage = () => {
     });
   };
 
+  console.log("showQuery.toString() => ", showQuery.toString() === "");
+
   return (
     <MainPageLayout>
       <div
@@ -241,7 +243,7 @@ const MyItem: NextPage = () => {
         <div className="w-full flex items-start justify-start mt-5 gap-4 flex-col px-2">
           <MyItemDetail />
           <MobileMyItemDetail collectionData={undefined} />
-          <TabsTip />
+          <TabsTip setSelectedNFTs={() => setSelectedNFTs([])} />
           <div className="w-full flex items-center justify-start flex-row gap-3">
             <div
               className={`flex items-center justify-center gap-2 w-full ${
@@ -378,16 +380,16 @@ const MyItem: NextPage = () => {
           </div>
         </div>
         <MobileItemMultiSelectBar
+          setSelectedNFTs={() => setSelectedNFTs([])}
           selectedNFTLists={selectedNFTs}
           toggleSelection={(item: OwnNFTDataType) => toggleNFTSelection(item)}
           functionState={
-            showQuery.toString() === undefined ||
-            showQuery.toString() === "unlisted"
+            showQuery.toString() === "" || showQuery.toString() === "unlisted"
               ? "list"
               : "delist"
           }
         />
-        <MobileTabsTip />
+        <MobileTabsTip setSelectedNFTs={() => setSelectedNFTs([])} />
       </div>
       <div
         className={`${

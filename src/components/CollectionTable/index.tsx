@@ -29,7 +29,6 @@ const headerToKeyMap: {
 
 export default function CollectionTable() {
   const { collectionData, collectionDataState } = useContext(CollectionContext);
-  const router = useRouter();
   const [sortConfig, setSortConfig] = useState<SortConfig | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [searchColumn, setSearchColumn] = useState<

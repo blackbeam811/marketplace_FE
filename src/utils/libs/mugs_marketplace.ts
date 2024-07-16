@@ -406,6 +406,21 @@ export const MugsMarketplace = {
           isSigner: false,
         },
         {
+          name: "userPool",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "systemProgram",
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: "escrowVault",
+          isMut: true,
+          isSigner: false,
+        },
+        {
           name: "nftMint",
           isMut: false,
           isSigner: false,
@@ -414,6 +429,14 @@ export const MugsMarketplace = {
       args: [
         {
           name: "offerBump",
+          type: "u8",
+        },
+        {
+          name: "escrowBump",
+          type: "u8",
+        },
+        {
+          name: "userBump",
           type: "u8",
         },
       ],
@@ -1817,6 +1840,6 @@ export const MugsMarketplace = {
     },
   ],
   metadata: {
-    address: "9aakjwwFnjM5EStvk3QgCKEF9NnepZ2AQqgKjwUZBYtj",
+    address: "5J3fJvN67uWLo2uNaygTJjdRoJs5mxn9XgtXroiQkcwm",
   },
 };
