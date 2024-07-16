@@ -47,7 +47,11 @@ export default function ItemMultiSelectbar(props: {
     if (props.selectedNFTLists.length === 0) {
       errorAlert("Please select the nfts");
     } else {
-      if (wallet && props.selectedNFTLists !== undefined) {
+      if (
+        wallet &&
+        props.selectedNFTLists !== undefined &&
+        props.selectedNFTLists.length !== 0
+      ) {
         if (myBalance < totalPrice) {
           errorAlert("You don't have enough sol.");
         } else {
@@ -138,7 +142,11 @@ export default function ItemMultiSelectbar(props: {
 
   // NFT List Function
   const handleListMyNFTFunc = async () => {
-    if (!wallet || props.selectedNFTLists === undefined) {
+    if (
+      !wallet ||
+      props.selectedNFTLists === undefined ||
+      props.selectedNFTLists.length === 0
+    ) {
       return;
     }
     if (props.selectedNFTLists.some((data) => data.solPrice === 0)) {
@@ -163,6 +171,7 @@ export default function ItemMultiSelectbar(props: {
             getAllListedNFTsBySeller(),
             getAllListedNFTs(),
             getAllCollectionData(),
+            props.setSelectedNFTs(),
           ]);
           successAlert("Success");
         } else {
@@ -263,15 +272,20 @@ export default function ItemMultiSelectbar(props: {
                     </div>
                     <span className="text-white text-md">{_.tokenId}</span>
                   </div>
-                  <input
-                    className={`outline-none bg-transparent border-customborder border rounded-md w-[90px] text-white py-2 px-1 ${
+                  <div
+                    className={`flex items-center justfiy-center gap-2 text-white ${
                       props.functionState !== "list" && "hidden"
                     }`}
-                    placeholder="0 sol"
-                    onChange={(e) =>
-                      handleSetMultiPrice(index, Number(e.target.value))
-                    }
-                  />
+                  >
+                    <input
+                      className={`outline-none bg-transparent border-customborder border rounded-md w-[70px] text-white py-1 px-1 `}
+                      placeholder="0"
+                      onChange={(e) =>
+                        handleSetMultiPrice(index, Number(e.target.value))
+                      }
+                    />
+                    sol
+                  </div>
                   <div
                     className={`flex items-center justify-center gap-2 ${
                       props.functionState === "list" && "hidden"

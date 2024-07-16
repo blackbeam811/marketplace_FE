@@ -16,6 +16,7 @@ import {
 import { CollectionContext } from "./CollectionContext";
 import { getAllListedApi, getAllListedDataBySellerApi } from "@/utils/api";
 
+// Creating context to store and share NFT data
 export const NFTDataContext = createContext<NFTDataContextType>({
   solPrice: 0,
   myBalance: 0,
@@ -32,6 +33,7 @@ interface NFTDataProviderProps {
   children: ReactNode;
 }
 
+// Provider component for the NFT data context
 export function NFTDataProvider({ children }: NFTDataProviderProps) {
   const connection = new web3.Connection(SOLANA_RPC);
   const { publicKey } = useWallet();
@@ -43,6 +45,7 @@ export function NFTDataProvider({ children }: NFTDataProviderProps) {
   const [ownListedNFTs, setOwnListedNFTs] = useState<OwnNFTDataType[]>([]);
   const [listedAllNFTs, setListedAllNFTs] = useState<OwnNFTDataType[]>([]);
 
+  // Function to get the balance of the connected wallet
   const getBalanceFunc = useCallback(async () => {
     const solConnection = new web3.Connection(SOLANA_RPC);
     if (publicKey) {
@@ -53,11 +56,13 @@ export function NFTDataProvider({ children }: NFTDataProviderProps) {
     }
   }, [publicKey]);
 
+  // Fetch balance when publicKey changes
   useEffect(() => {
     getBalanceFunc();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [publicKey]);
 
+  // Commented out function to fetch Solana price from CoinGecko
   // const fetchSolPrice = async () => {
   //   try {
   //     const response = await fetch(
@@ -78,12 +83,14 @@ export function NFTDataProvider({ children }: NFTDataProviderProps) {
   //   }
   // };
 
+  // Function to fetch NFT metadata from a URI
   const fetchNFTMetadata = async (uri: string): Promise<any> => {
     const response = await fetch(uri);
     if (!response.ok) throw new Error("Failed to fetch metadata from URI");
     return await response.json();
   };
 
+  // Function to construct NFT data from raw data and metadata
   const constructNFTData = (
     acc: any,
     metadata: any,
@@ -126,6 +133,7 @@ export function NFTDataProvider({ children }: NFTDataProviderProps) {
     };
   };
 
+  // Function to get NFTs owned by the connected wallet
   const getOwnNFTs = async (): Promise<void> => {
     if (!publicKey) return;
     try {
@@ -168,6 +176,7 @@ export function NFTDataProvider({ children }: NFTDataProviderProps) {
     }
   };
 
+  // Function to get NFTs listed by the connected wallet
   const getAllListedNFTsBySeller = async (): Promise<void> => {
     if (!publicKey) return;
     try {
@@ -193,9 +202,8 @@ export function NFTDataProvider({ children }: NFTDataProviderProps) {
     }
   };
 
+  // Function to get all listed NFTs
   const getAllListedNFTs = async (): Promise<void> => {
-    console.log("herer");
-
     try {
       let listedData = [];
       listedData = await getAllListedApi();
@@ -218,12 +226,14 @@ export function NFTDataProvider({ children }: NFTDataProviderProps) {
     }
   };
 
+  // Commented out useEffect to fetch Solana price at intervals
   // useEffect(() => {
   //   fetchSolPrice();
   //   const interval = setInterval(fetchSolPrice, 120000); // Call every 60 seconds
   //   return () => clearInterval(interval);
   // }, []);
 
+  // Fetch all listed NFTs when the component mounts
   useEffect(() => {
     const fetchData = async () => {
       try {

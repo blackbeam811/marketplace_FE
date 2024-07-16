@@ -561,7 +561,7 @@ const NFTDetailModal = () => {
           </div>
           <div className="w-full flex items-start justify-start max-h-[70vh] overflow-y-auto md:min-h-[70vh] min-h-[70vh] relative">
             <div
-              className={`w-full grid md:grid-cols-2 grid-cols-1 gap-5 lg:gap-10 pr-2 ${
+              className={`w-full grid md:grid-cols-2 grid-cols-1 gap-5 pr-2 ${
                 showState !== 0 && "hidden"
               }`}
             >

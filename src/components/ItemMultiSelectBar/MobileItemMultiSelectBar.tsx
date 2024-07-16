@@ -10,14 +10,19 @@ import { NFTDataContext } from "@/contexts/NFTDataContext";
 import { LoadingContext } from "@/contexts/LoadingContext";
 import { errorAlert, successAlert } from "../ToastGroup";
 import { useAnchorWallet } from "@solana/wallet-adapter-react";
-import { purchasePNft } from "@/utils/contractScript";
-import { purchaseNFT } from "@/utils/api";
+import {
+  listPNftForSale,
+  pNftDelist,
+  purchasePNft,
+} from "@/utils/contractScript";
+import { delistNftApi, listNftApi, purchaseNFT } from "@/utils/api";
 import { CollectionContext } from "@/contexts/CollectionContext";
 
 export default function MobileItemMultiSelectBar(props: {
   selectedNFTLists: OwnNFTDataType[];
   toggleSelection: (item: OwnNFTDataType) => void;
   functionState: string;
+  setSelectedNFTs: () => void;
 }) {
   const elem = useRef(null);
   const wallet = useAnchorWallet();
@@ -86,13 +91,121 @@ export default function MobileItemMultiSelectBar(props: {
     }
   };
 
+  // NFT Delist Function
+  const handleDelistMyNFTFunc = async () => {
+    if (!wallet || props.selectedNFTLists === undefined) {
+      return;
+    }
+
+    try {
+      openFunctionLoading();
+
+      // Delist the NFT
+      const tx = await pNftDelist(wallet, props.selectedNFTLists);
+
+      if (tx) {
+        const result = await delistNftApi(
+          tx.transactions,
+          tx.delistData,
+          tx.mintAddrArray
+        );
+
+        if (result.type === "success") {
+          // Refresh data after successful delist
+          await Promise.all([
+            getOwnNFTs(),
+            getAllListedNFTsBySeller(),
+            getAllListedNFTs(),
+            getAllCollectionData(),
+            props.setSelectedNFTs(),
+          ]);
+          successAlert("Success");
+        } else {
+          errorAlert("Something went wrong.");
+        }
+      } else {
+        errorAlert("Something went wrong.");
+      }
+    } catch (e) {
+      console.error("Error:", e);
+      errorAlert("Something went wrong.");
+    } finally {
+      closeFunctionLoading();
+    }
+  };
+
+  const handleSetMultiPrice = async (index: number, price: number) => {
+    props.selectedNFTLists[index].solPrice = price;
+  };
+
+  // NFT List Function
+  const handleListMyNFTFunc = async () => {
+    if (
+      !wallet ||
+      props.selectedNFTLists === undefined ||
+      props.selectedNFTLists.length === 0
+    ) {
+      return;
+    }
+    if (props.selectedNFTLists.some((data) => data.solPrice === 0)) {
+      errorAlert("Please enter the price.");
+      return;
+    }
+
+    try {
+      openFunctionLoading();
+
+      // Update the itemDetail price
+      // List the NFT for sale
+      const tx = await listPNftForSale(wallet, props.selectedNFTLists);
+
+      if (tx) {
+        const result = await listNftApi(tx.transactions, tx.listData);
+
+        if (result.type === "success") {
+          // Refresh data after successful listing
+          await Promise.all([
+            getOwnNFTs(),
+            getAllListedNFTsBySeller(),
+            getAllListedNFTs(),
+            getAllCollectionData(),
+            props.setSelectedNFTs(),
+          ]);
+          successAlert("Success");
+        } else {
+          errorAlert("Something went wrong.");
+        }
+      } else {
+        errorAlert("Something went wrong.");
+      }
+    } catch (e) {
+      console.error("Error:", e);
+      errorAlert("Something went wrong.");
+    } finally {
+      closeFunctionLoading();
+    }
+  };
+
+  console.log("props.functionState ===> ", props.functionState);
+
   return (
     <div className="fixed bottom-[3.4rem] left-0 right-0 w-full md:hidden border-t border-customborder bg-darkgreen p-1 z-50 flex items-center justify-between">
       <button
         className="bg-yellow-600 text-sm rounded-md px-8 py-[5px] text-white"
-        onClick={handleBuyNFTFunc}
+        onClick={() =>
+          props.functionState === "buy"
+            ? handleBuyNFTFunc()
+            : props.functionState === "delist"
+            ? handleDelistMyNFTFunc()
+            : handleListMyNFTFunc()
+        }
       >
-        Buy now
+        {props.functionState === "delist"
+          ? "Delist "
+          : props.functionState === "buy"
+          ? "Buy "
+          : "List "}{" "}
+        now
       </button>
 
       <div className="flex items-center gap-2">
@@ -156,7 +269,25 @@ export default function MobileItemMultiSelectBar(props: {
                 </div>
                 <span className="text-white text-md">#{_.tokenId}</span>
               </div>
-              <div className="flex items-center gap-2">
+              <div
+                className={`items-center justfiy-center gap-2 text-white ${
+                  props.functionState === "list" ? "flex" : "hidden"
+                }`}
+              >
+                <input
+                  className={`outline-none bg-transparent border-customborder border rounded-md w-[70px] text-white py-1 px-1`}
+                  placeholder="0"
+                  onChange={(e) =>
+                    handleSetMultiPrice(index, Number(e.target.value))
+                  }
+                />
+                sol
+              </div>
+              <div
+                className={`items-center gap-2 ${
+                  props.functionState !== "list" ? "flex" : "hidden"
+                }`}
+              >
                 <img
                   src="/svgs/solana-sol-logo.svg"
                   className="w-[10px] h-[10px] object-cover"
@@ -188,15 +319,31 @@ export default function MobileItemMultiSelectBar(props: {
                 <span className="text-white">262.8 SOL</span>
               </div>{" "} */}
           <span className="text-gray-400 text-sm">
-            By clicking "Buy", you agree to the Mugs Terms of service.
+            By clicking "{" "}
+            {props.functionState === "delist"
+              ? "Delist "
+              : props.functionState === "buy"
+              ? "Buy "
+              : "List "}
+            ", you agree to the Mugs Terms of service.
           </span>
         </div>
         <button
           className="w-[90%] text-center text-white bg-yellow-600 rounded-md py-2 absolute bottom-3"
-          onClick={handleBuyNFTFunc}
+          onClick={() =>
+            props.functionState === "buy"
+              ? handleBuyNFTFunc()
+              : props.functionState === "delist"
+              ? handleDelistMyNFTFunc()
+              : handleListMyNFTFunc()
+          }
         >
-          Buy {props.selectedNFTLists.length} items for {totalPrice.toFixed(2)}{" "}
-          SOL
+          {props.functionState === "delist"
+            ? "Delist "
+            : props.functionState === "buy"
+            ? "Buy "
+            : "List "}{" "}
+          {props.selectedNFTLists.length} items for {totalPrice.toFixed(2)} SOL
         </button>
       </div>
     </div>

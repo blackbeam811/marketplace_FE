@@ -4,7 +4,7 @@ import { MdOutlineLocalOffer } from "react-icons/md";
 import { useRouter, useSearchParams } from "next/navigation";
 import { TabMenu } from "@/data/tabMenuData";
 
-export default function MobileTabsTip() {
+export default function MobileTabsTip(props: { setSelectedNFTs: () => void }) {
   const router = useRouter();
   const param = useSearchParams();
   const search = param.get("activeTab") || "items";
@@ -20,7 +20,10 @@ export default function MobileTabsTip() {
               ? "border-b-2 text-white"
               : "text-gray-400"
           } w-[50px] justify-center items-center`}
-          onClick={() => router.push(item.link)}
+          onClick={() => {
+            router.push(item.link);
+            props.setSelectedNFTs();
+          }}
           key={index}
         >
           <div className="p-1">

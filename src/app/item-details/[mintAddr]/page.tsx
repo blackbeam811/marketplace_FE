@@ -578,12 +578,20 @@ const ItemDetails: NextPage = () => {
                 />
               </div>
 
-              <ListOrDelistButton
-                wallet={wallet}
-                selectedNFT={itemDetail}
-                handleListMyNFTFunc={handleListMyNFTFunc}
-                handleDelistMyNFTFunc={handleDelistMyNFTFunc}
-              />
+              <div className="w-full flex items-center justify-center gap-3">
+                <ListOrDelistButton
+                  wallet={wallet}
+                  selectedNFT={itemDetail}
+                  handleListMyNFTFunc={handleListMyNFTFunc}
+                  handleDelistMyNFTFunc={handleDelistMyNFTFunc}
+                />
+                <CreateAuctionButton
+                  wallet={wallet}
+                  selectedNFT={itemDetail}
+                  handleListMyNFTFunc={handleListMyNFTFunc}
+                  handleDelistMyNFTFunc={handleDelistMyNFTFunc}
+                />
+              </div>
               <BuyNowButton
                 wallet={wallet}
                 selectedNFT={itemDetail}
@@ -876,6 +884,33 @@ const ListOrDelistButton: React.FC<ButtonProps> = ({
       wallet?.publicKey.toBase58() === selectedNFT.seller
         ? "List Now"
         : "Delist now"}
+    </div>
+  );
+};
+
+const CreateAuctionButton: React.FC<ButtonProps> = ({
+  wallet,
+  selectedNFT,
+  handleListMyNFTFunc,
+  handleDelistMyNFTFunc,
+}) => {
+  const isHidden = wallet?.publicKey.toBase58() !== selectedNFT?.seller;
+
+  return (
+    <div
+      className={`w-full rounded-md py-[6px] text-center bg-green-600 duration-200 hover:bg-green-700 text-white cursor-pointer ${
+        isHidden && "hidden"
+      }`}
+      onClick={
+        selectedNFT?.solPrice === 0
+          ? handleListMyNFTFunc
+          : handleDelistMyNFTFunc
+      }
+    >
+      {selectedNFT?.solPrice === 0 &&
+      wallet?.publicKey.toBase58() === selectedNFT.seller
+        ? "Create Auction"
+        : "Cancel Auction"}
     </div>
   );
 };
