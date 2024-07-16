@@ -70,9 +70,7 @@ const NFTDetailModal = () => {
   } = useContext(NFTDataContext);
   const { openFunctionLoading, closeFunctionLoading } =
     useContext(LoadingContext);
-
   const { getAllCollectionData } = useContext(CollectionContext);
-
   const { closeNFTDetailModal, nftDetailModalShow, selectedNFTDetail } =
     useContext(ModalContext);
 
@@ -160,7 +158,7 @@ const NFTDetailModal = () => {
   }, [memoSelectedNFTDetail]);
 
   useEffect(() => {
-    let data;
+    let data: OwnNFTDataType[];
 
     if (currentRouter === "me") {
       data =

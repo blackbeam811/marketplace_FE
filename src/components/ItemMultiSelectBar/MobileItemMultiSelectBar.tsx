@@ -19,6 +19,8 @@ import { delistNftApi, listNftApi, purchaseNFT } from "@/utils/api";
 import { CollectionContext } from "@/contexts/CollectionContext";
 
 export default function MobileItemMultiSelectBar(props: {
+  nftLength: number;
+  rangeSelection: (length: number) => void;
   selectedNFTLists: OwnNFTDataType[];
   toggleSelection: (item: OwnNFTDataType) => void;
   functionState: string;
@@ -211,9 +213,22 @@ export default function MobileItemMultiSelectBar(props: {
       <div className="flex items-center gap-2">
         <div className="flex items-center gap-2 border border-customborder rounded-md px-1">
           <input
-            type="number"
             placeholder="0"
-            className="bg-transparent w-[80px] text-white px-2 py-1 outline-none"
+            type="number"
+            className="outline-none bg-transparent w-[70px] text-white px-2 py-1"
+            value={
+              props.selectedNFTLists.length === 0
+                ? ""
+                : Math.min(props.selectedNFTLists.length, props.nftLength)
+            }
+            max={props.nftLength}
+            onChange={(e) => {
+              const newValue = Math.min(
+                Number(e.target.value),
+                props.nftLength
+              );
+              props.rangeSelection(newValue);
+            }}
           />
           <p className="text-sm text-gray-200 uppercase">items</p>
         </div>

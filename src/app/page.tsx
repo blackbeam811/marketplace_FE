@@ -1,15 +1,11 @@
 "use client";
 /* eslint-disable @next/next/no-img-element */
 import type { NextPage } from "next";
-import React, { useContext } from "react";
+import React from "react";
 import MainPageLayout from "@/components/Layout";
 import CollectionSlider from "@/components/CollectionSlider";
 import CollectionTable from "@/components/CollectionTable";
-import CollectionSliderSkeleton from "@/components/CollectionSlider/CollectionSliderSkeleton";
-import { CollectionContext } from "@/contexts/CollectionContext";
 const Home: NextPage = () => {
-  const { collectionDataState } = useContext(CollectionContext);
-
   return (
     <MainPageLayout>
       <React.StrictMode>

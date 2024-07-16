@@ -8,14 +8,15 @@ export default function CollectionItemSkeleton(props: {
   const router = useRouter();
   const param = useSearchParams();
   const search = param.get("activeTab") || "items";
+  console.log("search = >", search);
 
   return (
     <div
-      className={`items-start justify-start w-full grid grid-cols-2 md:grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-5 px-2 ${
-        (!props.loadingState || search !== "items") && "hidden"
+      className={`items-start justify-start w-full grid grid-cols-2 md:grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-5 pb-1 ${
+        props.loadingState && search === "items" ? "flex" : "hidden"
       }`}
     >
-      {[...Array(5)].map((_, index) => (
+      {[...Array(3)].map((_, index) => (
         <div
           key={index}
           className="w-full aspect-[5/6] animate-pulse bg-green-900 rounded-md"
