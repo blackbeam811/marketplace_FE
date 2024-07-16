@@ -35,12 +35,14 @@ import {
   getAllOffersByCollectionAddrApi,
 } from "@/utils/api";
 import { NormalSpinner } from "@/components/Spinners";
+import { useWindowSize } from "@/hooks/useWindowSize";
 
 const Market: NextPage = () => {
   const { publicKey, connected } = useWallet();
   const { collectionAddr } = useParams();
   const searchParam = useSearchParams();
   const search = searchParam.get("activeTab") || "items";
+  const { height } = useWindowSize();
 
   const { collectionData } = useContext(CollectionContext);
   const { listedAllNFTs, getOwnNFTsState } = useContext(NFTDataContext);
@@ -150,6 +152,11 @@ const Market: NextPage = () => {
     });
   };
 
+  const rangeSelection = (length: number) => {
+    const data = Array.from({ length }, (_, i) => filterListedByParam[i]);
+    setSelectedNFTs(data);
+  };
+
   return (
     <MainPageLayout>
       <div
@@ -165,7 +172,7 @@ const Market: NextPage = () => {
           filterOpen={filterOpen}
           onClosebar={() => setFilterOpen(false)}
         /> */}
-        <div className="w-full flex items-start justify-start mt-2 md:gap-4 gap-1 flex-col relative">
+        <div className="w-full flex items-start justify-start mt-2 md:gap-4 gap-2 flex-col relative">
           {filterCollectionData && (
             <>
               <CollectionDetail collectionData={filterCollectionData} />
@@ -187,8 +194,10 @@ const Market: NextPage = () => {
               onSelectFilter={handleFilterSelect}
             />
             <ItemMultiSelectbar
+              nftLength={filterListedByParam.length}
               setSelectedNFTs={() => setSelectedNFTs([])}
               selectedNFTLists={selectedNFTs}
+              rangeSelection={(length: number) => rangeSelection(length)}
               toggleSelection={(item: OwnNFTDataType) =>
                 toggleNFTSelection(item)
               }
@@ -196,7 +205,10 @@ const Market: NextPage = () => {
             />
           </div>
           <CollectionItemSkeleton loadingState={filterLoading} />
-          <div className="w-full max-h-[70vh] overflow-y-auto pb-10">
+          <div
+            className={`w-full overflow-y-auto pb-10`}
+            style={{ maxHeight: height! * 0.65 + "px" }}
+          >
             <div
               className={`relative ${
                 search === "items" || search === null ? "block" : "hidden"
@@ -246,13 +258,6 @@ const Market: NextPage = () => {
               <ActivityTable data={activityData} />
             </div>
             <div
-              className={`w-full flex items-center justify-center ${
-                !filterLoading && "hidden"
-              }`}
-            >
-              <NormalSpinner width={7} height={7} />
-            </div>
-            <div
               className={`${
                 !filterLoading &&
                 search === "items" &&
@@ -266,6 +271,8 @@ const Market: NextPage = () => {
           </div>
         </div>
         <MobileItemMultiSelectBar
+          nftLength={filterListedByParam.length}
+          rangeSelection={(length: number) => rangeSelection(length)}
           setSelectedNFTs={() => setSelectedNFTs([])}
           selectedNFTLists={selectedNFTs}
           toggleSelection={(item: OwnNFTDataType) => toggleNFTSelection(item)}

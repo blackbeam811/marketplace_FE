@@ -56,11 +56,11 @@ const ItemDetails: NextPage = () => {
   const { mintAddr } = router;
   const wallet = useAnchorWallet();
 
-  const [openAboutTag, setOpenAboutTag] = useState(false);
-  const [openOfferTable, setOpenOfferTable] = useState(false);
-  const [openAttributeTag, setOpenAttributeTag] = useState(false);
-  const [openDetailTag, setOpenDetailTag] = useState(false);
-  const [openActivityTag, setOpenActivityTag] = useState(false);
+  const [openAboutTag, setOpenAboutTag] = useState<Boolean>(false);
+  const [openOfferTable, setOpenOfferTable] = useState<Boolean>(false);
+  const [openAttributeTag, setOpenAttributeTag] = useState<Boolean>(false);
+  const [openDetailTag, setOpenDetailTag] = useState<Boolean>(false);
+  const [openActivityTag, setOpenActivityTag] = useState<Boolean>(false);
   const [itemDetail, setItemDetail] = useState<OwnNFTDataType>();
   const [offerData, setOfferData] = useState<OfferDataType[]>([]);
   const [activityData, setActivityData] = useState<ActivityDataType[]>([]);
@@ -901,11 +901,6 @@ const CreateAuctionButton: React.FC<ButtonProps> = ({
       className={`w-full rounded-md py-[6px] text-center bg-green-600 duration-200 hover:bg-green-700 text-white cursor-pointer ${
         isHidden && "hidden"
       }`}
-      onClick={
-        selectedNFT?.solPrice === 0
-          ? handleListMyNFTFunc
-          : handleDelistMyNFTFunc
-      }
     >
       {selectedNFT?.solPrice === 0 &&
       wallet?.publicKey.toBase58() === selectedNFT.seller

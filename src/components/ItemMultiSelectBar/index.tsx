@@ -19,10 +19,12 @@ import { delistNftApi, listNftApi, purchaseNFT } from "@/utils/api";
 import { CollectionContext } from "@/contexts/CollectionContext";
 
 export default function ItemMultiSelectbar(props: {
+  nftLength: number;
   functionState: string;
   selectedNFTLists: OwnNFTDataType[];
   setSelectedNFTs: () => void;
   toggleSelection: (item: OwnNFTDataType) => void;
+  rangeSelection: (length: number) => void;
 }) {
   const elem = useRef(null);
   const wallet = useAnchorWallet();
@@ -196,14 +198,28 @@ export default function ItemMultiSelectbar(props: {
             placeholder="0"
             type="number"
             className="outline-none bg-transparent w-[50px] text-white px-2 py-1"
+            value={
+              props.selectedNFTLists.length === 0
+                ? ""
+                : Math.min(props.selectedNFTLists.length, props.nftLength)
+            }
+            max={props.nftLength}
+            onChange={(e) => {
+              const newValue = Math.min(
+                Number(e.target.value),
+                props.nftLength
+              );
+              props.rangeSelection(newValue);
+            }}
           />
           <p className="text-sm text-gray-200 uppercase">items</p>
         </div>
         <input
           type="range"
           className="focus:outline-none outline-none"
-          max={5}
-          onChange={(e) => console.log(e.target.value)}
+          max={props.nftLength}
+          value={props.selectedNFTLists.length}
+          onChange={(e) => props.rangeSelection(Number(e.target.value))}
         />
       </div>
       <div className="flex items-center justify-center gap-2 relative">

@@ -17,23 +17,25 @@ import OfferFilterSelect from "@/components/OfferFilterSelect";
 import MobileItemMultiSelectBar from "@/components/ItemMultiSelectBar/MobileItemMultiSelectBar";
 import MobileTabsTip from "@/components/TabsTip/MobileTabsTip";
 import ItemMultiSelectbar from "@/components/ItemMultiSelectBar";
-
-import { NFTDataContext } from "@/contexts/NFTDataContext";
+import ActivityTable from "@/components/ActivityTable";
+import OfferTable from "@/components/OfferTable";
+import { errorAlert, successAlert } from "@/components/ToastGroup";
+import MyNFTFilterSelect from "@/components/MyNFTFilterSelect";
+import MobileMyItemDetail from "@/components/MyItemDetail/MobileMyItemDetail";
 
 import { myItemFilterOptions } from "@/data/selectTabData";
+
 import { ActivityDataType, OfferDataType, OwnNFTDataType } from "@/types/types";
-import MobileMyItemDetail from "@/components/MyItemDetail/MobileMyItemDetail";
+
+import { LoadingContext } from "@/contexts/LoadingContext";
+import { NFTDataContext } from "@/contexts/NFTDataContext";
 import {
   cancelOfferApi,
   getAllActivitiesByMakerApi,
   getAllOffersByMakerApi,
 } from "@/utils/api";
-import ActivityTable from "@/components/ActivityTable";
-import OfferTable from "@/components/OfferTable";
-import { LoadingContext } from "@/contexts/LoadingContext";
 import { cancelOffer } from "@/utils/contractScript";
-import { errorAlert, successAlert } from "@/components/ToastGroup";
-import MyNFTFilterSelect from "@/components/MyNFTFilterSelect";
+import { useWindowSize } from "@/hooks/useWindowSize";
 
 const MyItem: NextPage = () => {
   const param = useSearchParams();
@@ -42,12 +44,14 @@ const MyItem: NextPage = () => {
     () => param.getAll("item") || ["unlisted"],
     [param]
   );
+  const { height } = useWindowSize();
+
   const wallet = useAnchorWallet();
   const { publicKey, connected } = useWallet();
   const { ownNFTs, getOwnNFTsState, ownListedNFTs } =
     useContext(NFTDataContext);
   const [showNFTs, setShowNFTs] = useState<OwnNFTDataType[]>([]);
-  const [filterLoading, setFilterLoading] = useState(false);
+  const [filterLoading, setFilterLoading] = useState(true);
   const [nameSearch, setNameSearch] = useState("");
   const [offerData, setOfferData] = useState<OfferDataType[]>([]);
   const [filterOfferData, setFilterOfferData] = useState<OfferDataType[]>([]);
@@ -139,6 +143,7 @@ const MyItem: NextPage = () => {
   }, [showQuery, ownNFTs, ownListedNFTs]);
 
   useEffect(() => {
+    if (ownListedNFTs.length === 0 || ownNFTs.length === 0) return;
     const filterNFTs = (nfts: any) =>
       nameSearch === ""
         ? nfts
@@ -231,7 +236,10 @@ const MyItem: NextPage = () => {
     });
   };
 
-  console.log("showQuery.toString() => ", showQuery.toString() === "");
+  const rangeSelection = (length: number) => {
+    const data = Array.from({ length }, (_, i) => showNFTs[i]);
+    setSelectedNFTs(data);
+  };
 
   return (
     <MainPageLayout>
@@ -240,7 +248,7 @@ const MyItem: NextPage = () => {
           !connected && " hidden"
         }`}
       >
-        <div className="w-full flex items-start justify-start mt-5 gap-4 flex-col px-2">
+        <div className="w-full flex items-start justify-start mt-5 md:gap-4 gap-2 flex-col px-2">
           <MyItemDetail />
           <MobileMyItemDetail collectionData={undefined} />
           <TabsTip setSelectedNFTs={() => setSelectedNFTs([])} />
@@ -299,6 +307,8 @@ const MyItem: NextPage = () => {
             } w-full`}
           >
             <ItemMultiSelectbar
+              nftLength={showNFTs.length}
+              rangeSelection={(length: number) => rangeSelection(length)}
               setSelectedNFTs={() => setSelectedNFTs([])}
               selectedNFTLists={selectedNFTs}
               toggleSelection={(item: OwnNFTDataType) =>
@@ -312,7 +322,10 @@ const MyItem: NextPage = () => {
               }
             />
           </div>
-          <div className="w-full md:max-h-[70vh] max-h-[50vh] overflow-y-auto pb-10">
+          <div
+            className={`w-full overflow-y-auto pb-10`}
+            style={{ maxHeight: height! * 0.65 + "px" }}
+          >
             <div
               className={`relative ${
                 search === "items" || search === null ? "block" : "hidden"
@@ -345,9 +358,7 @@ const MyItem: NextPage = () => {
             </div>
             <div
               className={`${
-                connected && !getOwnNFTsState && showNFTs.length === 0
-                  ? "flex"
-                  : "hidden"
+                !filterLoading && showNFTs.length === 0 ? "flex" : "hidden"
               } items-center justify-center ${
                 (search === "activity" || search === "offers") && "hidden"
               }`}
@@ -380,6 +391,8 @@ const MyItem: NextPage = () => {
           </div>
         </div>
         <MobileItemMultiSelectBar
+          nftLength={showNFTs.length}
+          rangeSelection={(length: number) => rangeSelection(length)}
           setSelectedNFTs={() => setSelectedNFTs([])}
           selectedNFTLists={selectedNFTs}
           toggleSelection={(item: OwnNFTDataType) => toggleNFTSelection(item)}
