@@ -15,7 +15,7 @@ export default function CollectionSlider(props: { loadingState: boolean }) {
           containerClass="container-with-dots"
           draggable
           autoPlay={true}
-          autoPlaySpeed={2000}
+          autoPlaySpeed={2500}
           focusOnSelect={false}
           infinite
           keyBoardControl
@@ -49,7 +49,7 @@ export default function CollectionSlider(props: { loadingState: boolean }) {
             },
           }}
           shouldResetAutoplay
-          showDots={false}
+          showDots={true}
           arrows={true}
           slidesToSlide={1}
         >

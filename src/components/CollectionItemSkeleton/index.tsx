@@ -8,7 +8,6 @@ export default function CollectionItemSkeleton(props: {
   const router = useRouter();
   const param = useSearchParams();
   const search = param.get("activeTab") || "items";
-  console.log("search = >", search);
 
   return (
     <div

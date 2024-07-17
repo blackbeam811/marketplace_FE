@@ -78,7 +78,7 @@ const Header: FC<HeaderProps> = () => {
   }, []);
 
   return (
-    <header className="border-b border-customborder fixed w-full bg-darkgreen z-10">
+    <header className="border-b border-customborder fixed w-full bg-darkgreen z-[1000]">
       <div className="py-2 px-4 flex items-center justify-between relative">
         <Link href={"/"} className="z-[1]">
           <div className="flex items-center justify-center gap-3">
@@ -92,14 +92,14 @@ const Header: FC<HeaderProps> = () => {
               />
             </div>
 
-            <h2 className="text-white text-xl uppercase font-extrabold hidden lg:block">
+            <h2 className="text-white text-xl uppercase font-extrabold hidden md:block">
               MUGS
             </h2>
           </div>
         </Link>
         <div className="md:absolute left-0 right-0 flex items-center justify-center z-0">
           <div
-            className={`2xl:min-w-[600px] xl:min-w-[500px] md:w-[350px] w-[150px] border rounded-md border-customborder hover:border-gray-400 duration-300 flex items-center justify-center gap-2 md:px-3 px-2 py-[1px]
+            className={`2xl:min-w-[600px] xl:min-w-[500px] md:w-[350px] w-[170px] border rounded-md border-customborder hover:border-gray-400 duration-300 flex items-center justify-center gap-2 md:px-3 px-2 py-[1px]
           ${isFocused && "border-gray-400"}`}
           >
             <BiSearch color="white" />

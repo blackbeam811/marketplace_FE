@@ -49,6 +49,8 @@ import {
   updatePriceApi,
 } from "@/utils/api";
 import { CollectionContext } from "@/contexts/CollectionContext";
+import { ModalContext } from "@/contexts/ModalContext";
+import AuctionModal from "@/components/Modal/AuctionModal";
 
 const ItemDetails: NextPage = () => {
   const route = useRouter();
@@ -76,6 +78,8 @@ const ItemDetails: NextPage = () => {
   } = useContext(NFTDataContext);
   const { openFunctionLoading, closeFunctionLoading } =
     useContext(LoadingContext);
+  const { openAuctionModal, closeAuctionModal, auctionModalShow } =
+    useContext(ModalContext);
   const { getAllCollectionData } = useContext(CollectionContext);
 
   useEffect(() => {
@@ -309,7 +313,6 @@ const ItemDetails: NextPage = () => {
   };
 
   const handleMakeOffer = async () => {
-    console.log("offer starting");
     if (wallet && itemDetail !== undefined) {
       if (updatedPrice <= itemDetail.solPrice / 2) {
         errorAlert("Offer price must be bigger than the listed price.");
@@ -550,7 +553,7 @@ const ItemDetails: NextPage = () => {
               </p>
               <div className="w-full flex items-center justify-between gap-2">
                 <input
-                  className="w-full p-[6px] flex items-center placeholder:text-gray-500 outline-none text-white justify-between rounded-md border border-customborder bg-transparent"
+                  className="w-full p-[5px] flex items-center placeholder:text-gray-500 outline-none text-white justify-between rounded-md border border-customborder bg-transparent"
                   placeholder="Input the price"
                   type="number"
                   onChange={(e) => {
@@ -578,7 +581,7 @@ const ItemDetails: NextPage = () => {
                 />
               </div>
 
-              <div className="w-full flex items-center justify-center gap-3">
+              <div className="w-full flex items-center justify-center gap-2">
                 <ListOrDelistButton
                   wallet={wallet}
                   selectedNFT={itemDetail}
@@ -588,8 +591,10 @@ const ItemDetails: NextPage = () => {
                 <CreateAuctionButton
                   wallet={wallet}
                   selectedNFT={itemDetail}
-                  handleListMyNFTFunc={handleListMyNFTFunc}
-                  handleDelistMyNFTFunc={handleDelistMyNFTFunc}
+                  handleCreateAuctionMyNFTFunc={openAuctionModal}
+                  handleCancelAuctionMyNFTFunc={() =>
+                    console.log("cancel auction")
+                  }
                 />
               </div>
               <BuyNowButton
@@ -776,6 +781,7 @@ const ItemDetails: NextPage = () => {
           </div>
         </div>
       </div>
+      <AuctionModal nftItem={itemDetail} />
     </MainPageLayout>
   );
 };
@@ -891,8 +897,8 @@ const ListOrDelistButton: React.FC<ButtonProps> = ({
 const CreateAuctionButton: React.FC<ButtonProps> = ({
   wallet,
   selectedNFT,
-  handleListMyNFTFunc,
-  handleDelistMyNFTFunc,
+  handleCreateAuctionMyNFTFunc,
+  handleCancelAuctionMyNFTFunc,
 }) => {
   const isHidden = wallet?.publicKey.toBase58() !== selectedNFT?.seller;
 
@@ -901,6 +907,7 @@ const CreateAuctionButton: React.FC<ButtonProps> = ({
       className={`w-full rounded-md py-[6px] text-center bg-green-600 duration-200 hover:bg-green-700 text-white cursor-pointer ${
         isHidden && "hidden"
       }`}
+      onClick={handleCreateAuctionMyNFTFunc}
     >
       {selectedNFT?.solPrice === 0 &&
       wallet?.publicKey.toBase58() === selectedNFT.seller
