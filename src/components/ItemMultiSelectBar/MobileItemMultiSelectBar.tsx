@@ -188,8 +188,6 @@ export default function MobileItemMultiSelectBar(props: {
     }
   };
 
-  console.log("props.functionState ===> ", props.functionState);
-
   return (
     <div className="fixed bottom-[3.4rem] left-0 right-0 w-full md:hidden border-t border-customborder bg-darkgreen p-1 z-50 flex items-center justify-between">
       <button

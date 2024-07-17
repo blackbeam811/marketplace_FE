@@ -184,4 +184,6 @@ export interface ButtonProps {
   handleListMyNFTFunc?: () => void;
   handleDelistMyNFTFunc?: () => void;
   handleBuyNFTFunc?: () => void;
+  handleCreateAuctionMyNFTFunc?: () => void;
+  handleCancelAuctionMyNFTFunc?: () => void;
 }

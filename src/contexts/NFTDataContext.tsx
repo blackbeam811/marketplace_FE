@@ -62,26 +62,26 @@ export function NFTDataProvider({ children }: NFTDataProviderProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [publicKey]);
 
-  // Commented out function to fetch Solana price from CoinGecko
-  // const fetchSolPrice = async () => {
-  //   try {
-  //     const response = await fetch(
-  //       "https://api.coingecko.com/api/v3/simple/price?ids=solana&vs_currencies=usd",
-  //       {
-  //         method: "GET",
-  //         headers: {
-  //           accept: "application/json",
-  //           "x-cg-demo-api-key": COINGECKOAPIKEY,
-  //         },
-  //       }
-  //     );
-  //     if (!response.ok) throw new Error("Failed to fetch Solana price");
-  //     const data = await response.json();
-  //     setSolPrice(data.solana.usd);
-  //   } catch (error) {
-  //     console.error("Error fetching Solana price:", error);
-  //   }
-  // };
+  // Function out function to fetch Solana price from CoinGecko
+  const fetchSolPrice = async () => {
+    try {
+      const response = await fetch(
+        "https://api.coingecko.com/api/v3/simple/price?ids=solana&vs_currencies=usd",
+        {
+          method: "GET",
+          headers: {
+            accept: "application/json",
+            "x-cg-demo-api-key": COINGECKOAPIKEY,
+          },
+        }
+      );
+      if (!response.ok) throw new Error("Failed to fetch Solana price");
+      const data = await response.json();
+      setSolPrice(data.solana.usd);
+    } catch (error) {
+      console.error("Error fetching Solana price:", error);
+    }
+  };
 
   // Function to fetch NFT metadata from a URI
   const fetchNFTMetadata = async (uri: string): Promise<any> => {
@@ -226,12 +226,10 @@ export function NFTDataProvider({ children }: NFTDataProviderProps) {
     }
   };
 
-  // Commented out useEffect to fetch Solana price at intervals
-  // useEffect(() => {
-  //   fetchSolPrice();
-  //   const interval = setInterval(fetchSolPrice, 120000); // Call every 60 seconds
-  //   return () => clearInterval(interval);
-  // }, []);
+  // Function to fetch Solana price at intervals
+  useEffect(() => {
+    fetchSolPrice();
+  }, []);
 
   // Fetch all listed NFTs when the component mounts
   useEffect(() => {

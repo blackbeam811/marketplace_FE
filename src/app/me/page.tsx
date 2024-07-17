@@ -130,11 +130,8 @@ const MyItem: NextPage = () => {
   useEffect(() => {
     const updateShowNFTs = () => {
       if (showQuery[0] === "listed") {
-        console.log("=============================== my listed nfts");
         setShowNFTs(ownListedNFTs);
       } else {
-        console.log("=============================== my unlisted nfts");
-
         setShowNFTs(ownNFTs);
       }
     };
@@ -323,8 +320,8 @@ const MyItem: NextPage = () => {
             />
           </div>
           <div
-            className={`w-full overflow-y-auto pb-10`}
-            style={{ maxHeight: height! * 0.65 + "px" }}
+            className={`w-full overflow-y-auto pb-14 md:pb-16`}
+            style={{ maxHeight: height! * 0.68 + "px" }}
           >
             <div
               className={`relative ${
@@ -333,7 +330,7 @@ const MyItem: NextPage = () => {
             >
               <CollectionItemSkeleton loadingState={filterLoading} />
               <div
-                className={`w-full grid grid-cols-2 md:grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-5 ${
+                className={`w-full grid grid-cols-2 md:grid-cols-[repeat(auto-fill,minmax(200px,1fr))] md:gap-5 gap-3 ${
                   getOwnNFTsState && "hidden"
                 }`}
               >

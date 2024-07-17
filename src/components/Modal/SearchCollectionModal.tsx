@@ -34,10 +34,10 @@ export default function SearchCollectionModal() {
 
   return (
     <div
-      className={`w-full fixed items-start top-0 duration-300 bottom-0 py-10 left-0 right-0 justify-center flex px-3 bg-black bg-opacity-10 backdrop-blur-md z-[9] ${
+      className={`w-full fixed items-start top-0 duration-300 bottom-0 py-10 left-0 right-0 justify-center flex px-3 bg-black bg-opacity-10 backdrop-blur-md ${
         !searchCollectionModalShow
           ? "opacity-0 pointer-events-none"
-          : "opacity-100 pointer-events-auto"
+          : "opacity-100 pointer-events-auto z-[999]"
       }`}
     >
       <div
