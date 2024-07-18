@@ -20,6 +20,8 @@ export type ListNFTItemType = {
   metaDataUrl: string;
   price: number;
   seller: string;
+  minIncrease?: number;
+  endTime?: number;
 };
 
 export type SelectPropsType = {
@@ -52,6 +54,16 @@ export type NFTCardType = {
   state: string;
 };
 
+export type AuctionNFTCardType = {
+  imgUrl: string;
+  tokenId: string;
+  mintAddr: string;
+  collectionName: string;
+  solPrice: number;
+  state: string;
+  endTime: number | undefined;
+};
+
 export type NFTAttribute = {
   trait_type: string;
   value: string;
@@ -70,6 +82,8 @@ export type OwnNFTDataType = {
   listed: boolean;
   attribute: NFTAttribute[];
   updatedAt: string | number | Date;
+  minIncrease?: number;
+  endTime?: number;
 };
 
 export type OfferDataType = {
@@ -136,6 +150,7 @@ export interface NFTDataContextType {
   ownNFTs: OwnNFTDataType[];
   ownListedNFTs: OwnNFTDataType[];
   listedAllNFTs: OwnNFTDataType[];
+  allAuctions: OwnNFTDataType[];
   getOwnNFTs: () => Promise<void>;
   getAllListedNFTs: () => Promise<void>;
   getAllListedNFTsBySeller: () => Promise<void>;
@@ -175,6 +190,7 @@ export interface CollectionDetailProps {
 
 export interface ButtonProps {
   wallet: any;
+  typeParam?: string;
   selectedNFT: OwnNFTDataType | undefined;
   offerData?: OfferDataType[];
   handleUpdatePriceFunc?: () => void;

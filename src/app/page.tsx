@@ -5,6 +5,8 @@ import React from "react";
 import MainPageLayout from "@/components/Layout";
 import CollectionSlider from "@/components/CollectionSlider";
 import CollectionTable from "@/components/CollectionTable";
+import AuctionCard from "@/components/AuctionCard";
+import AuctionTable from "@/components/AuctionTable";
 const Home: NextPage = () => {
   return (
     <MainPageLayout>
@@ -14,6 +16,7 @@ const Home: NextPage = () => {
             {/* <CollectionSliderSkeleton loadingState={collectionDataState} /> */}
             <CollectionSlider loadingState={false} />
             <CollectionTable />
+            <AuctionTable />
           </div>
         </div>
       </React.StrictMode>

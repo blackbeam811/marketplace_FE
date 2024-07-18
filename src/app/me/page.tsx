@@ -137,6 +137,7 @@ const MyItem: NextPage = () => {
     };
 
     updateShowNFTs();
+    setFilterLoading(false);
   }, [showQuery, ownNFTs, ownListedNFTs]);
 
   useEffect(() => {
@@ -151,6 +152,7 @@ const MyItem: NextPage = () => {
           );
 
     const nftsToShow = showQuery[0] === "listed" ? ownListedNFTs : ownNFTs;
+    console.log("filterNFTs", filterNFTs(nftsToShow));
     setShowNFTs(filterNFTs(nftsToShow));
     setFilterLoading(false);
   }, [nameSearch, showQuery, ownListedNFTs, ownNFTs]);
@@ -331,7 +333,7 @@ const MyItem: NextPage = () => {
               <CollectionItemSkeleton loadingState={filterLoading} />
               <div
                 className={`w-full grid grid-cols-2 md:grid-cols-[repeat(auto-fill,minmax(200px,1fr))] md:gap-5 gap-3 ${
-                  getOwnNFTsState && "hidden"
+                  filterLoading && "hidden"
                 }`}
               >
                 {showNFTs?.map((item, index) => (

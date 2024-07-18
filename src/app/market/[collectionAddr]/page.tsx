@@ -97,7 +97,8 @@ const Market: NextPage = () => {
     if (!collectionAddr || !listedAllNFTs.length) return;
 
     const filteredNFTs = listedAllNFTs.filter(
-      (item) => item.collectionAddr === collectionAddr
+      (item) =>
+        item.collectionAddr === collectionAddr && item.endTime === undefined
     );
     setFilterListedNFTData(filteredNFTs);
     setFilterLoading(false);
