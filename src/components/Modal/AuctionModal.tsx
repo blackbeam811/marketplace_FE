@@ -7,17 +7,23 @@ import Modal from "react-responsive-modal";
 import { CloseIcon } from "@/components/SvgIcons";
 import { NFTDataContext } from "@/contexts/NFTDataContext";
 import { ModalContext } from "@/contexts/ModalContext";
-import { errorAlert } from "../ToastGroup";
+import { errorAlert, successAlert } from "../ToastGroup";
 import { OwnNFTDataType, RedeemModalProps } from "@/types/types";
 import { CiWarning } from "react-icons/ci";
 import { LoadingContext } from "@/contexts/LoadingContext";
 import { createCreateAuctionPnftTx } from "@/utils/libs/scripts";
 import { createAuctionPNft } from "@/utils/contractScript";
+import { createAuctionNftApi } from "@/utils/api";
+import { CollectionContext } from "@/contexts/CollectionContext";
 
 const AuctionModal = (props: { nftItem: OwnNFTDataType | undefined }) => {
   const wallet = useAnchorWallet();
   const { connected, publicKey } = useWallet();
   const { auctionModalShow, closeAuctionModal } = useContext(ModalContext);
+  const { getAllListedNFTs, getOwnNFTs, getAllListedNFTsBySeller } =
+    useContext(NFTDataContext);
+  const { getAllCollectionData } = useContext(CollectionContext);
+
   const { openFunctionLoading, closeFunctionLoading } =
     useContext(LoadingContext);
   const [startPrice, setStartPrice] = useState(0);
@@ -50,45 +56,41 @@ const AuctionModal = (props: { nftItem: OwnNFTDataType | undefined }) => {
     } else {
       openFunctionLoading();
 
-      // Update the itemDetail price
-      // List the NFT for sale
-      const tx = await createAuctionPNft(
-        wallet,
-        props.nftItem!,
-        startPrice,
-        minIncreaseAmount,
-        auctionDuration,
-        true
-      );
+      try {
+        const tx = await createAuctionPNft(
+          wallet,
+          props.nftItem!,
+          startPrice,
+          minIncreaseAmount,
+          auctionDuration,
+          true
+        );
 
-      //     // if (tx) {
-      //     //   const result = await listNftApi(tx.transactions, tx.listData);
-
-      //       if (result.type === "success") {
-      //         // Refresh data after successful listing
-      //         await Promise.all([
-      //           getOwnNFTs(),
-      //           getAllListedNFTsBySeller(),
-      //           getActivityByMintAddr(),
-      //           getAllListedNFTs(),
-      //           getAllCollectionData(),
-      //         ]);
-      //         closeNFTDetailModal();
-      //         successAlert("Success");
-      //       } else {
-      //         errorAlert("Something went wrong.");
-      //       }
-      //     } else {
-      //       errorAlert("Something went wrong.");
-      //     }
-      //   } catch (e) {
-      //     console.error("Error:", e);
-      //     errorAlert("Something went wrong.");
-      //   } finally {
-      //     closeFunctionLoading();
-      //   }
-      //   console.log("start auction");
-      // }
+        const result = await createAuctionNftApi(tx.transaction, tx.auction);
+        if (tx) {
+          if (result.type === "success") {
+            // Refresh data after successful listing
+            await Promise.all([
+              getOwnNFTs(),
+              getAllListedNFTsBySeller(),
+              getAllListedNFTs(),
+              getAllCollectionData(),
+            ]);
+            closeAuctionModal();
+            successAlert("Success");
+          } else {
+            errorAlert("Something went wrong.");
+          }
+        } else {
+          errorAlert("Something went wrong.");
+        }
+      } catch (e) {
+        console.error("Error:", e);
+        errorAlert("Something went wrong.");
+      } finally {
+        closeFunctionLoading();
+      }
+      console.log("start auction");
     }
   };
 

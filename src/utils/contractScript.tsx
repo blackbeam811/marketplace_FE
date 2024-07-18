@@ -902,7 +902,23 @@ export const createAuctionPNft = async (
   tx.recentBlockhash = blockhash;
   let stx = (await payer.signTransaction(tx)).serialize();
 
+  const auction: any[] = [];
+  auction.push({
+    tokenId: item.tokenId,
+    imgUrl: item.imgUrl,
+    mintAddr: item.mintAddr,
+    collectionAddr: item.collectionAddr,
+    metaDataUrl: item.metaDataUrl,
+    seller: item.seller,
+    buyer: "",
+    solPrice: startPrice,
+    minIncrease: minIncrease,
+    endTime: duration,
+    txType: 5,
+  });
+
   console.log("tx ===>", tx);
+  return { transaction: stx, auction: auction };
 };
 export const placeBid = async (
   payer: AnchorWallet,
@@ -1030,9 +1046,8 @@ export const updateReserve = async (
 
 export const cancelAuctionPnft = async (
   payer: AnchorWallet,
-  mint: PublicKey
+  item: OwnNFTDataType
 ) => {
-  console.log(mint.toBase58());
   let cloneWindow = window;
   let provider = new anchor.AnchorProvider(
     solConnection,
@@ -1044,30 +1059,30 @@ export const cancelAuctionPnft = async (
     MARKETPLACE_PROGRAM_ID,
     provider
   );
-  if (!(await isInitializedUser(payer.publicKey, solConnection))) {
-    console.log(
-      "User PDA is not Initialized. Should Init User PDA for first usage"
-    );
-    await initUserPool(payer);
-  }
 
   const tx = await createCancelAuctionPnftTx(
-    mint,
+    new PublicKey(item.mintAddr),
     payer.publicKey,
     program,
     solConnection
   );
-  const { blockhash } = await solConnection.getRecentBlockhash("confirmed");
+  const { blockhash } = await solConnection.getLatestBlockhash("confirmed");
   tx.feePayer = payer.publicKey;
   tx.recentBlockhash = blockhash;
-  payer.signTransaction(tx);
-  const simulatieTx = await solConnection.simulateTransaction(tx);
-  console.log("tx =====>", simulatieTx);
-  let txId = await solConnection.sendTransaction(tx, [
-    (payer as NodeWallet).payer,
-  ]);
-  await solConnection.confirmTransaction(txId, "confirmed");
-  console.log("Your transaction signature", txId);
+  let stx = (await payer.signTransaction(tx)).serialize();
+  const delistData: any[] = [];
+  delistData.push({
+    tokenId: item.tokenId,
+    imgUrl: item.imgUrl,
+    mintAddr: item.mintAddr,
+    collectionAddr: item.collectionAddr,
+    seller: item.seller,
+    solPrice: item.solPrice,
+    buyer: "",
+    txType: 1,
+  });
+
+  return { transaction: stx, delistData: delistData };
 };
 
 export const getOfferDataInfo = async (

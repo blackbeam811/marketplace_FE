@@ -3,7 +3,7 @@
 "use client";
 import { useContext, useEffect, useState } from "react";
 import { NextPage } from "next";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useAnchorWallet } from "@solana/wallet-adapter-react";
 
 import { TfiAnnouncement } from "react-icons/tfi";
@@ -30,6 +30,7 @@ import {
 
 import {
   acceptOfferPNft,
+  cancelAuctionPnft,
   cancelOffer,
   listPNftForSale,
   makeOffer,
@@ -39,6 +40,7 @@ import {
 } from "@/utils/contractScript";
 import {
   acceptOfferPNftApi,
+  cancelAuctionApi,
   cancelOfferApi,
   delistNftApi,
   getAllActivitiesByMintAddrApi,
@@ -51,10 +53,12 @@ import {
 import { CollectionContext } from "@/contexts/CollectionContext";
 import { ModalContext } from "@/contexts/ModalContext";
 import AuctionModal from "@/components/Modal/AuctionModal";
+import Countdown from "@/components/CountDown";
 
 const ItemDetails: NextPage = () => {
   const route = useRouter();
   const router = useParams();
+  const typeParam = useSearchParams().get("type");
   const { mintAddr } = router;
   const wallet = useAnchorWallet();
 
@@ -72,6 +76,7 @@ const ItemDetails: NextPage = () => {
     myBalance,
     ownNFTs,
     listedAllNFTs,
+    allAuctions,
     getAllListedNFTsBySeller,
     getAllListedNFTs,
     getOwnNFTs,
@@ -489,6 +494,46 @@ const ItemDetails: NextPage = () => {
     }
   };
 
+  // Cancel NFT Auction Function
+  const handleCancelAuctionMyNFTFunc = async () => {
+    console.log("cancel auction");
+    if (!wallet || itemDetail === undefined) {
+      return;
+    }
+
+    try {
+      openFunctionLoading();
+
+      // Delist the NFT
+      const tx = await cancelAuctionPnft(wallet, itemDetail);
+
+      if (tx) {
+        const result = await cancelAuctionApi(tx.transaction, tx.delistData);
+
+        if (result.type === "success") {
+          // Refresh data after successful delist
+          await Promise.all([
+            getOwnNFTs(),
+            getAllListedNFTsBySeller(),
+            getActivityByMintAddr(),
+            getAllListedNFTs(),
+            getAllCollectionData(),
+          ]);
+          successAlert("Success");
+        } else {
+          errorAlert("Something went wrong.");
+        }
+      } else {
+        errorAlert("Something went wrong.");
+      }
+    } catch (e) {
+      console.error("Error:", e);
+      errorAlert("Something went wrong.");
+    } finally {
+      closeFunctionLoading();
+    }
+  };
+
   return (
     <MainPageLayout>
       <div
@@ -548,12 +593,31 @@ const ItemDetails: NextPage = () => {
                   itemDetail?.solPrice === 0 && "hidden"
                 }`}
               >
-                Listed Price : {itemDetail?.solPrice}
+                {`${
+                  itemDetail?.endTime === undefined
+                    ? "Listed Price"
+                    : "Auction Price"
+                }`}{" "}
+                : {itemDetail?.solPrice}
                 {" sol"}
               </p>
+              <div
+                className={`text-white ${
+                  (itemDetail?.endTime === undefined ||
+                    itemDetail?.endTime === 0) &&
+                  "hidden"
+                }`}
+              >
+                <Countdown timestamp={itemDetail?.endTime!} />
+              </div>
               <div className="w-full flex items-center justify-between gap-2">
                 <input
-                  className="w-full p-[5px] flex items-center placeholder:text-gray-500 outline-none text-white justify-between rounded-md border border-customborder bg-transparent"
+                  className={`w-full p-[5px] flex items-center placeholder:text-gray-500 outline-none text-white justify-between rounded-md border border-customborder bg-transparent
+                     ${
+                       typeParam === "auction" &&
+                       wallet?.publicKey.toBase58() === itemDetail?.seller &&
+                       "hidden"
+                     }`}
                   placeholder="Input the price"
                   type="number"
                   onChange={(e) => {
@@ -565,6 +629,7 @@ const ItemDetails: NextPage = () => {
                   selectedNFT={itemDetail}
                   offerData={offerData}
                   handleUpdatePriceFunc={handleUpdatePriceFunc}
+                  typeParam={itemDetail?.endTime !== undefined ? "auction" : ""}
                 />
                 <MakeOrCancelOfferButton
                   wallet={wallet}
@@ -572,7 +637,17 @@ const ItemDetails: NextPage = () => {
                   offerData={offerData}
                   handleMakeOffer={handleMakeOffer}
                   handleCancelOffer={handleCancelOffer}
+                  typeParam={itemDetail?.endTime !== undefined ? "auction" : ""}
                 />
+                <PlaceBidButton
+                  wallet={wallet}
+                  selectedNFT={itemDetail}
+                  offerData={offerData}
+                  handleMakeOffer={handleMakeOffer}
+                  handleCancelOffer={handleCancelOffer}
+                  typeParam={itemDetail?.endTime !== undefined ? "auction" : ""}
+                />
+
                 <AcceptHighOfferButton
                   wallet={wallet}
                   selectedNFT={itemDetail}
@@ -587,20 +662,22 @@ const ItemDetails: NextPage = () => {
                   selectedNFT={itemDetail}
                   handleListMyNFTFunc={handleListMyNFTFunc}
                   handleDelistMyNFTFunc={handleDelistMyNFTFunc}
+                  handleCancelAuctionMyNFTFunc={handleCancelAuctionMyNFTFunc}
+                  typeParam={itemDetail?.endTime !== undefined ? "auction" : ""}
                 />
                 <CreateAuctionButton
                   wallet={wallet}
                   selectedNFT={itemDetail}
                   handleCreateAuctionMyNFTFunc={openAuctionModal}
-                  handleCancelAuctionMyNFTFunc={() =>
-                    console.log("cancel auction")
-                  }
+                  handleCancelAuctionMyNFTFunc={handleCancelAuctionMyNFTFunc}
+                  typeParam={itemDetail?.endTime !== undefined ? "auction" : ""}
                 />
               </div>
               <BuyNowButton
                 wallet={wallet}
                 selectedNFT={itemDetail}
                 handleBuyNFTFunc={handleBuyNFTFunc}
+                typeParam={itemDetail?.endTime !== undefined ? "auction" : ""}
               />
             </div>
             <div
@@ -791,11 +868,13 @@ const UpdatePriceButton: React.FC<ButtonProps> = ({
   selectedNFT,
   offerData,
   handleUpdatePriceFunc,
+  typeParam,
 }) => {
   const isHidden =
     wallet?.publicKey.toBase58() !== selectedNFT?.seller ||
     selectedNFT?.solPrice === 0 ||
-    offerData?.filter((data) => Number(data.active) !== 0).length !== 0;
+    offerData?.filter((data) => Number(data.active) !== 0).length !== 0 ||
+    typeParam === "auction";
 
   return (
     <div
@@ -809,16 +888,38 @@ const UpdatePriceButton: React.FC<ButtonProps> = ({
   );
 };
 
+const PlaceBidButton: React.FC<ButtonProps> = ({
+  wallet,
+  selectedNFT,
+  offerData,
+  handleUpdatePriceFunc,
+  typeParam,
+}) => {
+  const isHidden = wallet?.publicKey.toBase58() === selectedNFT?.seller;
+  return (
+    <div
+      className={`w-full rounded-md py-[6px] text-center bg-red-600 duration-200 hover:bg-red-700 text-white cursor-pointer flex items-center gap-2 justify-center ${
+        isHidden && "hidden"
+      }`}
+      onClick={handleUpdatePriceFunc}
+    >
+      {"Place a bid"}
+    </div>
+  );
+};
+
 const MakeOrCancelOfferButton: React.FC<ButtonProps> = ({
   wallet,
   selectedNFT,
   offerData,
   handleMakeOffer,
   handleCancelOffer,
+  typeParam,
 }) => {
   const isHidden =
     wallet?.publicKey.toBase58() === selectedNFT?.seller ||
-    selectedNFT?.solPrice === 0;
+    selectedNFT?.solPrice === 0 ||
+    typeParam === "auction";
   const isActiveOffer =
     offerData?.filter(
       (data) =>
@@ -872,6 +973,8 @@ const ListOrDelistButton: React.FC<ButtonProps> = ({
   selectedNFT,
   handleListMyNFTFunc,
   handleDelistMyNFTFunc,
+  handleCancelAuctionMyNFTFunc,
+  typeParam,
 }) => {
   const isHidden = wallet?.publicKey.toBase58() !== selectedNFT?.seller;
 
@@ -883,12 +986,16 @@ const ListOrDelistButton: React.FC<ButtonProps> = ({
       onClick={
         selectedNFT?.solPrice === 0
           ? handleListMyNFTFunc
+          : typeParam === "auction"
+          ? handleCancelAuctionMyNFTFunc
           : handleDelistMyNFTFunc
       }
     >
       {selectedNFT?.solPrice === 0 &&
       wallet?.publicKey.toBase58() === selectedNFT.seller
         ? "List Now"
+        : typeParam === "auction"
+        ? "Cancel auction"
         : "Delist now"}
     </div>
   );
@@ -899,20 +1006,28 @@ const CreateAuctionButton: React.FC<ButtonProps> = ({
   selectedNFT,
   handleCreateAuctionMyNFTFunc,
   handleCancelAuctionMyNFTFunc,
+  typeParam,
 }) => {
-  const isHidden = wallet?.publicKey.toBase58() !== selectedNFT?.seller;
+  const isHidden =
+    wallet?.publicKey.toBase58() !== selectedNFT?.seller ||
+    typeParam !== "auction";
 
   return (
     <div
       className={`w-full rounded-md py-[6px] text-center bg-green-600 duration-200 hover:bg-green-700 text-white cursor-pointer ${
         isHidden && "hidden"
       }`}
-      onClick={handleCreateAuctionMyNFTFunc}
+      onClick={
+        selectedNFT?.solPrice === 0 &&
+        wallet?.publicKey.toBase58() === selectedNFT.seller
+          ? handleCreateAuctionMyNFTFunc
+          : handleCancelAuctionMyNFTFunc
+      }
     >
       {selectedNFT?.solPrice === 0 &&
       wallet?.publicKey.toBase58() === selectedNFT.seller
         ? "Create Auction"
-        : "Cancel Auction"}
+        : "Claim Auction"}
     </div>
   );
 };
@@ -921,8 +1036,11 @@ const BuyNowButton: React.FC<ButtonProps> = ({
   wallet,
   selectedNFT,
   handleBuyNFTFunc,
+  typeParam,
 }) => {
-  const isHidden = wallet?.publicKey.toBase58() === selectedNFT?.seller;
+  const isHidden =
+    wallet?.publicKey.toBase58() === selectedNFT?.seller ||
+    typeParam === "auction";
 
   return (
     <div

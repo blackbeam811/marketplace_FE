@@ -82,7 +82,7 @@ export default function CollectionTable() {
   }, [sortedData, searchTerm, searchColumn]);
 
   return (
-    <div className="w-full overflow-x-auto">
+    <div className="w-full overflow-x-auto pb-10">
       {/* <div className="flex mb-4">
         <input
           type="text"
@@ -167,6 +167,9 @@ export default function CollectionTable() {
           ))}
         </tbody>
       </table>
+      <div className="w-full flex items-center justify-center py-4">
+        <span className="text-sm text-white">Load more</span>
+      </div>
       <div
         className={`w-full items-center justify-center my-5 ${
           collectionDataState ? "flex" : "hidden"

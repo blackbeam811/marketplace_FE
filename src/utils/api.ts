@@ -39,6 +39,19 @@ export async function listNftApi(transactions: any, listData: any) {
   }
 }
 
+// Craete auction nft and save the auction nft data to the database.
+export async function createAuctionNftApi(transaction: any, auction: any) {
+  try {
+    const response = await axios.post(`${MUGS_ENDPOINT}/nft/createAuction`, {
+      transaction: transaction,
+      auction: auction,
+    });
+    return response?.data;
+  } catch (err) {
+    console.log("Auction NFTs err = ", err);
+  }
+}
+
 // Delist nfts and save the delisted nft data to the database.
 export async function delistNftApi(
   transactions: any,
@@ -51,6 +64,22 @@ export async function delistNftApi(
       delistData: delistData,
       mintAddrArray: mintAddrArray,
     });
+    return response?.data;
+  } catch (err) {
+    console.log("Delist NFTs err = ", err);
+  }
+}
+
+// Cancel auction and save the canceled auction nft data to the database.
+export async function cancelAuctionApi(transaction: any, delistData: any) {
+  try {
+    const response = await axios.post(
+      `${MUGS_ENDPOINT}/nft/deleteListedAuctionNfts`,
+      {
+        transaction: transaction,
+        delistData: delistData,
+      }
+    );
     return response?.data;
   } catch (err) {
     console.log("Delist NFTs err = ", err);
