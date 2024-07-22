@@ -446,7 +446,7 @@ const NFTDetailModal = () => {
               getActivityByMintAddr(),
               getAllListedNFTs(),
               getAllCollectionData(),
-              await getOfferByMintAddr(),
+              getOfferByMintAddr(),
             ]);
             closeFunctionLoading();
             closeNFTDetailModal();
@@ -750,6 +750,7 @@ const NFTDetailModal = () => {
                 handleCancelOffer={(mintAddr: string) =>
                   handleCancelOffer(mintAddr)
                 }
+                canCancel={false}
               />
             </div>
           </div>

@@ -833,6 +833,7 @@ const ItemDetails: NextPage = () => {
               handleCancelOffer={(mintAddr: string) =>
                 handleCancelOffer(mintAddr)
               }
+              canCancel={true}
             />
           </div>
         </div>

@@ -105,11 +105,11 @@ export default function CollectionTable() {
         </select>
       </div> */}
       <table className="min-w-[1024px] lg:w-full bg-transparent">
-        <thead className="border-b border-customborder">
+        <thead className="border-b border-customborder bg-[#134e2b]">
           <tr>
             {Object.keys(headerToKeyMap).map((header) => (
               <th
-                className="text-left py-3 px-4 uppercase text-gray-300 font-bold text-sm cursor-pointer"
+                className="text-left py-3 px-4 uppercase text-gray-100 font-bold text-sm cursor-pointer"
                 key={header}
                 onClick={() =>
                   handleSort(header as keyof CollectionTableTHType)

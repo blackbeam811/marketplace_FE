@@ -249,6 +249,7 @@ const Market: NextPage = () => {
                 handleCancelOffer={(mintAddr: string) =>
                   console.log("mintAddr => ", mintAddr)
                 }
+                canCancel={false}
               />
             </div>
             <div
