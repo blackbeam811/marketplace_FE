@@ -5,6 +5,7 @@ import { OfferDataType } from "@/types/types";
 import { useAnchorWallet } from "@solana/wallet-adapter-react";
 
 export default function OfferTable(props: {
+  canCancel: boolean;
   data: OfferDataType[];
   handleCancelOffer: (mintAddr: string) => void;
 }) {
@@ -55,7 +56,9 @@ export default function OfferTable(props: {
               <td className="py-2 px-4 text-white font-light">
                 <button
                   className={`px-2 bg-red-500 duration-300 hover:bg-red-600 rounded-sm ${
-                    row.buyer !== wallet?.publicKey.toBase58() && "hidden"
+                    (row.buyer !== wallet?.publicKey.toBase58() ||
+                      !props.canCancel) &&
+                    "hidden"
                   }`}
                   onClick={() => props.handleCancelOffer(row.mintAddr)}
                 >

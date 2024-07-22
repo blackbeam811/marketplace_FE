@@ -16,7 +16,7 @@ const Home: NextPage = () => {
             {/* <CollectionSliderSkeleton loadingState={collectionDataState} /> */}
             <CollectionSlider loadingState={false} />
             <CollectionTable />
-            <AuctionTable />
+            {/* <AuctionTable /> */}
           </div>
         </div>
       </React.StrictMode>
