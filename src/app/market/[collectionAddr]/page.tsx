@@ -219,9 +219,11 @@ const Market: NextPage = () => {
               }`}
             >
               <div
-                className={`w-full grid grid-cols-2 md:grid-cols-[repeat(auto-fill,minmax(${
-                  showGrid === "normal" ? "200px" : "150px"
-                },1fr))] gap-5 px-2 pb-5 ${filterLoading && "hidden"}`}
+                className={`w-full grid grid-cols-2 ${
+                  showGrid === "normal"
+                    ? "md:grid-cols-[repeat(auto-fill,minmax(200px,1fr))]"
+                    : "md:grid-cols-[repeat(auto-fill,minmax(150px,1fr))]"
+                } gap-5 px-2 pb-5 ${filterLoading ? "hidden" : ""}`}
               >
                 {filterListedByParam.map((item, index) => (
                   <NFTCard
