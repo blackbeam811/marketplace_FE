@@ -104,7 +104,7 @@ export default function CollectionTable() {
             ))}
         </select>
       </div> */}
-      <table className="min-w-[1024px] lg:w-full bg-transparent">
+      <table className="xl:min-w-[1024px] min-w-[800px] lg:w-full bg-transparent">
         <thead className="border-b border-customborder bg-[#134e2b]">
           <tr>
             {Object.keys(headerToKeyMap).map((header) => (
@@ -127,11 +127,11 @@ export default function CollectionTable() {
           {filteredData.map((row, index) => (
             <tr
               key={index}
-              className={`hover:bg-[#17483471] cursor-pointer duration-200 ${
+              className={`hover:bg-[#17483471] cursor-pointer duration-200 text-sm md:text-md ${
                 index % 2 === 0 ? "bg-darkgreen" : "bg-[#0f422321]"
               }`}
             >
-              <td className="relative py-2 px-4 text-white font-light text-md flex items-center justify-start gap-3">
+              <td className="relative py-2 px-4 text-white font-light flex items-center justify-start gap-3">
                 <div className="relative w-[45px] h-[45px]">
                   <img
                     src={PINATA_URL + row.imgUrl}
@@ -168,7 +168,7 @@ export default function CollectionTable() {
         </tbody>
       </table>
       <div className="w-full flex items-center justify-center py-4">
-        <span className="text-sm text-white">Load more</span>
+        {/* <span className="text-sm text-white">Load more</span> */}
       </div>
       <div
         className={`w-full items-center justify-center my-5 ${
