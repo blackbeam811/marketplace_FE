@@ -21,17 +21,22 @@ const NFTCard: FC<NFTCardProps> = ({
   state,
   isSelected,
   toggleSelection,
+  showGrid,
 }) => {
   const { openNFTDetailModal } = useContext(ModalContext);
 
   return (
     <div
-      className={`flex items-start justify-start flex-col gap-2 bg-[#0f4223b9] md:min-h-[250px] min-h-[230px] rounded-md pb-2 border ${
+      className={`flex items-start justify-start flex-col gap-2 bg-[#0f4223b9] ${
+        showGrid === "normal" ? "md:min-h-[250px]" : "md:min-h-[160px]"
+      } min-h-[230px] rounded-md pb-2 border ${
         isSelected ? "border-yellow-500" : "border-customborder"
       }`}
     >
       <div
-        className="overflow-hidden rounded-t-md aspect-square cursor-pointer group relative md:min-h-[200px]"
+        className={`overflow-hidden rounded-t-md aspect-square cursor-pointer group relative ${
+          showGrid === "normal" ? "md:min-h-[200px] " : "md:min-h-[160px] "
+        } w-full`}
         onClick={toggleSelection}
       >
         <img
@@ -65,7 +70,7 @@ const NFTCard: FC<NFTCardProps> = ({
           </p>
         </div>
         <div className="w-full flex items-center justify-between">
-          <p className="text-white text-left px-2 text-md">
+          <p className="text-white text-left px-2 text-sm">
             {collectionName} #{tokenId}
           </p>
           <span

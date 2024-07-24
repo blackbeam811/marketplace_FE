@@ -216,7 +216,7 @@ export default function ItemMultiSelectbar(props: {
         </div>
         <input
           type="range"
-          className="focus:outline-none outline-none"
+          className="focus:outline-none outline-none range-input"
           max={props.nftLength}
           value={props.selectedNFTLists.length}
           onChange={(e) => props.rangeSelection(Number(e.target.value))}

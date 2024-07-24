@@ -82,7 +82,7 @@ export default function CollectionTable() {
   }, [sortedData, searchTerm, searchColumn]);
 
   return (
-    <div className="w-full overflow-x-auto pb-10">
+    <div className="w-full overflow-x-auto pb-10 rounded-md">
       {/* <div className="flex mb-4">
         <input
           type="text"
@@ -105,7 +105,7 @@ export default function CollectionTable() {
         </select>
       </div> */}
       <table className="xl:min-w-[1024px] min-w-[800px] lg:w-full bg-transparent">
-        <thead className="border-b border-customborder bg-[#134e2b]">
+        <thead className="border-b border-customborder bg-[#133b29ce]">
           <tr>
             {Object.keys(headerToKeyMap).map((header) => (
               <th

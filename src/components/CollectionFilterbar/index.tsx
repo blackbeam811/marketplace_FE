@@ -6,10 +6,13 @@ import CollectionFilterSelect from "../CollectionFilterSelect";
 import { collectionFilterOptions } from "@/data/selectTabData";
 import { CollectionFilterbarProps } from "@/types/types";
 import { useSearchParams } from "next/navigation";
+import { BsFillGrid3X3GapFill, BsFillGridFill } from "react-icons/bs";
 
 export default function CollectionFilterbar({
   setFilterOpen,
   filterOpen,
+  setShowGrid,
+  showGrid,
   onSearch,
   onSelectFilter,
 }: CollectionFilterbarProps) {
@@ -39,6 +42,23 @@ export default function CollectionFilterbar({
         onClick={() => setFilterOpen(!filterOpen)}
       >
         <FiFilter />
+      </div>
+      <div
+        className="items-center justify-center bg-transparent border border-customborder p-2
+      rounded-md gap-2 hidden md:flex"
+      >
+        <BsFillGridFill
+          className={`text-gray-300 hover:text-yellow-600 duration-200 cursor-pointer ${
+            showGrid !== "normal" ? "text-gray-300" : "text-yellow-600"
+          }`}
+          onClick={() => setShowGrid("normal")}
+        />
+        <BsFillGrid3X3GapFill
+          className={`text-gray-300 hover:text-yellow-600 duration-200 cursor-pointer ${
+            showGrid === "normal" ? "text-gray-300" : "text-yellow-600"
+          }`}
+          onClick={() => setShowGrid("small")}
+        />
       </div>
       <div className="w-full flex items-center justify-start px-2 rounded-md border border-customborder hover:border-[#ffffff87] duration-300">
         <BiSearch color="white" />
