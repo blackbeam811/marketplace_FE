@@ -65,6 +65,10 @@ input[type="number"] {
   appearance: textfield;
 }
 
+/* Input range custom css */
+input[type="range"] {
+  accent-color: #ca8a04;
+}
 /*Custom Loader*/
 .sk-folding-cube {
   margin: 20px auto;

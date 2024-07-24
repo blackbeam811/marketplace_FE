@@ -63,6 +63,7 @@ const Market: NextPage = () => {
   const [activityData, setActivityData] = useState<ActivityDataType[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedFilter, setSelectedFilter] = useState("high2low");
+  const [showGrid, setShowGrid] = useState("normal");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -165,14 +166,14 @@ const Market: NextPage = () => {
           !connected && "hidden"
         }`}
       >
-        {/* <CollectionFilterSidebar
+        <CollectionFilterSidebar
           filterOpen={filterOpen}
           onClosebar={() => setFilterOpen(false)}
         />
         <MobileCollectionFilterSidebar
           filterOpen={filterOpen}
           onClosebar={() => setFilterOpen(false)}
-        /> */}
+        />
         <div className="w-full flex items-start justify-start mt-2 md:gap-4 gap-2 flex-col relative">
           {filterCollectionData && (
             <>
@@ -193,6 +194,8 @@ const Market: NextPage = () => {
               filterOpen={filterOpen}
               onSearch={handleSearch}
               onSelectFilter={handleFilterSelect}
+              setShowGrid={setShowGrid}
+              showGrid={showGrid}
             />
             <ItemMultiSelectbar
               nftLength={filterListedByParam.length}
@@ -216,13 +219,14 @@ const Market: NextPage = () => {
               }`}
             >
               <div
-                className={`w-full grid grid-cols-2 md:grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-5 px-2 pb-5 ${
-                  filterLoading && "hidden"
-                }`}
+                className={`w-full grid grid-cols-2 md:grid-cols-[repeat(auto-fill,minmax(${
+                  showGrid === "normal" ? "200px" : "150px"
+                },1fr))] gap-5 px-2 pb-5 ${filterLoading && "hidden"}`}
               >
                 {filterListedByParam.map((item, index) => (
                   <NFTCard
                     key={index}
+                    showGrid={showGrid}
                     imgUrl={item.imgUrl}
                     collectionName={item.collectionName}
                     tokenId={item.tokenId}

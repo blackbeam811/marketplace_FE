@@ -52,6 +52,7 @@ export type NFTCardType = {
   collectionName: string;
   solPrice: number;
   state: string;
+  showGrid: string;
 };
 
 export type AuctionNFTCardType = {
@@ -179,6 +180,8 @@ export interface RedeemModalProps {
 
 export interface CollectionFilterbarProps {
   setFilterOpen: (opened: boolean) => void;
+  setShowGrid: (show: string) => void;
+  showGrid: string;
   filterOpen: boolean;
   onSearch: (e: any) => void;
   onSelectFilter: (e: any) => void;

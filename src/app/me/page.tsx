@@ -36,6 +36,7 @@ import {
 } from "@/utils/api";
 import { cancelOffer } from "@/utils/contractScript";
 import { useWindowSize } from "@/hooks/useWindowSize";
+import { BsFillGrid3X3GapFill, BsFillGridFill } from "react-icons/bs";
 
 const MyItem: NextPage = () => {
   const param = useSearchParams();
@@ -62,6 +63,7 @@ const MyItem: NextPage = () => {
   >([]);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [selectedNFTs, setSelectedNFTs] = useState<OwnNFTDataType[]>([]);
+  const [showGrid, setShowGrid] = useState("normal");
 
   const { openFunctionLoading, closeFunctionLoading } =
     useContext(LoadingContext);
@@ -259,6 +261,23 @@ const MyItem: NextPage = () => {
             >
               {/* <ListNFTFilterSelect /> */}
               <div
+                className="items-center justify-center bg-transparent border border-customborder p-2
+      rounded-md gap-2 hidden md:flex"
+              >
+                <BsFillGridFill
+                  className={`text-gray-300 hover:text-yellow-600 duration-200 cursor-pointer ${
+                    showGrid !== "normal" ? "text-gray-300" : "text-yellow-600"
+                  }`}
+                  onClick={() => setShowGrid("normal")}
+                />
+                <BsFillGrid3X3GapFill
+                  className={`text-gray-300 hover:text-yellow-600 duration-200 cursor-pointer ${
+                    showGrid === "normal" ? "text-gray-300" : "text-yellow-600"
+                  }`}
+                  onClick={() => setShowGrid("small")}
+                />
+              </div>
+              <div
                 className={`w-full flex items-center justify-start px-2 rounded-md border border-customborder `}
               >
                 <BiSearch color="white" />
@@ -332,16 +351,17 @@ const MyItem: NextPage = () => {
             >
               <CollectionItemSkeleton loadingState={filterLoading} />
               <div
-                className={`w-full grid grid-cols-2 md:grid-cols-[repeat(auto-fill,minmax(200px,1fr))] md:gap-5 gap-3 ${
-                  filterLoading && "hidden"
-                }`}
+                className={`w-full grid grid-cols-2 md:grid-cols-[repeat(auto-fill,minmax(${
+                  showGrid === "normal" ? "200px" : "150px"
+                },1fr))] gap-5 px-2 pb-5 ${filterLoading && "hidden"}`}
               >
                 {showNFTs?.map((item, index) => (
                   <NFTCard
+                    key={index}
+                    showGrid={showGrid}
                     imgUrl={item.imgUrl}
                     collectionName={item.collectionName}
                     tokenId={item.tokenId}
-                    key={index}
                     mintAddr={item.mintAddr}
                     solPrice={item.solPrice}
                     state={item.solPrice === 0 ? "unlisted" : "listed"}

@@ -11,9 +11,9 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        darkgreen: '#022D19',
-        customborder: '#ffffff18'
-      }
+        darkgreen: "#022D19",
+        customborder: "#ffffff18",
+      },
     },
   },
   plugins: [],
