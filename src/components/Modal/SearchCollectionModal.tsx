@@ -62,7 +62,7 @@ export default function SearchCollectionModal() {
             {filterData.map((row, index) => (
               <tr
                 key={index}
-                className={`${
+                className={` ${
                   index % 2 === 0 ? "bg-darkgreen" : "bg-[#0b563356]"
                 } py-10`}
               >

@@ -31,7 +31,7 @@ const NFTCard: FC<NFTCardProps> = ({
       }`}
     >
       <div
-        className="overflow-hidden rounded-t-md aspect-square cursor-pointer group relative"
+        className="overflow-hidden rounded-t-md aspect-square cursor-pointer group relative md:min-h-[200px]"
         onClick={toggleSelection}
       >
         <img
