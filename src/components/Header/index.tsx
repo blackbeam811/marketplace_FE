@@ -34,6 +34,7 @@ import { BalanceProps, HeaderProps } from "@/types/types";
 import { NFTDataContext } from "@/contexts/NFTDataContext";
 
 const Header: FC<HeaderProps> = () => {
+  console.log("render header");
   const inputRef = useRef<HTMLInputElement>(null);
   const router = usePathname();
   const { publicKey, connected } = useWallet();
