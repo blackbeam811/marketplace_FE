@@ -21,7 +21,7 @@ export default function CollectionSlider(props: { loadingState: boolean }) {
           keyBoardControl
           minimumTouchDrag={80}
           renderButtonGroupOutside={false}
-          renderDotsOutside={false}
+          renderDotsOutside={true}
           responsive={{
             desktop: {
               breakpoint: {
@@ -49,7 +49,7 @@ export default function CollectionSlider(props: { loadingState: boolean }) {
             },
           }}
           shouldResetAutoplay
-          showDots={true}
+          showDots={false}
           arrows={true}
           slidesToSlide={1}
         >

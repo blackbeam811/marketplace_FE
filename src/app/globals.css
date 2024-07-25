@@ -15,6 +15,10 @@ body {
   background-color: #022d19 !important;
 }
 
+.react-multi-carousel-dot-list {
+  position: relative !important;
+}
+
 /*Customize react-responsive-modal style*/
 /* .react-responsive-modal-container {
   height: auto !important;
