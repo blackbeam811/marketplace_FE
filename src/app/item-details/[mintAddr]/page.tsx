@@ -892,11 +892,12 @@ const UpdatePriceButton: React.FC<ButtonProps> = ({
 const PlaceBidButton: React.FC<ButtonProps> = ({
   wallet,
   selectedNFT,
-  offerData,
   handleUpdatePriceFunc,
   typeParam,
 }) => {
-  const isHidden = wallet?.publicKey.toBase58() === selectedNFT?.seller;
+  const isHidden =
+    wallet?.publicKey.toBase58() === selectedNFT?.seller ||
+    typeParam !== "auction";
   return (
     <div
       className={`w-full rounded-md py-[6px] text-center bg-red-600 duration-200 hover:bg-red-700 text-white cursor-pointer flex items-center gap-2 justify-center ${

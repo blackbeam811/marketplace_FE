@@ -166,14 +166,14 @@ const Market: NextPage = () => {
           !connected && "hidden"
         }`}
       >
-        <CollectionFilterSidebar
+        {/* <CollectionFilterSidebar
           filterOpen={filterOpen}
           onClosebar={() => setFilterOpen(false)}
         />
         <MobileCollectionFilterSidebar
           filterOpen={filterOpen}
           onClosebar={() => setFilterOpen(false)}
-        />
+        /> */}
         <div className="w-full flex items-start justify-start mt-2 md:gap-4 gap-2 flex-col relative">
           {filterCollectionData && (
             <>

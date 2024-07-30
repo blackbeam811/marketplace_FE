@@ -8,6 +8,7 @@ import { PINATA_URL } from "@/config";
 import { NormalSpinner } from "../Spinners";
 import { CollectionDataType, CollectionTableTHType } from "@/types/types";
 import { useRouter } from "next/navigation";
+import { FaArrowsAltV } from "react-icons/fa";
 
 type SortConfig = {
   key: keyof CollectionDataType;
@@ -118,7 +119,13 @@ export default function CollectionTable() {
                 {header}
                 {sortConfig?.key ===
                   headerToKeyMap[header as keyof CollectionTableTHType] &&
-                  (sortConfig.direction === "ascending" ? " ↑" : " ↓")}
+                  (sortConfig.direction === "ascending" ? (
+                    " ↑"
+                  ) : sortConfig.direction === "descending" ? (
+                    " ↓"
+                  ) : (
+                    <FaArrowsAltV color="white" size={10} />
+                  ))}
               </th>
             ))}
           </tr>
