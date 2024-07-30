@@ -113,6 +113,13 @@ export type CollectionDataType = {
   owners: number;
 };
 
+export type UserDataType = {
+  userName: string;
+  userAddr: string;
+  email: string;
+  userWallet: string;
+};
+
 export type ActivityDataType = {
   updatedAt: string | number | Date;
   imgUrl: string;

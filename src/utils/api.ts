@@ -1,6 +1,6 @@
 import axios from "axios";
 import { MUGS_ENDPOINT } from "@/config";
-import { CollectionDataType } from "@/types/types";
+import { CollectionDataType, UserDataType } from "@/types/types";
 
 export async function redeemAPI(
   signedTransaction: Uint8Array,
@@ -175,6 +175,18 @@ export async function acceptOfferPNftApi(
 export async function createCollection(data: CollectionDataType) {
   try {
     const response = await axios.post(`${MUGS_ENDPOINT}/collection/create`, {
+      data: data,
+    });
+    return response?.data;
+  } catch (err) {
+    console.log("Collection create err = ", err);
+  }
+}
+
+// Add the new user to the database
+export async function createUserDataApi(data: UserDataType) {
+  try {
+    const response = await axios.post(`${MUGS_ENDPOINT}/user/create`, {
       data: data,
     });
     return response?.data;
