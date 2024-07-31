@@ -6,7 +6,11 @@ import AuctionCard from "../AuctionCard";
 export default function AuctionTable() {
   const { allAuctions, listedAllNFTs } = useContext(NFTDataContext);
   return (
-    <div className="w-full flex flex-col items-start justify-start mt-10">
+    <div
+      className={`w-full flex flex-col items-start justify-start mt-10 ${
+        allAuctions.length === 0 && "hidden"
+      }`}
+    >
       <div className="w-full border-b border-customborder py-3">
         <p className="text-gray-300 text-2xl">Created Auctions</p>
       </div>

@@ -893,7 +893,7 @@ export const createAuctionPNft = async (
     payer.publicKey,
     startPrice * SOL_DECIMAL,
     minIncrease * SOL_DECIMAL,
-    duration,
+    duration / 1000,
     reserved,
     program,
     solConnection
