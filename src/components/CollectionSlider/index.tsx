@@ -19,7 +19,6 @@ export default function CollectionSlider(props: { loadingState: boolean }) {
           focusOnSelect={false}
           infinite
           keyBoardControl
-          minimumTouchDrag={80}
           renderButtonGroupOutside={false}
           renderDotsOutside={true}
           responsive={{

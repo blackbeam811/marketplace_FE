@@ -209,6 +209,7 @@ export interface ButtonProps {
   handleAcceptHighOffer?: () => void;
   handleListMyNFTFunc?: () => void;
   handleDelistMyNFTFunc?: () => void;
+  handlePlaceBidFunc?: () => void;
   handleBuyNFTFunc?: () => void;
   handleCreateAuctionMyNFTFunc?: () => void;
   handleCancelAuctionMyNFTFunc?: () => void;
