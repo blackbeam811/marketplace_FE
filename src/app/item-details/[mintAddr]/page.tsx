@@ -534,6 +534,45 @@ const ItemDetails: NextPage = () => {
     }
   };
 
+  // Place a bid for NFT Auction
+  const handlePlaceBidFunc = async () => {
+    if (!wallet || itemDetail === undefined) {
+      return;
+    }
+
+    try {
+      openFunctionLoading();
+
+      // Delist the NFT
+      const tx = await cancelAuctionPnft(wallet, itemDetail);
+
+      if (tx) {
+        const result = await cancelAuctionApi(tx.transaction, tx.delistData);
+
+        if (result.type === "success") {
+          // Refresh data after successful delist
+          await Promise.all([
+            getOwnNFTs(),
+            getAllListedNFTsBySeller(),
+            getActivityByMintAddr(),
+            getAllListedNFTs(),
+            getAllCollectionData(),
+          ]);
+          successAlert("Success");
+        } else {
+          errorAlert("Something went wrong.");
+        }
+      } else {
+        errorAlert("Something went wrong.");
+      }
+    } catch (e) {
+      console.error("Error:", e);
+      errorAlert("Something went wrong.");
+    } finally {
+      closeFunctionLoading();
+    }
+  };
+
   return (
     <MainPageLayout>
       <div
@@ -645,6 +684,7 @@ const ItemDetails: NextPage = () => {
                   offerData={offerData}
                   handleMakeOffer={handleMakeOffer}
                   handleCancelOffer={handleCancelOffer}
+                  handlePlaceBidFunc={handlePlaceBidFunc}
                   typeParam={itemDetail?.endTime !== undefined ? "auction" : ""}
                 />
 
@@ -892,7 +932,7 @@ const UpdatePriceButton: React.FC<ButtonProps> = ({
 const PlaceBidButton: React.FC<ButtonProps> = ({
   wallet,
   selectedNFT,
-  handleUpdatePriceFunc,
+  handlePlaceBidFunc,
   typeParam,
 }) => {
   const isHidden =
@@ -903,7 +943,7 @@ const PlaceBidButton: React.FC<ButtonProps> = ({
       className={`w-full rounded-md py-[6px] text-center bg-red-600 duration-200 hover:bg-red-700 text-white cursor-pointer flex items-center gap-2 justify-center ${
         isHidden && "hidden"
       }`}
-      onClick={handleUpdatePriceFunc}
+      onClick={handlePlaceBidFunc}
     >
       {"Place a bid"}
     </div>
