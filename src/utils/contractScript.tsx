@@ -17,7 +17,6 @@ import {
   createInitOfferDataTx,
   createInitSellDataTx,
   createInitUserTx,
-  createListForSellNftTx,
   createListForSellPNftTx,
   createMakeOfferTx,
   createPlaceBidTx,
@@ -122,68 +121,6 @@ export const updateFee = async (payer: AnchorWallet, solFee: number) => {
   console.log(solFee);
   const tx = await createUpdateFeeTx(payer.publicKey, program, solFee);
   const { blockhash } = await solConnection.getRecentBlockhash("confirmed");
-  tx.feePayer = payer.publicKey;
-  tx.recentBlockhash = blockhash;
-  payer.signTransaction(tx);
-  let txId = await solConnection.sendTransaction(tx, [
-    (payer as NodeWallet).payer,
-  ]);
-  await solConnection.confirmTransaction(txId, "confirmed");
-  console.log("Your transaction signature", txId);
-};
-
-export const listNftForSale = async (
-  payer: AnchorWallet,
-  mint: PublicKey,
-  priceSol: number
-) => {
-  let cloneWindow = window;
-  let provider = new anchor.AnchorProvider(
-    solConnection,
-    cloneWindow["solana"],
-    anchor.AnchorProvider.defaultOptions()
-  );
-  const program = new anchor.Program(
-    MugsMarketplace as anchor.Idl,
-    MARKETPLACE_PROGRAM_ID,
-    provider
-  );
-
-  if (!(await isInitializedUser(payer.publicKey, solConnection))) {
-    await initUserPool(payer);
-  }
-
-  const [sellData, _] = await PublicKey.findProgramAddress(
-    [Buffer.from(SELL_DATA_SEED), mint.toBuffer()],
-    MARKETPLACE_PROGRAM_ID
-  );
-  console.log("Sell Data PDA: ", sellData.toBase58());
-
-  let poolAccount = await solConnection.getAccountInfo(sellData);
-  if (poolAccount === null || poolAccount.data === null) {
-    await initSellData(payer, mint);
-  }
-
-  const [auctionData] = await PublicKey.findProgramAddress(
-    [Buffer.from(AUCTION_DATA_SEED), mint.toBuffer()],
-    MARKETPLACE_PROGRAM_ID
-  );
-  console.log("Auction Data PDA: ", auctionData.toBase58());
-
-  poolAccount = await solConnection.getAccountInfo(auctionData);
-  if (poolAccount === null || poolAccount.data === null) {
-    await initAuctionData(payer, mint);
-  }
-
-  const tx = await createListForSellNftTx(
-    mint,
-    payer.publicKey,
-    program,
-    solConnection,
-    priceSol
-  );
-  const { blockhash } = await solConnection.getRecentBlockhash("confirmed");
-
   tx.feePayer = payer.publicKey;
   tx.recentBlockhash = blockhash;
   payer.signTransaction(tx);
