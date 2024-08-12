@@ -53,7 +53,7 @@ export default function MobileItemMultiSelectBar(props: {
 
   // Buy NFT Function
   const handleBuyNFTFunc = async () => {
-    if (wallet && props.selectedNFTLists !== undefined) {
+    if (wallet && props.selectedNFTLists.length !== 0) {
       if (myBalance < totalPrice) {
         errorAlert("You don't have enough sol.");
       } else {
@@ -189,7 +189,7 @@ export default function MobileItemMultiSelectBar(props: {
   };
 
   return (
-    <div className="fixed bottom-[3.4rem] left-0 right-0 w-full md:hidden border-t border-customborder bg-darkgreen p-1 z-50 flex items-center justify-between">
+    <div className="fixed bottom-[3.4rem] left-0 right-0 w-full md:hidden border-t border-customborder bg-darkgreen p-1 z-[10000] flex items-center justify-between">
       <button
         className="bg-yellow-600 text-sm rounded-md px-8 py-[5px] text-white"
         onClick={() =>

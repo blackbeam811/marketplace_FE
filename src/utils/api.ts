@@ -135,6 +135,19 @@ export async function makeOfferApi(transactions: any, offerData: any) {
   }
 }
 
+// Make the offer for the listed nft and save the offer data to the database
+export async function placeBidApi(transaction: any, bidData: any) {
+  try {
+    const response = await axios.post(`${MUGS_ENDPOINT}/bid/create`, {
+      transaction: transaction,
+      bidData: bidData,
+    });
+    return response?.data;
+  } catch (err) {
+    console.log("Make bid err = ", err);
+  }
+}
+
 // Cancel the made offer and save the offer data to the database
 export async function cancelOfferApi(
   mintAddr: string,

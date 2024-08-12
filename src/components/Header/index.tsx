@@ -79,7 +79,7 @@ const Header: FC<HeaderProps> = () => {
   }, []);
 
   return (
-    <header className="border-b border-customborder fixed w-full bg-darkgreen z-[1000]">
+    <header className="border-b border-customborder fixed w-full bg-darkgreen z-[9999]">
       <div className="py-2 px-4 flex items-center justify-between relative">
         <Link href={"/"} className="z-[1]">
           <div className="flex items-center justify-center gap-3">
