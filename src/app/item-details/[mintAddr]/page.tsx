@@ -34,6 +34,7 @@ import {
   cancelOffer,
   listPNftForSale,
   makeOffer,
+  placeBid,
   pNftDelist,
   purchasePNft,
   setPrice,
@@ -47,6 +48,7 @@ import {
   getAllOffersByMintAddrApi,
   listNftApi,
   makeOfferApi,
+  placeBidApi,
   purchaseNFT,
   updatePriceApi,
 } from "@/utils/api";
@@ -542,12 +544,11 @@ const ItemDetails: NextPage = () => {
 
     try {
       openFunctionLoading();
-
-      // Delist the NFT
-      const tx = await cancelAuctionPnft(wallet, itemDetail);
-
+      // bid for auction NFT
+      const tx = await placeBid(wallet, itemDetail, updatedPrice);
+      console.log("tx ==> ", tx);
       if (tx) {
-        const result = await cancelAuctionApi(tx.transaction, tx.delistData);
+        const result = await placeBidApi(tx.transaction, tx.bidData);
 
         if (result.type === "success") {
           // Refresh data after successful delist

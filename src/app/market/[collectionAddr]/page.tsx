@@ -145,27 +145,29 @@ const Market: NextPage = () => {
   const toggleNFTSelection = (nft: OwnNFTDataType) => {
     setSelectedNFTs((prevSelectedNFTs) => {
       if (prevSelectedNFTs.find((item) => item.mintAddr === nft.mintAddr)) {
+        // If the NFT is already selected, remove it from the selected list.
         return prevSelectedNFTs.filter(
           (item) => item.mintAddr !== nft.mintAddr
         );
       } else {
-        return [...prevSelectedNFTs, nft];
+        // Only add the NFT if the seller is not the public key
+        if (nft.seller !== publicKey?.toBase58()) {
+          return [...prevSelectedNFTs, nft];
+        }
+        return prevSelectedNFTs; // Return the unchanged array if the condition is not met.
       }
     });
   };
 
   const rangeSelection = (length: number) => {
     const data = Array.from({ length }, (_, i) => filterListedByParam[i]);
-    setSelectedNFTs(data);
+    const dataNotMine = data.filter((_) => _.seller !== publicKey?.toBase58());
+    setSelectedNFTs(dataNotMine);
   };
 
   return (
     <MainPageLayout>
-      <div
-        className={`w-full flex items-start justify-start flex-row ${
-          !connected && "hidden"
-        }`}
-      >
+      <div className={`w-full flex items-start justify-start flex-row `}>
         {/* <CollectionFilterSidebar
           filterOpen={filterOpen}
           onClosebar={() => setFilterOpen(false)}
@@ -198,7 +200,11 @@ const Market: NextPage = () => {
               showGrid={showGrid}
             />
             <ItemMultiSelectbar
-              nftLength={filterListedByParam.length}
+              nftLength={
+                filterListedByParam.filter(
+                  (data) => data.seller !== publicKey?.toBase58()
+                ).length
+              }
               setSelectedNFTs={() => setSelectedNFTs([])}
               selectedNFTLists={selectedNFTs}
               rangeSelection={(length: number) => rangeSelection(length)}
@@ -237,7 +243,9 @@ const Market: NextPage = () => {
                     state={item.solPrice === 0 ? "unlisted" : "listed"}
                     isSelected={
                       !!selectedNFTs.find(
-                        (nft) => nft.mintAddr === item.mintAddr
+                        (nft) =>
+                          nft.mintAddr === item.mintAddr &&
+                          nft.seller !== publicKey?.toBase58()
                       )
                     }
                     toggleSelection={() => toggleNFTSelection(item)}
@@ -289,15 +297,6 @@ const Market: NextPage = () => {
         <Suspense fallback={<div />}>
           <MobileTabsTip setSelectedNFTs={() => setSelectedNFTs([])} />
         </Suspense>
-      </div>
-      <div
-        className={`${
-          !publicKey ? "flex" : "hidden"
-        } items-center justify-center min-h-[80vh] w-full`}
-      >
-        <p className="text-gray-400 text-center">
-          Connect wallet to see the colection. 🤨
-        </p>
       </div>
     </MainPageLayout>
   );
