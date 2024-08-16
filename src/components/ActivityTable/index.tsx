@@ -100,7 +100,7 @@ export default function ActivityTable({ data }: { data: ActivityDataType[] }) {
   return (
     <div className="w-full flex items-center justify-center gap-2 flex-col overflow-x-auto">
       <div className="w-full overflow-x-auto border border-customborder rounded-md mb-4 min-h-[10vh] relative">
-        <table className="min-w-[1000px] lg:w-full bg-transparent">
+        <table className="min-w-[900px] lg:w-full bg-transparent">
           <thead className="border-b border-customborder">
             <tr>
               {Object.keys(headerToKeyMap).map((header) => (

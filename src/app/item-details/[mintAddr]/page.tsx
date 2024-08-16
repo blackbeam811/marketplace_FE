@@ -542,6 +542,11 @@ const ItemDetails: NextPage = () => {
       return;
     }
 
+    if (updatedPrice === 0) {
+      errorAlert("Please input the price.");
+      return;
+    }
+
     try {
       openFunctionLoading();
       // bid for auction NFT
