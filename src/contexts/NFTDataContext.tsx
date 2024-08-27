@@ -109,6 +109,7 @@ export function NFTDataProvider({ children }: NFTDataProviderProps) {
       mint,
       updatedAt,
       minIncrease,
+      lastBidPrice,
       endTime,
     } = acc;
 
@@ -133,6 +134,7 @@ export function NFTDataProvider({ children }: NFTDataProviderProps) {
       solPrice: listed ? solPrice : 0,
       updatedAt: listed ? updatedAt : 0,
       minIncrease: listed ? minIncrease : 0,
+      lastBidPrice: listed ? lastBidPrice : 0,
       endTime: listed ? endTime : 0,
       attribute,
       listed,

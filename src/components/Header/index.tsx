@@ -41,7 +41,6 @@ const Header: FC<HeaderProps> = () => {
   const { openSearchCollectionModal, setFilterWith } = useContext(ModalContext);
   const { myBalance } = useContext(NFTDataContext);
   const [isFocused, setIsFocused] = useState(false);
-  const [openMobileMenu, setOpenMobileMenu] = useState(false);
 
   useOnClickOutside(inputRef, () => setIsFocused(false));
 
@@ -79,7 +78,7 @@ const Header: FC<HeaderProps> = () => {
   }, []);
 
   return (
-    <header className="border-b border-customborder fixed w-full bg-darkgreen z-[9999]">
+    <header className="border-b border-customborder fixed w-full bg-darkgreen z-[9]">
       <div className="py-2 px-4 flex items-center justify-between relative">
         <Link href={"/"} className="z-[1]">
           <div className="flex items-center justify-center gap-3">
