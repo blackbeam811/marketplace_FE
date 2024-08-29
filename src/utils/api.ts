@@ -122,6 +122,24 @@ export async function purchaseNFT(
   }
 }
 
+// Claim the listed nft and save the claimed nft data to the database
+export async function claimAuctionPnftApi(
+  transactions: any,
+  purchaseData: any,
+  mintAddrArray: any
+) {
+  try {
+    const response = await axios.post(`${MUGS_ENDPOINT}/nft/purchase`, {
+      transaction: transactions,
+      purchaseData: purchaseData,
+      mintAddrArray: mintAddrArray,
+    });
+    return response?.data;
+  } catch (err) {
+    console.log("Purchase NFT err = ", err);
+  }
+}
+
 // Make the offer for the listed nft and save the offer data to the database
 export async function makeOfferApi(transactions: any, offerData: any) {
   try {

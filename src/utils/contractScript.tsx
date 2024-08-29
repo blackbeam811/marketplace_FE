@@ -954,6 +954,8 @@ export const claimAuctionPnft = async (
     provider
   );
   const initTransactions = [];
+  const mintAddrArray = [];
+  mintAddrArray.push(item.mintAddr);
 
   if (!(await isInitializedUser(payer.publicKey, solConnection))) {
     console.log(
@@ -1016,9 +1018,12 @@ export const claimAuctionPnft = async (
   );
   tx.feePayer = payer.publicKey;
   tx.recentBlockhash = blockhash;
-  payer.signTransaction(tx);
   let stx = (await payer.signTransaction(tx)).serialize();
-  return { transaction: stx, claimAuctionData: claimAuctionData };
+  return {
+    transaction: [stx],
+    claimAuctionData: claimAuctionData,
+    mintAddrArray: mintAddrArray,
+  };
 };
 
 export const updateReserve = async (

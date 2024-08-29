@@ -44,6 +44,7 @@ import {
   acceptOfferPNftApi,
   cancelAuctionApi,
   cancelOfferApi,
+  claimAuctionPnftApi,
   delistNftApi,
   getAllActivitiesByMintAddrApi,
   getAllOffersByMintAddrApi,
@@ -579,13 +580,11 @@ const ItemDetails: NextPage = () => {
 
       // Delist the NFT
       const tx = await claimAuctionPnft(wallet, itemDetail);
-
-      console.log("claim tx => ", tx);
-      return;
       if (tx) {
-        const result = await cancelAuctionApi(
+        const result = await claimAuctionPnftApi(
           tx.transaction,
-          tx.claimAuctionData
+          tx.claimAuctionData,
+          tx.mintAddrArray
         );
 
         if (result.type === "success") {
@@ -603,6 +602,7 @@ const ItemDetails: NextPage = () => {
         }
       } else {
         errorAlert("Something went wrong.");
+        closeFunctionLoading();
       }
     } catch (e) {
       console.error("Error:", e);
