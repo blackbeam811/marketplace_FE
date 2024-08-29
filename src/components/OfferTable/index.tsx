@@ -13,7 +13,7 @@ export default function OfferTable(props: {
 
   return (
     <div className="w-full overflow-x-auto border border-customborder rounded-md mb-10 min-h-[10vh]">
-      <table className="min-w-[1024px] lg:w-full bg-transparent">
+      <table className="min-w-[900px] lg:w-full bg-transparent">
         <thead className="border-b border-customborder">
           <tr>
             {offerTableTH.map((item, index) => (

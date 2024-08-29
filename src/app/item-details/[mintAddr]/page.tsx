@@ -32,6 +32,7 @@ import {
   acceptOfferPNft,
   cancelAuctionPnft,
   cancelOffer,
+  claimAuctionPnft,
   listPNftForSale,
   makeOffer,
   placeBid,
@@ -43,9 +44,11 @@ import {
   acceptOfferPNftApi,
   cancelAuctionApi,
   cancelOfferApi,
+  claimAuctionPnftApi,
   delistNftApi,
   getAllActivitiesByMintAddrApi,
   getAllOffersByMintAddrApi,
+  getBidByBidder,
   listNftApi,
   makeOfferApi,
   placeBidApi,
@@ -73,6 +76,7 @@ const ItemDetails: NextPage = () => {
   const [offerData, setOfferData] = useState<OfferDataType[]>([]);
   const [activityData, setActivityData] = useState<ActivityDataType[]>([]);
   const [updatedPrice, setUpdatedPrice] = useState(0);
+  const [bidPrice, setBidPrice] = useState(0);
 
   const {
     myBalance,
@@ -105,6 +109,23 @@ const ItemDetails: NextPage = () => {
       }
     }
   }, [ownNFTs, mintAddr, listedAllNFTs]);
+
+  useEffect(() => {
+    if (itemDetail && wallet) {
+      const fetchData = async () => {
+        try {
+          const res = await getBidByBidder(
+            wallet?.publicKey,
+            itemDetail.mintAddr
+          );
+          setBidPrice(res.data[0].bidPrice);
+        } catch (error) {
+          console.log("Error fetching bid data: ", error);
+        }
+      };
+      fetchData();
+    }
+  }, [itemDetail, wallet]);
 
   const getOfferByMintAddr = async () => {
     try {
@@ -498,8 +519,13 @@ const ItemDetails: NextPage = () => {
 
   // Cancel NFT Auction Function
   const handleCancelAuctionMyNFTFunc = async () => {
-    console.log("cancel auction");
+    const currentDate = Date.now();
     if (!wallet || itemDetail === undefined) {
+      return;
+    }
+
+    if (currentDate < itemDetail?.endTime!) {
+      errorAlert("The auction is not over yet.");
       return;
     }
 
@@ -536,9 +562,70 @@ const ItemDetails: NextPage = () => {
     }
   };
 
+  // Claim NFT Auction Function
+  const handleClaimAuctionNFTFunc = async () => {
+    console.log("claim auction");
+    const currentDate = Date.now();
+    if (!wallet || itemDetail === undefined) {
+      return;
+    }
+
+    // if (currentDate < itemDetail?.endTime!) {
+    //   errorAlert("The auction is not over yet.");
+    //   return;
+    // }
+
+    try {
+      openFunctionLoading();
+
+      // Delist the NFT
+      const tx = await claimAuctionPnft(wallet, itemDetail);
+      if (tx) {
+        const result = await claimAuctionPnftApi(
+          tx.transaction,
+          tx.claimAuctionData,
+          tx.mintAddrArray
+        );
+
+        if (result.type === "success") {
+          // Refresh data after successful delist
+          await Promise.all([
+            getOwnNFTs(),
+            getAllListedNFTsBySeller(),
+            getActivityByMintAddr(),
+            getAllListedNFTs(),
+            getAllCollectionData(),
+          ]);
+          successAlert("Success");
+        } else {
+          errorAlert("Something went wrong.");
+        }
+      } else {
+        errorAlert("Something went wrong.");
+        closeFunctionLoading();
+      }
+    } catch (e) {
+      console.error("Error:", e);
+      errorAlert("Something went wrong.");
+      closeFunctionLoading();
+    } finally {
+      closeFunctionLoading();
+    }
+  };
+
   // Place a bid for NFT Auction
   const handlePlaceBidFunc = async () => {
     if (!wallet || itemDetail === undefined) {
+      return;
+    }
+
+    if (bidPrice !== 0) {
+      errorAlert("You have already bid on this NFT.");
+      return;
+    }
+
+    if (updatedPrice === 0) {
+      errorAlert("Please input the price.");
       return;
     }
 
@@ -636,7 +723,7 @@ const ItemDetails: NextPage = () => {
                 {`${
                   itemDetail?.endTime === undefined
                     ? "Listed Price"
-                    : "Auction Price"
+                    : "Auction Start Price"
                 }`}{" "}
                 : {itemDetail?.solPrice}
                 {" sol"}
@@ -650,6 +737,14 @@ const ItemDetails: NextPage = () => {
               >
                 <Countdown timestamp={itemDetail?.endTime!} />
               </div>
+              <p
+                className={`text-left text-white text-md ${
+                  bidPrice === 0 && "hidden"
+                }`}
+              >
+                Your bid price is {bidPrice}
+                {" sol"}
+              </p>
               <div className="w-full flex items-center justify-between gap-2">
                 <input
                   className={`w-full p-[5px] flex items-center placeholder:text-gray-500 outline-none text-white justify-between rounded-md border border-customborder bg-transparent
@@ -711,6 +806,7 @@ const ItemDetails: NextPage = () => {
                   selectedNFT={itemDetail}
                   handleCreateAuctionMyNFTFunc={openAuctionModal}
                   handleCancelAuctionMyNFTFunc={handleCancelAuctionMyNFTFunc}
+                  handleClaimAuctionNFTFunc={handleClaimAuctionNFTFunc}
                   typeParam={itemDetail?.endTime !== undefined ? "auction" : ""}
                 />
               </div>
@@ -1048,7 +1144,7 @@ const CreateAuctionButton: React.FC<ButtonProps> = ({
   wallet,
   selectedNFT,
   handleCreateAuctionMyNFTFunc,
-  handleCancelAuctionMyNFTFunc,
+  handleClaimAuctionNFTFunc,
   typeParam,
 }) => {
   const isHidden =
@@ -1064,7 +1160,7 @@ const CreateAuctionButton: React.FC<ButtonProps> = ({
         selectedNFT?.solPrice === 0 &&
         wallet?.publicKey.toBase58() === selectedNFT.seller
           ? handleCreateAuctionMyNFTFunc
-          : handleCancelAuctionMyNFTFunc
+          : handleClaimAuctionNFTFunc
       }
     >
       {selectedNFT?.solPrice === 0 &&

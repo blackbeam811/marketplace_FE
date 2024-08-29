@@ -83,7 +83,9 @@ export type OwnNFTDataType = {
   listed: boolean;
   attribute: NFTAttribute[];
   updatedAt: string | number | Date;
+  lastBidPrice?: number;
   minIncrease?: number;
+
   endTime?: number;
 };
 
@@ -212,5 +214,6 @@ export interface ButtonProps {
   handlePlaceBidFunc?: () => void;
   handleBuyNFTFunc?: () => void;
   handleCreateAuctionMyNFTFunc?: () => void;
+  handleClaimAuctionNFTFunc?: () => void;
   handleCancelAuctionMyNFTFunc?: () => void;
 }

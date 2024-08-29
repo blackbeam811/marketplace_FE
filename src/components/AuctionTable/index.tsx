@@ -14,7 +14,7 @@ export default function AuctionTable() {
       <div className="w-full border-b border-customborder py-3">
         <p className="text-gray-300 text-2xl">Created Auctions</p>
       </div>
-      <div className="w-full grid grid-cols-5 gap-3 py-3">
+      <div className="w-full grid xl:grid-cols-5 grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-3 py-3">
         {listedAllNFTs
           .filter((data) => data.endTime !== undefined)
           .map((item, index) => (

@@ -939,9 +939,9 @@ export const placeBid = async (
 
 export const claimAuctionPnft = async (
   payer: AnchorWallet,
-  mint: PublicKey
+  item: OwnNFTDataType
 ) => {
-  console.log(mint.toBase58());
+  console.log("claimitemDetail => ", item);
   let cloneWindow = window;
   let provider = new anchor.AnchorProvider(
     solConnection,
@@ -953,33 +953,77 @@ export const claimAuctionPnft = async (
     MARKETPLACE_PROGRAM_ID,
     provider
   );
+  const initTransactions = [];
+  const mintAddrArray = [];
+  mintAddrArray.push(item.mintAddr);
+
   if (!(await isInitializedUser(payer.publicKey, solConnection))) {
     console.log(
       "User PDA is not Initialized. Should Init User PDA for first usage"
     );
-    await initUserPool(payer);
+    const initUserTx = await initUserPool(payer);
+    initUserTx.feePayer = payer.publicKey;
+    initTransactions.push(initUserTx);
+  }
+
+  const { blockhash } = await solConnection.getLatestBlockhash("confirmed");
+  for (const tx of initTransactions) {
+    tx.recentBlockhash = blockhash;
+  }
+
+  try {
+    const signedInitTransactions = await payer.signAllTransactions(
+      initTransactions
+    );
+    const serializedInitTransactions = signedInitTransactions.map((tx) =>
+      tx.serialize()
+    );
+
+    const signatures = await Promise.all(
+      serializedInitTransactions.map((tx) => sendTransaction(tx))
+    );
+
+    await Promise.all(
+      signatures.map((signature) =>
+        solConnection.confirmTransaction(signature, "confirmed")
+      )
+    );
+  } catch (error) {
+    console.error("Failed to initialize transactions:", error);
+    throw error;
   }
 
   const globalPool: any = await getGlobalState(program);
 
+  const claimAuctionData: any[] = [];
+
+  claimAuctionData.push({
+    tokenId: item.tokenId,
+    imgUrl: item.imgUrl,
+    mintAddr: item.mintAddr,
+    seller: item.seller,
+    buyer: payer.publicKey.toBase58(),
+    collectionAddr: item.collectionAddr,
+    metaDataUrl: item.metaDataUrl,
+    solPrice: item.lastBidPrice,
+    txType: 2,
+  });
+
   const tx = await createClaimAuctionPnftTx(
-    mint,
+    new PublicKey(item.mintAddr),
     payer.publicKey,
     globalPool.teamTreasury.slice(0, globalPool.teamCount.toNumber()),
     program,
     solConnection
   );
-  const { blockhash } = await solConnection.getRecentBlockhash("confirmed");
   tx.feePayer = payer.publicKey;
   tx.recentBlockhash = blockhash;
-  payer.signTransaction(tx);
-  const simulatieTx = await solConnection.simulateTransaction(tx);
-  console.log("tx =====>", simulatieTx);
-  let txId = await solConnection.sendTransaction(tx, [
-    (payer as NodeWallet).payer,
-  ]);
-  await solConnection.confirmTransaction(txId, "confirmed");
-  console.log("Your transaction signature", txId);
+  let stx = (await payer.signTransaction(tx)).serialize();
+  return {
+    transaction: [stx],
+    claimAuctionData: claimAuctionData,
+    mintAddrArray: mintAddrArray,
+  };
 };
 
 export const updateReserve = async (
