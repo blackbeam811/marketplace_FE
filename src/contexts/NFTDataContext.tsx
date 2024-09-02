@@ -176,7 +176,6 @@ export function NFTDataProvider({ children }: NFTDataProviderProps) {
             }
           })
       );
-      console.log("my own nfts => ", data);
       setOwnNFTs(data);
     } catch (error) {
       console.error("Error fetching own NFTs:", error);
@@ -191,7 +190,6 @@ export function NFTDataProvider({ children }: NFTDataProviderProps) {
     try {
       let listedData = [];
       listedData = await getAllListedDataBySellerApi(publicKey.toBase58());
-      console.log("listData => ", listedData);
       const data: OwnNFTDataType[] = await Promise.all(
         listedData.length !== 0
           ? listedData.map(async (acc: any) => {
@@ -217,7 +215,6 @@ export function NFTDataProvider({ children }: NFTDataProviderProps) {
     try {
       let listedData = [];
       listedData = await getAllListedApi();
-      console.log("alllistData => ", listedData);
 
       const data: OwnNFTDataType[] = await Promise.all(
         listedData.length !== 0

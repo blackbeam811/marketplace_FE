@@ -95,15 +95,17 @@ const Market: NextPage = () => {
   }, [collectionAddr, collectionData]);
 
   useEffect(() => {
-    if (!collectionAddr || !listedAllNFTs.length) return;
+    if (!collectionAddr || !listedAllNFTs.length || !publicKey) return;
 
     const filteredNFTs = listedAllNFTs.filter(
       (item) =>
-        item.collectionAddr === collectionAddr && item.endTime === undefined
+        item.collectionAddr === collectionAddr &&
+        item.endTime === undefined &&
+        publicKey?.toBase58() !== item.seller
     );
     setFilterListedNFTData(filteredNFTs);
     setFilterLoading(false);
-  }, [collectionAddr, listedAllNFTs]);
+  }, [collectionAddr, listedAllNFTs, publicKey]);
 
   useEffect(() => {
     let filteredData = [...filterListedNFTData];

@@ -83,6 +83,11 @@ input[type="range"] {
   transform: rotateZ(45deg);
 }
 
+/* Custom date input tag icon*/
+input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+  color: white !important;
+}
+
 .sk-folding-cube .sk-cube {
   float: left;
   width: 50%;

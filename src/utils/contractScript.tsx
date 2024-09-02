@@ -1019,6 +1019,7 @@ export const claimAuctionPnft = async (
   tx.feePayer = payer.publicKey;
   tx.recentBlockhash = blockhash;
   let stx = (await payer.signTransaction(tx)).serialize();
+  console.log("claimAuctionData =>", claimAuctionData);
   return {
     transaction: [stx],
     claimAuctionData: claimAuctionData,

@@ -203,6 +203,7 @@ export interface CollectionDetailProps {
 export interface ButtonProps {
   wallet: any;
   typeParam?: string;
+  bidPrice?: number;
   selectedNFT: OwnNFTDataType | undefined;
   offerData?: OfferDataType[];
   handleUpdatePriceFunc?: () => void;

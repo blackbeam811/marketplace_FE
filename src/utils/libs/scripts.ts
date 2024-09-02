@@ -2235,12 +2235,12 @@ export const createClaimAuctionPnftTx = async (
   const mintMetadata = await getMetadata(mint);
   console.log("Metadata=", mintMetadata.toBase58());
 
-  // let {
-  //   metadata: { Metadata },
-  // } = programs;
-  // let metadataAccount = await Metadata.getPDA(mint);
-  // const metadata = await Metadata.load(connection, metadataAccount);
-  // let creators = metadata.data.data.creators;
+  let {
+    metadata: { Metadata },
+  } = programs;
+  let metadataAccount = await Metadata.getPDA(mint);
+  const metadata = await Metadata.load(connection, metadataAccount);
+  let creators = metadata.data.data.creators;
 
   let treasuryAccounts: PublicKey[] = treasuryAddresses;
   console.log(
@@ -2260,13 +2260,13 @@ export const createClaimAuctionPnftTx = async (
       isSigner: false,
     });
   });
-  // creators?.map((creator: { address: anchor.web3.PublicKeyInitData }) => {
-  //   remainingAccounts.push({
-  //     pubkey: new PublicKey(creator.address),
-  //     isWritable: true,
-  //     isSigner: false,
-  //   });
-  // });
+  creators?.map((creator: { address: anchor.web3.PublicKeyInitData }) => {
+    remainingAccounts.push({
+      pubkey: new PublicKey(creator.address),
+      isWritable: true,
+      isSigner: false,
+    });
+  });
 
   console.log(
     "==> claiming Auction",
