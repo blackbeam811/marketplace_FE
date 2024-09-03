@@ -34,7 +34,6 @@ import { BalanceProps, HeaderProps } from "@/types/types";
 import { NFTDataContext } from "@/contexts/NFTDataContext";
 
 const Header: FC<HeaderProps> = () => {
-  console.log("render header");
   const inputRef = useRef<HTMLInputElement>(null);
   const router = usePathname();
   const { publicKey, connected } = useWallet();
@@ -106,7 +105,7 @@ const Header: FC<HeaderProps> = () => {
             <input
               ref={inputRef}
               placeholder="Search all of Mugs"
-              className={`outline-none bg-transparent w-full text-white py-2 md:py-[5px] md:px-1 font-thin text-[12px] md:text-sm placeholder:text-gray-300 ${
+              className={`outline-none bg-transparent w-full text-white py-2 md:py-[5px] md:px-1 font-semibold text-[10px] md:text-sm placeholder:text-gray-300 ${
                 isFocused && "border-gray-400"
               }`}
               onFocus={() => {
@@ -115,7 +114,7 @@ const Header: FC<HeaderProps> = () => {
               onClick={openSearchCollectionModal}
               onChange={(e) => setFilterWith(e.target.value)}
             />
-            <div className="bg-gray-300 rounded-sm text-[12px] text-gray-900 px-1 hidden md:block">
+            <div className="bg-gray-300 rounded-sm text-[10px] text-gray-900 font-normal px-1 hidden md:block">
               CTRL+K
             </div>
           </div>

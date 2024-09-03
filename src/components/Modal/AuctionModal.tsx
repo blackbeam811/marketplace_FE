@@ -96,7 +96,7 @@ const AuctionModal = (props: { nftItem: OwnNFTDataType | undefined }) => {
 
   return (
     <Modal open={auctionModalShow} onClose={closeAuctionModal} center>
-      <div className="rounded-lg flex items-start gap-3 justify-start relative flex-col">
+      <div className="rounded-lg flex items-start gap-3 justify-start relative flex-col md:p-5 pr-2 sm:pr-0">
         <div
           className="absolute top-0 right-2 cursor-pointer z-20"
           onClick={closeAuctionModal}
@@ -104,14 +104,14 @@ const AuctionModal = (props: { nftItem: OwnNFTDataType | undefined }) => {
           <CloseIcon />
         </div>
         <div className="w-full flex items-center justify-center">
-          <h1 className="text-white uppercase text-2xl font-bold mt-1 text-center">
+          <h1 className="text-white uppercase text-3xl font-bold mt-1 text-center">
             create auction
           </h1>
         </div>
 
-        <div>
-          <span className="text-gray-400">Start Price:</span>
-          <div className="bg-drakgreen border border-customborder rounded-md p-1 text-white w-[290px] sm:w-[350px] text-center flex items-center justify-start gap-2">
+        <div className="w-full">
+          <span className="text-gray-300">Start Price:</span>
+          <div className="bg-drakgreen border border-customborder rounded-md p-1 text-white w-full sm:w-[350px] text-center flex items-center justify-start gap-2">
             <input
               className="outline-none bg-transparent text-white py-1 w-full px-1 text-sm"
               placeholder="0"
@@ -120,9 +120,9 @@ const AuctionModal = (props: { nftItem: OwnNFTDataType | undefined }) => {
             />
           </div>
         </div>
-        <div>
-          <span className="text-gray-400">Min Increase Amount:</span>
-          <div className="bg-drakgreen border border-customborder rounded-md p-1 text-white w-[290px] sm:w-[350px] text-center flex items-center justify-start gap-2">
+        <div className="w-full">
+          <span className="text-gray-300">Min Increase Amount:</span>
+          <div className="bg-drakgreen border border-customborder rounded-md p-1 text-white w-full sm:w-[350px] text-center flex items-center justify-start gap-2">
             <input
               className="outline-none bg-transparent text-white py-1 w-full px-1 text-sm"
               placeholder="0"
@@ -131,9 +131,9 @@ const AuctionModal = (props: { nftItem: OwnNFTDataType | undefined }) => {
             />
           </div>
         </div>
-        <div>
-          <span className="text-gray-400">Auction End Time:</span>
-          <div className="bg-drakgreen border border-customborder rounded-md p-1 text-white w-[290px] sm:w-[350px] text-center flex items-center justify-start gap-2">
+        <div className="w-full">
+          <span className="text-gray-300">Auction End Time:</span>
+          <div className="bg-drakgreen border border-customborder rounded-md p-1 text-white w-full sm:w-[350px] text-center flex items-center justify-start gap-2">
             <input
               className="outline-none bg-transparent text-white py-1 w-full px-1 text-sm"
               type="datetime-local"
@@ -147,10 +147,12 @@ const AuctionModal = (props: { nftItem: OwnNFTDataType | undefined }) => {
         >
           Create Auction
         </div>
-        <span className="text-gray-500 text-[13px] flex gap-1">
-          <CiWarning color="" size={20} className="-mt-[2px]" />
-          Auction end time must be bigger than the current time.{" "}
-        </span>
+        <div className="text-center w-full flex items-center justify-center">
+          <span className="text-gray-300 text-[13px] flex gap-1">
+            <CiWarning color="white" size={20} className="-mt-[2px]" />
+            Auction end time must be bigger than the current time.{" "}
+          </span>
+        </div>
       </div>
     </Modal>
   );

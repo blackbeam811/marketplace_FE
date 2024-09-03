@@ -2,6 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
+@import "./fonts.css";
+
 @font-face {
   font-family: "custom";
   src: url("/fonts/Blinker-SemiBold.ttf") format("truetype");
@@ -81,6 +83,11 @@ input[type="range"] {
   position: relative;
   -webkit-transform: rotateZ(45deg);
   transform: rotateZ(45deg);
+}
+
+/* Custom date input tag icon*/
+input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+  color: white !important;
 }
 
 .sk-folding-cube .sk-cube {

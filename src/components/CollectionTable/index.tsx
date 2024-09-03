@@ -134,11 +134,11 @@ export default function CollectionTable() {
           {filteredData.map((row, index) => (
             <tr
               key={index}
-              className={`hover:bg-[#17483471] cursor-pointer duration-200 text-sm md:text-md ${
+              className={`hover:bg-[#17483471] cursor-pointer duration-200 text-sm font-semibold md:text-md ${
                 index % 2 === 0 ? "bg-darkgreen" : "bg-[#0f422321]"
               }`}
             >
-              <td className="relative py-2 px-4 text-white font-light flex items-center justify-start gap-3">
+              <td className="relative py-2 px-4 text-gray-100 font-semibold flex items-center justify-start gap-3">
                 <div className="relative w-[45px] h-[45px]">
                   <img
                     src={PINATA_URL + row.imgUrl}
@@ -152,22 +152,22 @@ export default function CollectionTable() {
               </td>
               <td className="py-2 px-4 text-[#8DEEC4]">{row.floorPrice} SOL</td>
               <td className="py-2 px-4 text-[#DD7A98]">{row.totalVolume}</td>
-              <td className="py-2 px-4 text-white font-light">
+              <td className="py-2 px-4 text-white font-semibold">
                 {row.listed === 0
                   ? 0
                   : ((row.listed / row.totalVolume) * 100).toFixed(2)}
                 %
               </td>
-              <td className="py-2 px-4 text-white font-light">
+              <td className="py-2 px-4 text-gray-100 font-semibold">
                 {row.sales.toLocaleString()}
               </td>
-              <td className="py-2 px-4 text-white font-light">
+              <td className="py-2 px-4 text-gray-100 font-semibold">
                 {row.listed.toLocaleString()}
               </td>
-              <td className="py-2 px-4 text-white font-light">
+              <td className="py-2 px-4 text-gray-100 font-semibold">
                 {row.topOffer.toLocaleString()} SOL
               </td>
-              <td className="py-2 px-4 text-white font-light">
+              <td className="py-2 px-4 text-gray-100 font-semibold">
                 {row.owners.toLocaleString()}
               </td>
             </tr>

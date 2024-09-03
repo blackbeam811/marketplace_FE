@@ -129,7 +129,7 @@ export async function claimAuctionPnftApi(
   mintAddrArray: any
 ) {
   try {
-    const response = await axios.post(`${MUGS_ENDPOINT}/nft/purchase`, {
+    const response = await axios.post(`${MUGS_ENDPOINT}/nft/claimauction`, {
       transaction: transactions,
       purchaseData: purchaseData,
       mintAddrArray: mintAddrArray,

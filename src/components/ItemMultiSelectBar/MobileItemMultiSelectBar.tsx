@@ -189,7 +189,7 @@ export default function MobileItemMultiSelectBar(props: {
   };
 
   return (
-    <div className="fixed bottom-[3.4rem] left-0 right-0 w-full md:hidden border-t border-customborder bg-darkgreen p-1 z-[10000] flex items-center justify-between">
+    <div className="fixed bottom-[3.4rem] left-0 right-0 w-full md:hidden border-t border-customborder bg-darkgreen p-1 z-[9998] flex items-center justify-between">
       <button
         className="bg-yellow-600 text-sm rounded-md px-8 py-[5px] text-white"
         onClick={() =>

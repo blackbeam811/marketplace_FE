@@ -524,10 +524,10 @@ const ItemDetails: NextPage = () => {
       return;
     }
 
-    if (currentDate < itemDetail?.endTime!) {
-      errorAlert("The auction is not over yet.");
-      return;
-    }
+    // if (currentDate < itemDetail?.endTime!) {
+    //   errorAlert("The auction is not over yet.");
+    //   return;
+    // }
 
     try {
       openFunctionLoading();
@@ -564,7 +564,6 @@ const ItemDetails: NextPage = () => {
 
   // Claim NFT Auction Function
   const handleClaimAuctionNFTFunc = async () => {
-    console.log("claim auction");
     const currentDate = Date.now();
     if (!wallet || itemDetail === undefined) {
       return;
@@ -595,6 +594,7 @@ const ItemDetails: NextPage = () => {
             getActivityByMintAddr(),
             getAllListedNFTs(),
             getAllCollectionData(),
+            route.push("/me"),
           ]);
           successAlert("Success");
         } else {
@@ -624,8 +624,22 @@ const ItemDetails: NextPage = () => {
       return;
     }
 
-    if (updatedPrice === 0) {
-      errorAlert("Please input the price.");
+    if (itemDetail.lastBidPrice === 0 && itemDetail.solPrice < updatedPrice) {
+      errorAlert(`You must bid with ${itemDetail.solPrice} sol.`);
+      return;
+    }
+
+    if (
+      updatedPrice === 0 ||
+      updatedPrice < itemDetail?.lastBidPrice! + itemDetail?.minIncrease!
+    ) {
+      errorAlert(
+        "Please input the price correctly" +
+          itemDetail?.lastBidPrice! +
+          itemDetail?.minIncrease! +
+          "," +
+          updatedPrice
+      );
       return;
     }
 
@@ -647,6 +661,7 @@ const ItemDetails: NextPage = () => {
             getAllCollectionData(),
           ]);
           successAlert("Success");
+          route.push("/me");
         } else {
           errorAlert("Something went wrong.");
         }
@@ -660,6 +675,8 @@ const ItemDetails: NextPage = () => {
       closeFunctionLoading();
     }
   };
+
+  console.log("itemDetail ==>", itemDetail);
 
   return (
     <MainPageLayout>
@@ -715,99 +732,158 @@ const ItemDetails: NextPage = () => {
                   5.614 Sol
                 </span>
               </div> */}
-              <p
-                className={`text-left text-white text-2xl ${
-                  itemDetail?.solPrice === 0 && "hidden"
-                }`}
-              >
-                {`${
-                  itemDetail?.endTime === undefined
-                    ? "Listed Price"
-                    : "Auction Start Price"
-                }`}{" "}
-                : {itemDetail?.solPrice}
-                {" sol"}
-              </p>
-              <div
-                className={`text-white ${
-                  (itemDetail?.endTime === undefined ||
-                    itemDetail?.endTime === 0) &&
-                  "hidden"
-                }`}
-              >
-                <Countdown timestamp={itemDetail?.endTime!} />
-              </div>
-              <p
-                className={`text-left text-white text-md ${
-                  bidPrice === 0 && "hidden"
-                }`}
-              >
-                Your bid price is {bidPrice}
-                {" sol"}
-              </p>
-              <div className="w-full flex items-center justify-between gap-2">
-                <input
-                  className={`w-full p-[5px] flex items-center placeholder:text-gray-500 outline-none text-white justify-between rounded-md border border-customborder bg-transparent
+              {wallet ? (
+                <div className="w-full flex items-start justify-center flex-col gap-2">
+                  <p
+                    className={`text-left text-white text-2xl ${
+                      itemDetail?.solPrice === 0 && "hidden"
+                    }`}
+                  >
+                    {`${
+                      itemDetail?.endTime === undefined
+                        ? "Listed Price"
+                        : "Auction Start Price"
+                    }`}{" "}
+                    : {itemDetail?.solPrice}
+                    {" sol"}
+                  </p>
+                  <p
+                    className={`text-left text-yellow-500 text-xl ${
+                      ((itemDetail?.lastBidPrice === 0 && bidPrice === 0) ||
+                        typeParam !== "auction") &&
+                      "hidden"
+                    }`}
+                  >
+                    {`The next bid price must be at least `}
+
+                    {(
+                      itemDetail?.lastBidPrice! + itemDetail?.minIncrease!
+                    ).toFixed(2)}
+                    {" sol"}
+                  </p>
+                  <div
+                    className={`text-white ${
+                      (itemDetail?.endTime === undefined ||
+                        itemDetail?.endTime === 0) &&
+                      "hidden"
+                    }`}
+                  >
+                    <Countdown timestamp={itemDetail?.endTime!} />
+                  </div>
+                  <p
+                    className={`text-left text-white text-md ${
+                      bidPrice === 0 && "hidden"
+                    }`}
+                  >
+                    Your bid price is {bidPrice}
+                    {" sol"}
+                  </p>
+                  <div className="w-full flex items-center justify-between gap-2">
+                    <input
+                      className={`w-full p-[5px] flex items-center placeholder:text-gray-500 outline-none text-white justify-between rounded-md border border-customborder bg-transparent
                      ${
-                       typeParam === "auction" &&
-                       wallet?.publicKey.toBase58() === itemDetail?.seller &&
+                       ((typeParam === "auction" &&
+                         wallet?.publicKey.toBase58() === itemDetail?.seller) ||
+                         bidPrice !== 0 ||
+                         (itemDetail?.lastBidPrice !== undefined &&
+                           bidPrice !== 0) ||
+                         (itemDetail?.minIncrease !== 0 &&
+                           wallet?.publicKey.toBase58() ===
+                             itemDetail?.seller)) &&
                        "hidden"
                      }`}
-                  placeholder="Input the price"
-                  type="number"
-                  onChange={(e) => {
-                    setUpdatedPrice(Number(e.target.value));
-                  }}
-                />
-                <UpdatePriceButton
-                  wallet={wallet}
-                  selectedNFT={itemDetail}
-                  offerData={offerData}
-                  handleUpdatePriceFunc={handleUpdatePriceFunc}
-                  typeParam={itemDetail?.endTime !== undefined ? "auction" : ""}
-                />
-                <MakeOrCancelOfferButton
-                  wallet={wallet}
-                  selectedNFT={itemDetail}
-                  offerData={offerData}
-                  handleMakeOffer={handleMakeOffer}
-                  handleCancelOffer={handleCancelOffer}
-                  typeParam={itemDetail?.endTime !== undefined ? "auction" : ""}
-                />
-                <PlaceBidButton
-                  wallet={wallet}
-                  selectedNFT={itemDetail}
-                  offerData={offerData}
-                  handleMakeOffer={handleMakeOffer}
-                  handleCancelOffer={handleCancelOffer}
-                  handlePlaceBidFunc={handlePlaceBidFunc}
-                  typeParam={itemDetail?.endTime !== undefined ? "auction" : ""}
-                />
+                      placeholder="Input the price"
+                      type="number"
+                      onChange={(e) => {
+                        setUpdatedPrice(Number(e.target.value));
+                      }}
+                    />
+                    <input
+                      className={`w-full p-[5px] items-center placeholder:text-gray-500 outline-none text-white justify-between rounded-md border border-customborder bg-transparent
+                     ${
+                       typeParam !== "auction" &&
+                       itemDetail?.minIncrease === undefined &&
+                       itemDetail?.solPrice !== 0
+                         ? "flex"
+                         : "hidden"
+                     }`}
+                      placeholder="Input the price"
+                      type="number"
+                      onChange={(e) => {
+                        setUpdatedPrice(Number(e.target.value));
+                      }}
+                    />
+                    <UpdatePriceButton
+                      wallet={wallet}
+                      selectedNFT={itemDetail}
+                      offerData={offerData}
+                      handleUpdatePriceFunc={handleUpdatePriceFunc}
+                      typeParam={
+                        itemDetail?.endTime !== undefined ? "auction" : ""
+                      }
+                    />
+                    <MakeOrCancelOfferButton
+                      wallet={wallet}
+                      selectedNFT={itemDetail}
+                      offerData={offerData}
+                      handleMakeOffer={handleMakeOffer}
+                      handleCancelOffer={handleCancelOffer}
+                      typeParam={
+                        itemDetail?.endTime !== undefined ? "auction" : ""
+                      }
+                    />
+                    <PlaceBidButton
+                      wallet={wallet}
+                      selectedNFT={itemDetail}
+                      offerData={offerData}
+                      handleMakeOffer={handleMakeOffer}
+                      handleCancelOffer={handleCancelOffer}
+                      handlePlaceBidFunc={handlePlaceBidFunc}
+                      typeParam={
+                        itemDetail?.endTime !== undefined ? "auction" : ""
+                      }
+                      bidPrice={bidPrice}
+                    />
 
-                <AcceptHighOfferButton
-                  wallet={wallet}
-                  selectedNFT={itemDetail}
-                  offerData={offerData}
-                  handleAcceptHighOffer={handleAcceptHighOffer}
-                />
-              </div>
+                    <AcceptHighOfferButton
+                      wallet={wallet}
+                      selectedNFT={itemDetail}
+                      offerData={offerData}
+                      handleAcceptHighOffer={handleAcceptHighOffer}
+                    />
+                    <ClaimAuctionPnftButton
+                      wallet={wallet}
+                      selectedNFT={itemDetail}
+                      bidPrice={bidPrice}
+                      typeParam={
+                        itemDetail?.endTime !== undefined ? "auction" : ""
+                      }
+                      handleClaimAuctionNFTFunc={handleClaimAuctionNFTFunc}
+                    />
+                    <ListOrDelistButton
+                      wallet={wallet}
+                      selectedNFT={itemDetail}
+                      handleListMyNFTFunc={handleListMyNFTFunc}
+                      handleDelistMyNFTFunc={handleDelistMyNFTFunc}
+                      typeParam={
+                        itemDetail?.endTime !== undefined ? "auction" : ""
+                      }
+                    />
+                  </div>
+                </div>
+              ) : (
+                <p className="text-white uppercase">
+                  please connect the wallet
+                </p>
+              )}
 
               <div className="w-full flex items-center justify-center gap-2">
-                <ListOrDelistButton
-                  wallet={wallet}
-                  selectedNFT={itemDetail}
-                  handleListMyNFTFunc={handleListMyNFTFunc}
-                  handleDelistMyNFTFunc={handleDelistMyNFTFunc}
-                  handleCancelAuctionMyNFTFunc={handleCancelAuctionMyNFTFunc}
-                  typeParam={itemDetail?.endTime !== undefined ? "auction" : ""}
-                />
-                <CreateAuctionButton
+                <AuctionButton
                   wallet={wallet}
                   selectedNFT={itemDetail}
                   handleCreateAuctionMyNFTFunc={openAuctionModal}
                   handleCancelAuctionMyNFTFunc={handleCancelAuctionMyNFTFunc}
-                  handleClaimAuctionNFTFunc={handleClaimAuctionNFTFunc}
-                  typeParam={itemDetail?.endTime !== undefined ? "auction" : ""}
+                  typeParam={"auction"}
                 />
               </div>
               <BuyNowButton
@@ -1031,10 +1107,12 @@ const PlaceBidButton: React.FC<ButtonProps> = ({
   selectedNFT,
   handlePlaceBidFunc,
   typeParam,
+  bidPrice,
 }) => {
   const isHidden =
     wallet?.publicKey.toBase58() === selectedNFT?.seller ||
-    typeParam !== "auction";
+    typeParam !== "auction" ||
+    bidPrice !== 0;
   return (
     <div
       className={`w-full rounded-md py-[6px] text-center bg-red-600 duration-200 hover:bg-red-700 text-white cursor-pointer flex items-center gap-2 justify-center ${
@@ -1085,6 +1163,28 @@ const MakeOrCancelOfferButton: React.FC<ButtonProps> = ({
   );
 };
 
+const ClaimAuctionPnftButton: React.FC<ButtonProps> = ({
+  wallet,
+  bidPrice,
+  selectedNFT,
+  offerData,
+  typeParam,
+  handleClaimAuctionNFTFunc,
+}) => {
+  const isHidden = bidPrice === 0 || typeParam !== "auction";
+
+  return (
+    <div
+      className={`w-full rounded-md py-[6px] text-center bg-yellow-600 duration-200 hover:bg-yellow-700 text-white cursor-pointer ${
+        isHidden && "hidden"
+      }`}
+      onClick={handleClaimAuctionNFTFunc}
+    >
+      {"Claim NFT"}
+    </div>
+  );
+};
+
 const AcceptHighOfferButton: React.FC<ButtonProps> = ({
   wallet,
   selectedNFT,
@@ -1112,10 +1212,11 @@ const ListOrDelistButton: React.FC<ButtonProps> = ({
   selectedNFT,
   handleListMyNFTFunc,
   handleDelistMyNFTFunc,
-  handleCancelAuctionMyNFTFunc,
   typeParam,
 }) => {
-  const isHidden = wallet?.publicKey.toBase58() !== selectedNFT?.seller;
+  const isHidden =
+    (typeParam === "auction" && selectedNFT?.solPrice !== 0) ||
+    wallet?.publicKey.toBase58() !== selectedNFT?.seller;
 
   return (
     <div
@@ -1125,48 +1226,53 @@ const ListOrDelistButton: React.FC<ButtonProps> = ({
       onClick={
         selectedNFT?.solPrice === 0
           ? handleListMyNFTFunc
-          : typeParam === "auction"
-          ? handleCancelAuctionMyNFTFunc
           : handleDelistMyNFTFunc
       }
     >
       {selectedNFT?.solPrice === 0 &&
       wallet?.publicKey.toBase58() === selectedNFT.seller
         ? "List Now"
-        : typeParam === "auction"
-        ? "Cancel auction"
         : "Delist now"}
     </div>
   );
 };
 
-const CreateAuctionButton: React.FC<ButtonProps> = ({
+const AuctionButton: React.FC<ButtonProps> = ({
   wallet,
   selectedNFT,
   handleCreateAuctionMyNFTFunc,
-  handleClaimAuctionNFTFunc,
+  handleCancelAuctionMyNFTFunc,
   typeParam,
 }) => {
+  console.log("selectedNFT?.lastBidPrice =", selectedNFT?.lastBidPrice);
   const isHidden =
     wallet?.publicKey.toBase58() !== selectedNFT?.seller ||
-    typeParam !== "auction";
+    (selectedNFT?.solPrice !== 0 && selectedNFT?.minIncrease === undefined);
+  const currentTime = Date.now();
+  const canCancelState = Number(selectedNFT?.endTime) < currentTime;
 
   return (
     <div
-      className={`w-full rounded-md py-[6px] text-center bg-green-600 duration-200 hover:bg-green-700 text-white cursor-pointer ${
-        isHidden && "hidden"
-      }`}
+      className={`w-full rounded-md py-[6px] relative text-center bg-green-600 duration-200 ${
+        canCancelState && "hover:bg-green-700"
+      } text-white cursor-pointer ${isHidden && "hidden"}`}
       onClick={
         selectedNFT?.solPrice === 0 &&
-        wallet?.publicKey.toBase58() === selectedNFT.seller
+        wallet?.publicKey.toBase58() === selectedNFT.seller &&
+        selectedNFT?.minIncrease === 0
           ? handleCreateAuctionMyNFTFunc
-          : handleClaimAuctionNFTFunc
+          : handleCancelAuctionMyNFTFunc
       }
     >
-      {selectedNFT?.solPrice === 0 &&
-      wallet?.publicKey.toBase58() === selectedNFT.seller
+      {/* <div
+        className={`absolute rounded-md top-0 bottom-0 right-0 left-0 bg-black bg-opacity-70 cursor-not-allowed ${
+          canCancelState && "hidden"
+        }`}
+      ></div> */}
+      {wallet?.publicKey.toBase58() === selectedNFT?.seller &&
+      selectedNFT?.solPrice == 0
         ? "Create Auction"
-        : "Claim Auction"}
+        : "Cancel Auction"}
     </div>
   );
 };

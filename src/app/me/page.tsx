@@ -342,7 +342,7 @@ const MyItem: NextPage = () => {
           </div>
           <div
             className={`w-full overflow-y-auto pb-14 md:pb-16`}
-            style={{ maxHeight: height! * 0.68 + "px" }}
+            style={{ maxHeight: height! * 0.6 + "px" }}
           >
             <div
               className={`relative ${
@@ -429,7 +429,7 @@ const MyItem: NextPage = () => {
       <div
         className={`${
           !publicKey ? "flex" : "hidden"
-        } items-center justify-center min-h-[80vh] w-full`}
+        } items-center justify-center min-h-[78vh] w-full`}
       >
         <p className="text-gray-400 text-center">
           Connect wallet to see your profile page
