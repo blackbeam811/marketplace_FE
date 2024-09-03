@@ -1,0 +1,38 @@
+/* styles fonts.css */
+@font-face {
+  font-family: "ChakraPetch";
+  font-weight: 300;
+  font-style: normal;
+  src: url("/fonts/chakra/ChakraPetch-Light.ttf") format("truetype"),
+    url("/fonts/chakra/ChakraPetch-Light.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "ChakraPetch";
+  font-weight: 400;
+  font-style: normal;
+  src: url("/fonts/chakra/ChakraPetch-Regular.ttf") format("truetype"),
+    url("/fonts/chakra/ChakraPetch-Regular.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "ChakraPetch";
+  font-weight: 500;
+  font-style: normal;
+  src: url("/fonts/chakra/ChakraPetch-Medium.ttf") format("truetype"),
+    url("/fonts/chakra/ChakraPetch-Medium.ttf") format("truetype");
+}
+@font-face {
+  font-family: "ChakraPetch";
+  font-weight: 600;
+  font-style: normal;
+  src: url("/fonts/chakra/ChakraPetch-SemiBold.ttf") format("truetype"),
+    url("/fonts/chakra/ChakraPetch-SemiBold.ttf") format("truetype");
+}
+@font-face {
+  font-family: "ChakraPetch";
+  font-weight: 700;
+  font-style: normal;
+  src: url("/fonts/chakra/ChakraPetch-Bold.ttf") format("truetype"),
+    url("/fonts/chakra/ChakraPetch-Bold.ttf") format("truetype");
+}

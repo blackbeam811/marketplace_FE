@@ -2,6 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
+@import "./fonts.css";
+
 @font-face {
   font-family: "custom";
   src: url("/fonts/Blinker-SemiBold.ttf") format("truetype");
